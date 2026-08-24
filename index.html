@@ -1450,63 +1450,108 @@ const io = new IntersectionObserver((entries) => {
 document.querySelectorAll('.rv, .reveal-stagger').forEach(el => io.observe(el));
 
 /* ---------- booking form ---------- */
-const ACCESS_KEY = '6a77e977-fa35-4850-a9f2-a00e9d487ef5'; // <-- Paste your key here
-const ENDPOINT   = 'https://api.web3forms.com/submit';
+const ENDPOINT = 'https://hook.eu1.make.com/1xbd6mt18cvllho7k1ergevtftc8wj97';
 
 const form = document.getElementById('bookForm');
 const statusBox = document.getElementById('formStatus');
 const submitBtn = document.getElementById('submitBtn');
 const btnLabel = document.getElementById('btnLabel');
 
+/* ---------- validation ---------- */
 function setError(input, on) {
-  input.closest('.field').classList.toggle('invalid', on);
+  const field = input.closest('.field');
+  if (field) {
+    field.classList.toggle('invalid', on);
+  }
 }
 
 function validate() {
   let ok = true;
-  const name = form.name, email = form.email, service = form.service, message = form.message;
-  const nameBad = name.value.trim().length < 2; setError(name, nameBad); ok = ok && !nameBad;
-  const emailBad = !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim()); setError(email, emailBad); ok = ok && !emailBad;
-  const svcBad = !service.value; setError(service, svcBad); ok = ok && !svcBad;
-  const msgBad = message.value.trim().length < 10; setError(message, msgBad); ok = ok && !msgBad;
+
+  const name = form.name;
+  const email = form.email;
+  const service = form.service;
+  const message = form.message;
+
+  // Name
+  const nameBad = name.value.trim().length < 2;
+  setError(name, nameBad);
+  if (nameBad) ok = false;
+
+  // Email
+  const emailBad = !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(
+    email.value.trim()
+  );
+  setError(email, emailBad);
+  if (emailBad) ok = false;
+
+  // Service
+  const svcBad = !service.value;
+  setError(service, svcBad);
+  if (svcBad) ok = false;
+
+  // Message
+  const msgBad = message.value.trim().length < 10;
+  setError(message, msgBad);
+  if (msgBad) ok = false;
+
   return ok;
 }
 
-['input','change','blur'].forEach(evt => {
-  form.querySelectorAll('input,select,textarea').forEach(el => {
+/* ---------- live validation ---------- */
+['input', 'change', 'blur'].forEach(evt => {
+  form.querySelectorAll('input, select, textarea').forEach(el => {
     el.addEventListener(evt, () => {
-      if (el.closest('.field').classList.contains('invalid')) validate();
+      if (el.closest('.field')?.classList.contains('invalid')) {
+        validate();
+      }
     });
   });
 });
 
+/* ---------- status message ---------- */
 function showStatus(type, html) {
   statusBox.className = 'form-status show ' + type;
   statusBox.innerHTML = html;
 }
 
+/* ---------- submit form ---------- */
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  // Clear previous status
   statusBox.className = 'form-status';
 
+  // Validate form
   if (!validate()) {
-    form.querySelector('.field.invalid input, .field.invalid select, .field.invalid textarea')?.focus();
+    form
+      .querySelector(
+        '.field.invalid input, .field.invalid select, .field.invalid textarea'
+      )
+      ?.focus();
+
     return;
   }
 
+  /* ---------- form data sent to Make ---------- */
   const payload = {
-    access_key: ACCESS_KEY,
-    subject: 'New Consultation Request — ' + form.name.value.trim(),
-    from_name: 'OQVERA Website',
     name: form.name.value.trim(),
     email: form.email.value.trim(),
-    company: form.company.value.trim() || '—',
-    phone: form.phone.value.trim() || '—',
+    company: form.company?.value.trim() || '—',
+    phone: form.phone?.value.trim() || '—',
     service: form.service.value,
-    timeline: form.timeline.value,
-    message: form.message.value.trim()
+    timeline: form.timeline?.value || '—',
+    message: form.message.value.trim(),
+
+    // Lead tracking
+    status: 'New',
+    source: 'OQVERA Website',
+
+    // Timestamp
+    submitted_at: new Date().toISOString()
   };
 
+  /* ---------- loading state ---------- */
   submitBtn.disabled = true;
   submitBtn.classList.add('is-sending');
   btnLabel.textContent = 'Sending…';
@@ -1514,23 +1559,46 @@ form.addEventListener('submit', async (e) => {
   try {
     const res = await fetch(ENDPOINT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
       body: JSON.stringify(payload)
     });
 
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-      form.reset();
-      showStatus('ok', '<strong>Request sent successfully!</strong> We will reply within one business day.');
-    } else {
-      throw new Error(data.message || 'Submission failed');
+    /*
+     * Make webhooks may return an empty response.
+     * Therefore, we rely primarily on HTTP status.
+     */
+    if (!res.ok) {
+      throw new Error(`Webhook returned ${res.status}`);
     }
-  } catch (err) {
-    showStatus('bad',
-      'Unable to submit form. Please send your details directly to <a href="mailto:hello@oqvera.com">hello@oqvera.com</a>.'
+
+    /* ---------- success ---------- */
+    form.reset();
+
+    // Remove validation errors
+    form.querySelectorAll('.field.invalid').forEach(field => {
+      field.classList.remove('invalid');
+    });
+
+    showStatus(
+      'ok',
+      '<strong>Request sent successfully!</strong> We will reply within one business day.'
     );
+
+  } catch (err) {
+
+    console.error('OQVERA form submission error:', err);
+
+    showStatus(
+      'bad',
+      'Unable to submit form. Please send your details directly to ' +
+      '<a href="mailto:hello@oqvera.com">hello@oqvera.com</a>.'
+    );
+
   } finally {
+    /* ---------- restore button ---------- */
     submitBtn.disabled = false;
     submitBtn.classList.remove('is-sending');
     btnLabel.textContent = 'Send request';
