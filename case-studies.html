@@ -13,6 +13,24 @@
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;line-height:1.6}a{color:inherit;text-decoration:none}.wrap{max-width:var(--max);margin:auto;padding:0 24px}.nav{position:sticky;top:0;z-index:20;background:rgba(5,6,14,.84);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}.navin{height:64px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;letter-spacing:.16em}.brandmark{width:30px;height:30px}.links{display:flex;gap:30px;color:var(--muted);font-size:14px}.links a:hover{color:#fff}.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:10px;border:1px solid var(--line);font-size:13px;transition:.2s}.primary{background:linear-gradient(180deg,#7c6bff,#5b48f0);border:0}.ghost:hover{border-color:#fff;background:rgba(255,255,255,.04)}.hero{padding:88px 0 72px;text-align:center;border-bottom:1px solid var(--line);background:radial-gradient(circle at 50% 0,rgba(109,92,255,.14),transparent 55%)}.eyebrow{font:11px "JetBrains Mono",monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);margin-bottom:15px}.hero h1{font-size:clamp(42px,6vw,72px);line-height:1.02;letter-spacing:-.05em;margin:0 auto 20px;max-width:850px}.hero p{color:var(--muted);max-width:650px;margin:auto;font-size:16px}.filters{padding:22px 0;border-bottom:1px solid var(--line)}.filterrow{display:flex;gap:9px;flex-wrap:wrap}.filter{background:transparent;color:var(--muted);border:1px solid var(--line);padding:8px 13px;border-radius:8px;cursor:pointer}.filter.active,.filter:hover{color:#fff;border-color:var(--strong);background:rgba(109,92,255,.1)}.work{padding:60px 0 90px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.25s}.card:hover{transform:translateY(-5px);border-color:var(--strong);box-shadow:0 20px 50px rgba(0,0,0,.28)}.visual{height:245px;padding:22px;background:linear-gradient(145deg,#0a0d20,#11142b);border-bottom:1px solid var(--line);position:relative;overflow:hidden}.visual:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(109,92,255,.12);filter:blur(35px);right:-90px;top:-100px}.mock{position:relative;z-index:2;border:1px solid rgba(139,124,255,.22);border-radius:12px;background:#090b18;height:100%;padding:14px}.mocktop{display:flex;gap:6px;margin-bottom:14px}.dot{width:6px;height:6px;border-radius:50%;background:#4b4774}.mockgrid{display:grid;grid-template-columns:75px 1fr;gap:10px;height:calc(100% - 20px)}.side{border-right:1px solid var(--line)}.side i{display:block;height:8px;width:45px;background:#1b1e38;border-radius:4px;margin:10px 0}.content{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mini{background:#101329;border:1px solid var(--line);border-radius:7px;padding:8px}.mini b{display:block;width:40%;height:6px;background:#282d50;border-radius:3px;margin-bottom:10px}.mini span{display:block;height:5px;background:#1b1f39;border-radius:3px;margin:6px 0}.cardbody{padding:23px}.meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.type{font:9px "JetBrains Mono",monospace;letter-spacing:.14em;color:var(--soft);text-transform:uppercase}.status{font-size:10px;color:#7dd3fc;border:1px solid rgba(56,189,248,.2);padding:4px 7px;border-radius:6px}.card h2{font-size:24px;letter-spacing:-.03em;margin:0 0 10px}.card p{color:var(--muted);font-size:13px;margin:0 0 18px}.tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}.tag{font:10px "JetBrains Mono",monospace;color:#aeb3c8;border:1px solid var(--line);padding:5px 8px;border-radius:6px}.link{color:var(--soft);font-size:12px}.full{grid-column:1/-1}.full .visual{height:285px}.cta{margin-top:45px;border-radius:18px;padding:34px;background:linear-gradient(105deg,#5a45f0,#7c5cff 55%,#8b5cf6);display:flex;justify-content:space-between;align-items:center;gap:20px}.cta h2{margin:0 0 7px;font-size:25px}.cta p{margin:0;color:rgba(255,255,255,.82);font-size:13px}.footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:12px}.mobile{display:none}
 @media(max-width:760px){.links,.nav .btn{display:none}.mobile{display:block}.grid{grid-template-columns:1fr}.full{grid-column:auto}.hero{padding:65px 0 55px}.hero h1{font-size:44px}.cta{display:block}.cta .btn{margin-top:18px}}
 </style>
+<style>
+/* ---------- footer ---------- */
+.footer{border-top:1px solid var(--line);padding:44px 0 26px;background:var(--bg-2)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.3fr;gap:30px}
+.foot-grid h5{font-size:12px;margin:0 0 14px;letter-spacing:.02em;font-weight:600}
+.foot-grid ul{list-style:none;margin:0;padding:0;font-size:12.5px;color:var(--muted)}
+.foot-grid li{padding:5px 0}
+.foot-grid a:hover{color:#fff}
+.foot-tag{font-size:12.5px;color:var(--muted);margin:14px 0 18px;max-width:210px}
+.socials{display:flex;gap:9px}
+.soc{width:31px;height:31px;border-radius:8px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.18s}
+.soc:hover{color:#fff;border-color:var(--line-strong);background:var(--panel-2)}
+.contact-line{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);padding:5px 0}
+.contact-line svg{color:var(--brand-soft);flex:none}
+.copyright{text-align:center;font-size:11.5px;color:var(--muted-2);margin-top:34px;padding-top:20px;border-top:1px solid var(--line)}
+
+
+</style>
 </head>
 <body>
 <header class="nav"><div class="wrap navin">
@@ -50,7 +68,7 @@
 
 <div class="cta"><div><h2>Have a process worth automating?</h2><p>Let's turn it into a system that actually does the work.</p></div><a class="btn" style="background:#fff;color:#2a1b7a;border:0" href="index.html#book">Start a Project →</a></div>
 </div></main>
-<footer class="footer"><div class="wrap">© 2026 OQVERA. Intelligent Systems for Modern Businesses.</div></footer>
+
 
 <script>
 document.querySelectorAll('.filter').forEach(btn=>{
@@ -63,5 +81,44 @@ document.querySelectorAll('.filter').forEach(btn=>{
  });
 });
 </script>
+
+<footer class="footer">
+  <div class="wrap foot-grid">
+    <div>
+      <a href="index.html" class="brand">
+        <svg width="30" height="30" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <circle cx="16" cy="16" r="11" stroke="#8b7bff" stroke-width="2.6"/>
+          <circle cx="26" cy="24" r="11" stroke="#5b48f0" stroke-width="2.6"/>
+        </svg>
+        OQVERA
+      </a>
+      <p class="foot-tag">Intelligent Systems for Modern Businesses.</p>
+      <div class="socials">
+        <a class="soc" href="#" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.5c0-1.31-.02-3-1.9-3-1.9 0-2.2 1.43-2.2 2.9V21h-4z"/></svg></a>
+        <a class="soc" href="#" aria-label="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3.2l-7 8 8.3 10h-6.5l-5-6-5.8 6H1.5l7.5-8.6L1 3h6.7l4.6 5.6L17.5 3z"/></svg></a>
+        <a class="soc" href="#" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.5c.5.08.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .26.18.57.69.47A10 10 0 0 0 12 2z"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h5>Solutions</h5>
+      <ul><li><a href="index.html#solutions">AI Automation</a></li><li><a href="index.html#solutions">AI Agents</a></li><li><a href="index.html#solutions">AI-Powered Software</a></li><li><a href="index.html#about">MCP & AI Engineering</a></li></ul>
+    </div>
+    <div>
+      <h5>Work</h5>
+      <ul><li><a href="case-studies.html">Case Studies</a></li><li><a href="projects.html">All Projects</a></li><li><a href="project-dealership.html">Featured System</a></li><li><a href="index.html#how">Approach</a></li></ul>
+    </div>
+    <div>
+      <h5>About</h5>
+      <ul><li><a href="index.html#about">About OQVERA</a></li><li><a href="index.html#about">Founder</a></li><li><a href="index.html#how">Our Approach</a></li><li><a href="index.html#book">Contact</a></li></ul>
+    </div>
+    <div>
+      <h5>Get In Touch</h5>
+      <p class="foot-tag" style="margin-top:0">AI systems, automations, and software built around your business.</p>
+      <div class="contact-line"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></svg> hello@oqvera.com</div>
+      <div class="contact-line"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Remote — working worldwide</div>
+    </div>
+  </div>
+  <div class="wrap"><div class="copyright">© 2026 OQVERA. All rights reserved.</div></div>
+</footer>
 </body>
 </html>
