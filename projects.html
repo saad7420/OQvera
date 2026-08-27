@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -160,6 +160,36 @@ a{
   color:var(--muted);
   font-size:15px;
   line-height:1.7;
+}
+
+/* ---------- PROJECT FILTERS ---------- */
+
+.project-filters{
+  padding:34px 0 0;
+}
+
+.filterrow{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:9px;
+}
+
+.filter{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.02);
+  color:var(--muted);
+  padding:9px 14px;
+  border-radius:999px;
+  font:11px "JetBrains Mono",monospace;
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.filter:hover,.filter.active{
+  color:#fff;
+  border-color:rgba(139,124,255,.45);
+  background:rgba(109,92,255,.10);
 }
 
 /* ---------- PROJECTS ---------- */
@@ -586,6 +616,20 @@ a{
 </section>
 
 
+<!-- ================= PROJECT FILTERS ================= -->
+
+<section class="project-filters">
+  <div class="wrap">
+    <div class="filterrow">
+      <button class="filter active" data-filter="all">All</button>
+      <button class="filter" data-filter="agents">AI Agents</button>
+      <button class="filter" data-filter="automation">Automation</button>
+      <button class="filter" data-filter="software">AI Software</button>
+    </div>
+  </div>
+</section>
+
+
 <!-- ================= PROJECTS ================= -->
 
 <main class="projects">
@@ -597,7 +641,7 @@ a{
      PROJECT 01 — NATIONAL MOTORS
 ========================================================= -->
 
-<article class="project">
+<article class="project item" data-type="agents automation">
 
   <div class="visual">
 
@@ -710,7 +754,7 @@ a{
      PROJECT 02 — LANGGRAPH CHATBOT
 ========================================================= -->
 
-<article class="project">
+<article class="project item" data-type="agents software">
 
   <div class="visual">
 
@@ -835,7 +879,7 @@ a{
      PROJECT 03 — CONNECTED OPERATIONS
 ========================================================= -->
 
-<article class="project">
+<article class="project item" data-type="automation">
 
   <div class="visual">
 
@@ -920,9 +964,94 @@ a{
 </article>
 
 
+<!-- =========================================================
+     PROJECT 04 — CONTENT CREATION PIPELINE
+========================================================= -->
+
+<article class="project item" data-type="agents software">
+
+  <div class="visual">
+    <div class="diagram">
+      <div class="node">TOPIC INPUT</div>
+      <div class="arr">↓</div>
+      <div class="node main">LANGGRAPH ORCHESTRATOR</div>
+      <div class="arr">↓</div>
+      <div class="node">RESEARCH → OUTLINE → DRAFT</div>
+      <div class="arr">↓</div>
+      <div class="node green">AI QUALITY EVALUATION</div>
+      <div class="arr">↓</div>
+      <div class="node purple">REVISE ↺ → PUBLISH</div>
+    </div>
+  </div>
+
+  <div class="copy">
+    <span class="type">04 / AGENTIC CONTENT PIPELINE</span>
+
+    <h2>Content Creation Pipeline using LangGraph</h2>
+
+    <p>
+      A stateful content-generation workflow that turns a topic into a
+      researched, structured, reviewed, and publish-ready post. LangGraph
+      controls the pipeline while a structured AI evaluator creates a
+      quality gate that can send weak drafts back through revision.
+    </p>
+
+    <div class="tags">
+      <span class="tag">LangGraph</span>
+      <span class="tag">LangChain</span>
+      <span class="tag">Groq</span>
+      <span class="tag">Llama 3.3 70B</span>
+      <span class="tag">Pydantic</span>
+      <span class="tag">Python</span>
+      <span class="tag">Agentic Workflow</span>
+    </div>
+
+    <ul>
+      <li>Topic-driven automated research stage</li>
+      <li>LLM-generated content outline and first draft</li>
+      <li>Structured quality evaluation with score, feedback, and pass state</li>
+      <li>Conditional revision loop with a two-revision safety limit</li>
+      <li>Revision history preserved throughout the workflow</li>
+      <li>Mermaid graph visualization for the orchestration flow</li>
+      <li>Generates multiple posts from a topic list</li>
+    </ul>
+
+    <div class="project-actions">
+      <a class="btn primary" href="project-content-creation-pipeline.html">
+        View Case Study →
+      </a>
+      <a class="github-btn"
+         href="https://github.com/saad7420/Content-Creation-Pipeline-using-LangGraph"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="View Content Creation Pipeline on GitHub"
+         title="View GitHub Repository">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2a10 10 0 0 0-3.16 19.5c.5.08.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.2 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .26.18.57.69.47A10 10 0 0 0 12 2z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</article>
+
 </div>
 
 </main>
+
+
+<!-- ================= PROJECT FILTER SCRIPT ================= -->
+<script>
+document.querySelectorAll('.filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.item').forEach(card => {
+      card.style.display = filter === 'all' || card.dataset.type.includes(filter) ? '' : 'none';
+    });
+  });
+});
+</script>
 
 
 <!-- ================= FOOTER ================= -->
@@ -1236,4 +1365,3 @@ a{
 
 </body>
 </html>
-```

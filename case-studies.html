@@ -1,136 +1,1366 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>OQVERA — Case Studies</title>
-<meta name="description" content="OQVERA case studies — AI agents, automation systems, and intelligent software built around real business processes.">
+
+<title>OQVERA — Projects</title>
+
+<meta name="description"
+      content="OQVERA projects — AI agents, intelligent automation, LangGraph systems, and AI-powered business software.">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#05060e;--bg2:#080a16;--panel:#0d1022;--panel2:#11142b;--line:rgba(255,255,255,.08);--strong:rgba(139,124,255,.35);--txt:#eef0f8;--muted:#8b91a8;--brand:#6d5cff;--soft:#a78bfa;--cyan:#38bdf8;--max:1180px}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;line-height:1.6}a{color:inherit;text-decoration:none}.wrap{max-width:var(--max);margin:auto;padding:0 24px}.nav{position:sticky;top:0;z-index:20;background:rgba(5,6,14,.84);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}.navin{height:64px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;letter-spacing:.16em}.brandmark{width:30px;height:30px}.links{display:flex;gap:30px;color:var(--muted);font-size:14px}.links a:hover{color:#fff}.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:10px;border:1px solid var(--line);font-size:13px;transition:.2s}.primary{background:linear-gradient(180deg,#7c6bff,#5b48f0);border:0}.ghost:hover{border-color:#fff;background:rgba(255,255,255,.04)}.hero{padding:88px 0 72px;text-align:center;border-bottom:1px solid var(--line);background:radial-gradient(circle at 50% 0,rgba(109,92,255,.14),transparent 55%)}.eyebrow{font:11px "JetBrains Mono",monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);margin-bottom:15px}.hero h1{font-size:clamp(42px,6vw,72px);line-height:1.02;letter-spacing:-.05em;margin:0 auto 20px;max-width:850px}.hero p{color:var(--muted);max-width:650px;margin:auto;font-size:16px}.filters{padding:22px 0;border-bottom:1px solid var(--line)}.filterrow{display:flex;gap:9px;flex-wrap:wrap}.filter{background:transparent;color:var(--muted);border:1px solid var(--line);padding:8px 13px;border-radius:8px;cursor:pointer}.filter.active,.filter:hover{color:#fff;border-color:var(--strong);background:rgba(109,92,255,.1)}.work{padding:60px 0 90px}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;overflow:hidden;transition:.25s}.card:hover{transform:translateY(-5px);border-color:var(--strong);box-shadow:0 20px 50px rgba(0,0,0,.28)}.visual{height:245px;padding:22px;background:linear-gradient(145deg,#0a0d20,#11142b);border-bottom:1px solid var(--line);position:relative;overflow:hidden}.visual:after{content:"";position:absolute;width:260px;height:260px;border-radius:50%;background:rgba(109,92,255,.12);filter:blur(35px);right:-90px;top:-100px}.mock{position:relative;z-index:2;border:1px solid rgba(139,124,255,.22);border-radius:12px;background:#090b18;height:100%;padding:14px}.mocktop{display:flex;gap:6px;margin-bottom:14px}.dot{width:6px;height:6px;border-radius:50%;background:#4b4774}.mockgrid{display:grid;grid-template-columns:75px 1fr;gap:10px;height:calc(100% - 20px)}.side{border-right:1px solid var(--line)}.side i{display:block;height:8px;width:45px;background:#1b1e38;border-radius:4px;margin:10px 0}.content{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mini{background:#101329;border:1px solid var(--line);border-radius:7px;padding:8px}.mini b{display:block;width:40%;height:6px;background:#282d50;border-radius:3px;margin-bottom:10px}.mini span{display:block;height:5px;background:#1b1f39;border-radius:3px;margin:6px 0}.cardbody{padding:23px}.meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.type{font:9px "JetBrains Mono",monospace;letter-spacing:.14em;color:var(--soft);text-transform:uppercase}.status{font-size:10px;color:#7dd3fc;border:1px solid rgba(56,189,248,.2);padding:4px 7px;border-radius:6px}.card h2{font-size:24px;letter-spacing:-.03em;margin:0 0 10px}.card p{color:var(--muted);font-size:13px;margin:0 0 18px}.tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}.tag{font:10px "JetBrains Mono",monospace;color:#aeb3c8;border:1px solid var(--line);padding:5px 8px;border-radius:6px}.link{color:var(--soft);font-size:12px}.full{grid-column:1/-1}.full .visual{height:285px}.cta{margin-top:45px;border-radius:18px;padding:34px;background:linear-gradient(105deg,#5a45f0,#7c5cff 55%,#8b5cf6);display:flex;justify-content:space-between;align-items:center;gap:20px}.cta h2{margin:0 0 7px;font-size:25px}.cta p{margin:0;color:rgba(255,255,255,.82);font-size:13px}.footer{border-top:1px solid var(--line);padding:32px 0;color:var(--muted);font-size:12px}.mobile{display:none}
-@media(max-width:760px){.links,.nav .btn{display:none}.mobile{display:block}.grid{grid-template-columns:1fr}.full{grid-column:auto}.hero{padding:65px 0 55px}.hero h1{font-size:44px}.cta{display:block}.cta .btn{margin-top:18px}}
-</style>
-<style>
-/* ---------- footer ---------- */
-.footer{border-top:1px solid var(--line);padding:44px 0 26px;background:var(--bg-2)}
-.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.3fr;gap:30px}
-.foot-grid h5{font-size:12px;margin:0 0 14px;letter-spacing:.02em;font-weight:600}
-.foot-grid ul{list-style:none;margin:0;padding:0;font-size:12.5px;color:var(--muted)}
-.foot-grid li{padding:5px 0}
-.foot-grid a:hover{color:#fff}
-.foot-tag{font-size:12.5px;color:var(--muted);margin:14px 0 18px;max-width:210px}
-.socials{display:flex;gap:9px}
-.soc{width:31px;height:31px;border-radius:8px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.18s}
-.soc:hover{color:#fff;border-color:var(--line-strong);background:var(--panel-2)}
-.contact-line{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);padding:5px 0}
-.contact-line svg{color:var(--brand-soft);flex:none}
-.copyright{text-align:center;font-size:11.5px;color:var(--muted-2);margin-top:34px;padding-top:20px;border-top:1px solid var(--line)}
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet">
 
+<style>
+:root{
+  --bg:#05060e;
+  --bg2:#080a16;
+  --panel:#0d1022;
+  --panel2:#11142b;
+  --line:rgba(255,255,255,.08);
+  --strong:rgba(139,124,255,.35);
+  --txt:#eef0f8;
+  --muted:#8b91a8;
+  --muted2:#666c86;
+  --soft:#a78bfa;
+  --brand-soft:#8b5cf6;
+  --max:1180px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--txt);
+  font-family:Inter,system-ui,sans-serif;
+}
+
+.wrap{
+  max-width:var(--max);
+  margin:auto;
+  padding:0 24px;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+/* ---------- NAV ---------- */
+
+.nav{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(5,6,14,.84);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+
+.navin{
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:600;
+  letter-spacing:.16em;
+}
+
+.brandmark{
+  width:30px;
+}
+
+.links{
+  display:flex;
+  gap:30px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.links a{
+  transition:.2s ease;
+}
+
+.links a:hover{
+  color:#fff;
+}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:11px 18px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  font-size:13px;
+  transition:.2s ease;
+  cursor:pointer;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.primary{
+  background:linear-gradient(180deg,#7c6bff,#5b48f0);
+  border:0;
+}
+
+/* ---------- HERO ---------- */
+
+.hero{
+  padding:90px 0 70px;
+  text-align:center;
+  border-bottom:1px solid var(--line);
+  background:
+    radial-gradient(
+      circle at 50% 0,
+      rgba(109,92,255,.14),
+      transparent 55%
+    );
+}
+
+.eyebrow{
+  font:11px "JetBrains Mono",monospace;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--soft);
+  margin-bottom:15px;
+}
+
+.hero h1{
+  font-size:clamp(44px,6vw,72px);
+  letter-spacing:-.05em;
+  margin:0 0 18px;
+  line-height:1.02;
+}
+
+.hero p{
+  max-width:650px;
+  margin:auto;
+  color:var(--muted);
+  font-size:15px;
+  line-height:1.7;
+}
+
+/* ---------- PROJECT FILTERS ---------- */
+
+.project-filters{
+  padding:34px 0 0;
+}
+
+.filterrow{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:9px;
+}
+
+.filter{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.02);
+  color:var(--muted);
+  padding:9px 14px;
+  border-radius:999px;
+  font:11px "JetBrains Mono",monospace;
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.filter:hover,.filter.active{
+  color:#fff;
+  border-color:rgba(139,124,255,.45);
+  background:rgba(109,92,255,.10);
+}
+
+/* ---------- PROJECTS ---------- */
+
+.projects{
+  padding:62px 0 90px;
+}
+
+.project{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:25px;
+  padding:18px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:18px;
+  margin-bottom:18px;
+  transition:.25s ease;
+}
+
+.project:hover{
+  border-color:var(--strong);
+  transform:translateY(-3px);
+}
+
+/* ---------- PROJECT VISUAL ---------- */
+
+.visual{
+  min-height:320px;
+  border-radius:12px;
+  background:
+    radial-gradient(
+      circle at 50% 20%,
+      rgba(124,107,255,.09),
+      transparent 50%
+    ),
+    linear-gradient(145deg,#090b18,#11142b);
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:25px;
+  overflow:hidden;
+}
+
+.diagram{
+  width:100%;
+  max-width:430px;
+  display:grid;
+  grid-template-columns:1fr;
+  gap:9px;
+}
+
+.node{
+  padding:15px;
+  text-align:center;
+  border:1px solid rgba(139,124,255,.25);
+  border-radius:10px;
+  background:#0d1022;
+  font:11px "JetBrains Mono",monospace;
+  color:#c5bfff;
+}
+
+.node.main{
+  border-color:rgba(56,189,248,.35);
+  color:#8bdcff;
+  box-shadow:0 0 25px rgba(56,189,248,.05);
+}
+
+.node.green{
+  border-color:rgba(52,211,153,.3);
+  color:#86efac;
+}
+
+.node.purple{
+  border-color:rgba(167,139,250,.3);
+  color:#c4b5fd;
+}
+
+.arr{
+  text-align:center;
+  color:#4d5271;
+  font-size:14px;
+}
+
+/* ---------- PROJECT COPY ---------- */
+
+.copy{
+  padding:15px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+.copy .type{
+  font:10px "JetBrains Mono",monospace;
+  color:var(--soft);
+  letter-spacing:.13em;
+  text-transform:uppercase;
+}
+
+.copy h2{
+  font-size:29px;
+  letter-spacing:-.035em;
+  margin:13px 0 10px;
+  line-height:1.15;
+}
+
+.copy p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.75;
+  margin:0;
+}
+
+.tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin:20px 0;
+}
+
+.tag{
+  font:10px "JetBrains Mono",monospace;
+  color:#b8bdd0;
+  border:1px solid var(--line);
+  padding:6px 8px;
+  border-radius:6px;
+  background:rgba(255,255,255,.015);
+}
+
+.copy ul{
+  color:var(--muted);
+  font-size:12px;
+  padding-left:18px;
+  line-height:1.9;
+  margin:0 0 20px;
+}
+
+.project-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:9px;
+  margin-top:auto;
+}
+
+.secondary{
+  background:rgba(255,255,255,.02);
+}
+
+.secondary:hover{
+  border-color:rgba(139,124,255,.35);
+}
+
+/* ---------- GITHUB BUTTON ---------- */
+
+.github-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:42px;
+  height:42px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  color:var(--muted);
+  transition:.2s ease;
+}
+
+.github-btn:hover{
+  color:#fff;
+  border-color:rgba(139,124,255,.4);
+  background:var(--panel2);
+  transform:translateY(-1px);
+}
+
+.github-btn svg{
+  width:18px;
+  height:18px;
+}
+
+/* ---------- FOOTER ---------- */
+
+.footer{
+  border-top:1px solid var(--line);
+  padding:44px 0 26px;
+  background:var(--bg2);
+}
+
+.foot-grid{
+  display:grid;
+  grid-template-columns:1.5fr 1fr 1fr 1fr 1.3fr;
+  gap:30px;
+}
+
+.foot-grid h5{
+  font-size:12px;
+  margin:0 0 14px;
+  letter-spacing:.02em;
+  font-weight:600;
+}
+
+.foot-grid ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+  font-size:12.5px;
+  color:var(--muted);
+}
+
+.foot-grid li{
+  padding:5px 0;
+}
+
+.foot-grid a:hover{
+  color:#fff;
+}
+
+.foot-tag{
+  font-size:12.5px;
+  color:var(--muted);
+  margin:14px 0 18px;
+  max-width:240px;
+  line-height:1.6;
+}
+
+.socials{
+  display:flex;
+  gap:9px;
+}
+
+.soc{
+  width:31px;
+  height:31px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--muted);
+  transition:.18s;
+}
+
+.soc:hover{
+  color:#fff;
+  border-color:var(--strong);
+  background:var(--panel2);
+}
+
+.contact-line{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:12.5px;
+  color:var(--muted);
+  padding:5px 0;
+}
+
+.contact-line svg{
+  color:var(--brand-soft);
+  flex:none;
+}
+
+.copyright{
+  text-align:center;
+  font-size:11.5px;
+  color:var(--muted2);
+  margin-top:34px;
+  padding-top:20px;
+  border-top:1px solid var(--line);
+}
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:760px){
+
+  .links,
+  .nav .btn{
+    display:none;
+  }
+
+  .hero{
+    padding:65px 0 50px;
+  }
+
+  .hero h1{
+    font-size:46px;
+  }
+
+  .project{
+    grid-template-columns:1fr;
+  }
+
+  .visual{
+    min-height:280px;
+  }
+
+  .foot-grid{
+    grid-template-columns:1fr 1fr;
+    gap:28px 20px;
+  }
+
+  .foot-grid > div:first-child,
+  .foot-grid > div:last-child{
+    grid-column:1/-1;
+  }
+}
+
+@media(max-width:480px){
+
+  .wrap{
+    padding:0 18px;
+  }
+
+  .hero h1{
+    font-size:39px;
+  }
+
+  .project{
+    padding:12px;
+  }
+
+  .copy{
+    padding:10px;
+  }
+
+  .copy h2{
+    font-size:25px;
+  }
+
+  .foot-grid{
+    grid-template-columns:1fr;
+  }
+
+  .foot-grid > div{
+    grid-column:auto !important;
+  }
+}
 </style>
 </head>
+
 <body>
-<header class="nav"><div class="wrap navin">
-<a class="brand" href="index.html"><svg class="brandmark" viewBox="0 0 64 48" fill="none"><circle cx="22" cy="24" r="14" stroke="#38BDF8" stroke-width="4.5"/><circle cx="42" cy="24" r="14" stroke="#8B5CF6" stroke-width="4.5"/><path d="M47 30L56 41" stroke="#8B5CF6" stroke-width="4.5" stroke-linecap="round"/></svg>OQVERA</a>
-<nav class="links"><a href="index.html#solutions">Solutions</a><a href="case-studies.html">Case Studies</a><a href="projects.html">Projects</a><a href="index.html#about">About</a></nav>
-<a class="btn primary" href="index.html#book">Start a Project →</a><a class="mobile" href="index.html">← Home</a>
-</div></header>
 
-<section class="hero"><div class="wrap">
-<div class="eyebrow">OQVERA / Case Studies</div>
-<h1>Systems built to solve real business problems.</h1>
-<p>Explore how OQVERA combines AI, automation, software engineering, and integrations to turn operational bottlenecks into intelligent systems.</p>
-</div></section>
+<!-- ================= NAV ================= -->
 
-<section class="filters"><div class="wrap"><div class="filterrow">
-<button class="filter active" data-filter="all">All</button><button class="filter" data-filter="agents">AI Agents</button><button class="filter" data-filter="automation">Automation</button><button class="filter" data-filter="software">AI Software</button>
-</div></div></section>
+<header class="nav">
 
-<main class="work"><div class="wrap"><div class="grid">
-<article class="card full item" data-type="agents automation">
-<div class="visual"><div class="mock"><div class="mocktop"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div><div class="mockgrid"><div class="side"><i></i><i></i><i></i><i></i><i></i></div><div class="content"><div class="mini"><b></b><span></span><span></span></div><div class="mini"><b></b><span></span><span></span></div><div class="mini"><b></b><span></span><span></span></div><div class="mini"><b></b><span></span><span></span></div><div class="mini"><b></b><span></span><span></span></div><div class="mini"><b></b><span></span><span></span></div></div></div></div></div>
-<div class="cardbody"><div class="meta"><span class="type">Featured Case Study / AI Agents</span><span class="status">System Showcase</span></div><h2>AI Dealership Sales System</h2><p>An AI-powered sales workflow designed to handle inbound dealership inquiries, check live vehicle inventory, qualify customers, schedule test drives, and trigger follow-up automatically.</p><div class="tags"><span class="tag">Vapi</span><span class="tag">Make</span><span class="tag">Inventory Lookup</span><span class="tag">CRM</span><span class="tag">Voice AI</span><span class="tag">APIs</span></div><a class="link" href="project-dealership.html">View Project →</a></div>
+  <div class="wrap navin">
+
+    <a class="brand" href="index.html">
+
+      <svg class="brandmark"
+           viewBox="0 0 64 48"
+           fill="none">
+
+        <circle cx="22"
+                cy="24"
+                r="14"
+                stroke="#38BDF8"
+                stroke-width="4.5"/>
+
+        <circle cx="42"
+                cy="24"
+                r="14"
+                stroke="#8B5CF6"
+                stroke-width="4.5"/>
+
+        <path d="M47 30L56 41"
+              stroke="#8B5CF6"
+              stroke-width="4.5"
+              stroke-linecap="round"/>
+
+      </svg>
+
+      OQVERA
+
+    </a>
+
+    <nav class="links">
+
+      <a href="index.html#solutions">Solutions</a>
+
+      <a href="case-studies.html">Case Studies</a>
+
+      <a href="projects.html">Projects</a>
+
+      <a href="index.html#about">About</a>
+
+    </nav>
+
+    <a class="btn primary"
+       href="index.html#book">
+
+      Start a Project →
+
+    </a>
+
+  </div>
+
+</header>
+
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
+
+  <div class="wrap">
+
+    <div class="eyebrow">
+      OQVERA / Selected Projects
+    </div>
+
+    <h1>
+      Projects that turn ideas into working systems.
+    </h1>
+
+    <p>
+      A growing portfolio of AI agents, intelligent automation,
+      LangGraph systems, and AI-powered software built around
+      real business problems.
+    </p>
+
+  </div>
+
+</section>
+
+
+<!-- ================= PROJECT FILTERS ================= -->
+
+<section class="project-filters">
+  <div class="wrap">
+    <div class="filterrow">
+      <button class="filter active" data-filter="all">All</button>
+      <button class="filter" data-filter="agents">AI Agents</button>
+      <button class="filter" data-filter="automation">Automation</button>
+      <button class="filter" data-filter="software">AI Software</button>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================= PROJECTS ================= -->
+
+<main class="projects">
+
+<div class="wrap">
+
+
+<!-- =========================================================
+     PROJECT 01 — NATIONAL MOTORS
+========================================================= -->
+
+<article class="project item" data-type="agents automation">
+
+  <div class="visual">
+
+    <div class="diagram">
+
+      <div class="node">
+        CUSTOMER CALL
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node main">
+        AI VOICE AGENT / VAPI
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node">
+        VEHICLE INVENTORY
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node green">
+        MAKE AUTOMATION
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node purple">
+        CRM / FOLLOW-UP / TEST DRIVE
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="copy">
+
+    <span class="type">
+      01 / AI VOICE AGENT + AUTOMATION
+    </span>
+
+    <h2>
+      National Motors AI Calling Agent
+    </h2>
+
+    <p>
+      An AI-powered inbound calling system built for an automotive
+      dealership. The agent can communicate with customers,
+      understand what vehicle they are looking for, retrieve
+      inventory information, qualify leads, and trigger business
+      workflows automatically.
+    </p>
+
+    <div class="tags">
+
+      <span class="tag">Vapi</span>
+      <span class="tag">Make</span>
+      <span class="tag">Voice AI</span>
+      <span class="tag">Google Sheets</span>
+      <span class="tag">Webhooks</span>
+      <span class="tag">APIs</span>
+
+    </div>
+
+    <ul>
+
+      <li>AI-powered inbound dealership calls</li>
+
+      <li>Natural conversational lead qualification</li>
+
+      <li>Real-time vehicle inventory lookup</li>
+
+      <li>Vehicle make, model, price and stock search</li>
+
+      <li>Automated test-drive workflow</li>
+
+      <li>Lead routing and follow-up automation</li>
+
+      <li>Business data connected through Make</li>
+
+    </ul>
+
+    <div class="project-actions">
+
+      <a class="btn primary"
+         href="index.html#book">
+
+        Request a Demo →
+
+      </a>
+
+      <a class="btn secondary"
+         href="project-dealership.html">
+
+        View System →
+
+      </a>
+
+    </div>
+
+  </div>
+
 </article>
 
-<article class="card item" data-type="automation">
-<div class="visual"><div class="mock"><div class="mocktop"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div><div class="content" style="grid-template-columns:1fr"><div class="mini"><b></b><span></span><span></span><span></span></div><div class="mini"><b></b><span></span><span></span></div><div class="mini"><b></b><span></span></div></div></div></div>
-<div class="cardbody"><div class="meta"><span class="type">Automation</span><span class="status">Coming Soon</span></div><h2>Operations Automation</h2><p>Workflow automation connecting business tools, data sources, notifications, and internal processes into one reliable execution layer.</p><div class="tags"><span class="tag">n8n</span><span class="tag">Make</span><span class="tag">Webhooks</span><span class="tag">APIs</span></div><span class="link">Case study in progress →</span></div>
+
+<!-- =========================================================
+     PROJECT 02 — LANGGRAPH CHATBOT
+========================================================= -->
+
+<article class="project item" data-type="agents software">
+
+  <div class="visual">
+
+    <div class="diagram">
+
+      <div class="node">
+        USER QUESTION
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node main">
+        LANGGRAPH ORCHESTRATOR
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node">
+        AI / CONTEXT / TOOLS
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node green">
+        STATEFUL CONVERSATION
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node purple">
+        INTELLIGENT RESPONSE
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="copy">
+
+    <span class="type">
+      02 / AI AGENT + LANGGRAPH
+    </span>
+
+    <h2>
+      LangGraph AI Chatbot
+    </h2>
+
+    <p>
+      A stateful AI chatbot built with LangGraph to demonstrate
+      graph-based agent orchestration, conversational state,
+      structured workflows, and intelligent response generation.
+      The system uses LangGraph to control the flow of the
+      conversation instead of relying on a simple single-prompt
+      chatbot architecture.
+    </p>
+
+    <div class="tags">
+
+      <span class="tag">LangGraph</span>
+      <span class="tag">LangChain</span>
+      <span class="tag">Python</span>
+      <span class="tag">Streamlit</span>
+      <span class="tag">LLM</span>
+      <span class="tag">AI Agents</span>
+
+    </div>
+
+    <ul>
+
+      <li>Graph-based AI orchestration</li>
+
+      <li>Stateful conversation management</li>
+
+      <li>Modular agent workflow</li>
+
+      <li>Context-aware responses</li>
+
+      <li>LLM-powered reasoning pipeline</li>
+
+      <li>Interactive Streamlit interface</li>
+
+      <li>Open-source GitHub implementation</li>
+
+    </ul>
+
+    <div class="project-actions">
+
+      <a class="btn primary"
+         href="https://saad7420-chatbot-based-on-langgraph-app-utzuat.streamlit.app/"
+         target="_blank"
+         rel="noopener noreferrer">
+
+        Live Demo →
+
+      </a>
+
+      <a class="github-btn"
+         href="https://github.com/saad7420/Chatbot-based-on-Langgraph"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="View LangGraph Chatbot on GitHub"
+         title="View GitHub Repository">
+
+        <svg viewBox="0 0 24 24"
+             fill="currentColor">
+
+          <path d="M12 2a10 10 0 0 0-3.16 19.5c.5.08.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .26.18.57.69.47A10 10 0 0 0 12 2z"/>
+
+        </svg>
+
+      </a>
+
+    </div>
+
+  </div>
+
 </article>
 
-<article class="card item" data-type="software">
-<div class="visual"><div class="mock"><div class="mocktop"><i class="dot"></i><i class="dot"></i><i class="dot"></i></div><div class="content"><div class="mini"><b></b><span></span><span></span></div><div class="mini"><b></b><span></span><span></span></div><div class="mini"><b></b><span></span><span></span></div><div class="mini"><b></b><span></span><span></span></div></div></div></div>
-<div class="cardbody"><div class="meta"><span class="type">AI Software</span><span class="status">Coming Soon</span></div><h2>Intelligent Business Software</h2><p>Custom dashboards, internal tools, and AI-powered applications designed around specific business workflows.</p><div class="tags"><span class="tag">Next.js</span><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">PostgreSQL</span></div><span class="link">Case study in progress →</span></div>
+
+<!-- =========================================================
+     PROJECT 03 — CONNECTED OPERATIONS
+========================================================= -->
+
+<article class="project item" data-type="automation">
+
+  <div class="visual">
+
+    <div class="diagram">
+
+      <div class="node">
+        BUSINESS TRIGGER
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node main">
+        AI + WORKFLOW ORCHESTRATION
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node">
+        APIs / WEBHOOKS / DATABASES
+      </div>
+
+      <div class="arr">↓</div>
+
+      <div class="node green">
+        AUTOMATED BUSINESS ACTION
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="copy">
+
+    <span class="type">
+      03 / AUTOMATION
+    </span>
+
+    <h2>
+      Connected Operations Automation
+    </h2>
+
+    <p>
+      Automation architecture for repetitive business operations,
+      connecting tools, APIs, databases, and AI services so
+      information moves automatically without unnecessary manual
+      handoffs.
+    </p>
+
+    <div class="tags">
+
+      <span class="tag">n8n</span>
+      <span class="tag">Make</span>
+      <span class="tag">Webhooks</span>
+      <span class="tag">APIs</span>
+      <span class="tag">AI</span>
+
+    </div>
+
+    <ul>
+
+      <li>Workflow orchestration</li>
+
+      <li>API integrations</li>
+
+      <li>Webhook-based automation</li>
+
+      <li>Notifications and routing</li>
+
+      <li>Database synchronization</li>
+
+      <li>AI-powered workflow steps</li>
+
+    </ul>
+
+    <span style="color:#666c86;font-size:12px">
+      Detailed project page coming next.
+    </span>
+
+  </div>
+
 </article>
+
+
+<!-- =========================================================
+     PROJECT 04 — CONTENT CREATION PIPELINE
+========================================================= -->
+
+<article class="project item" data-type="agents software">
+
+  <div class="visual">
+    <div class="diagram">
+      <div class="node">TOPIC INPUT</div>
+      <div class="arr">↓</div>
+      <div class="node main">LANGGRAPH ORCHESTRATOR</div>
+      <div class="arr">↓</div>
+      <div class="node">RESEARCH → OUTLINE → DRAFT</div>
+      <div class="arr">↓</div>
+      <div class="node green">AI QUALITY EVALUATION</div>
+      <div class="arr">↓</div>
+      <div class="node purple">REVISE ↺ → PUBLISH</div>
+    </div>
+  </div>
+
+  <div class="copy">
+    <span class="type">04 / AGENTIC CONTENT PIPELINE</span>
+
+    <h2>Content Creation Pipeline using LangGraph</h2>
+
+    <p>
+      A stateful content-generation workflow that turns a topic into a
+      researched, structured, reviewed, and publish-ready post. LangGraph
+      controls the pipeline while a structured AI evaluator creates a
+      quality gate that can send weak drafts back through revision.
+    </p>
+
+    <div class="tags">
+      <span class="tag">LangGraph</span>
+      <span class="tag">LangChain</span>
+      <span class="tag">Groq</span>
+      <span class="tag">Llama 3.3 70B</span>
+      <span class="tag">Pydantic</span>
+      <span class="tag">Python</span>
+      <span class="tag">Agentic Workflow</span>
+    </div>
+
+    <ul>
+      <li>Topic-driven automated research stage</li>
+      <li>LLM-generated content outline and first draft</li>
+      <li>Structured quality evaluation with score, feedback, and pass state</li>
+      <li>Conditional revision loop with a two-revision safety limit</li>
+      <li>Revision history preserved throughout the workflow</li>
+      <li>Mermaid graph visualization for the orchestration flow</li>
+      <li>Generates multiple posts from a topic list</li>
+    </ul>
+
+    <div class="project-actions">
+      <a class="btn primary" href="project-content-creation-pipeline.html">
+        View Case Study →
+      </a>
+      <a class="github-btn"
+         href="https://github.com/saad7420/Content-Creation-Pipeline-using-LangGraph"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="View Content Creation Pipeline on GitHub"
+         title="View GitHub Repository">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2a10 10 0 0 0-3.16 19.5c.5.08.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.2 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .26.18.57.69.47A10 10 0 0 0 12 2z"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</article>
+
 </div>
 
-<div class="cta"><div><h2>Have a process worth automating?</h2><p>Let's turn it into a system that actually does the work.</p></div><a class="btn" style="background:#fff;color:#2a1b7a;border:0" href="index.html#book">Start a Project →</a></div>
-</div></main>
+</main>
 
 
+<!-- ================= PROJECT FILTER SCRIPT ================= -->
 <script>
-document.querySelectorAll('.filter').forEach(btn=>{
- btn.addEventListener('click',()=>{
-  document.querySelectorAll('.filter').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
-  const f=btn.dataset.filter;
-  document.querySelectorAll('.item').forEach(card=>{
-   card.style.display=(f==='all'||card.dataset.type.includes(f))?'':'none';
+document.querySelectorAll('.filter').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.item').forEach(card => {
+      card.style.display = filter === 'all' || card.dataset.type.includes(filter) ? '' : 'none';
+    });
   });
- });
 });
 </script>
 
+
 <!-- ================= FOOTER ================= -->
+
 <footer class="footer">
+
   <div class="wrap foot-grid">
+
+    <!-- BRAND -->
+
     <div>
-      <a href="#top" class="brand">
-        <svg width="30" height="30" viewBox="0 0 64 48" fill="none">
+
+      <a href="index.html" class="brand">
+
+        <svg width="30"
+             height="30"
+             viewBox="0 0 64 48"
+             fill="none">
+
           <defs>
-            <linearGradient id="footCyan" x1="4" y1="8" x2="36" y2="40" gradientUnits="userSpaceOnUse">
+
+            <linearGradient id="footCyan"
+                            x1="4"
+                            y1="8"
+                            x2="36"
+                            y2="40"
+                            gradientUnits="userSpaceOnUse">
+
               <stop stop-color="#38BDF8"/>
               <stop offset="1" stop-color="#2563EB"/>
+
             </linearGradient>
-            <linearGradient id="footPurple" x1="28" y1="8" x2="60" y2="40" gradientUnits="userSpaceOnUse">
+
+            <linearGradient id="footPurple"
+                            x1="28"
+                            y1="8"
+                            x2="60"
+                            y2="40"
+                            gradientUnits="userSpaceOnUse">
+
               <stop stop-color="#C084FC"/>
               <stop offset="1" stop-color="#6366F1"/>
+
             </linearGradient>
+
           </defs>
-          <circle cx="22" cy="24" r="14" stroke="url(#footCyan)" stroke-width="4.5" stroke-linecap="round"/>
-          <circle cx="42" cy="24" r="14" stroke="url(#footPurple)" stroke-width="4.5" stroke-linecap="round"/>
-          <path d="M47 30L56 41" stroke="url(#footPurple)" stroke-width="4.5" stroke-linecap="round"/>
+
+          <circle cx="22"
+                  cy="24"
+                  r="14"
+                  stroke="url(#footCyan)"
+                  stroke-width="4.5"
+                  stroke-linecap="round"/>
+
+          <circle cx="42"
+                  cy="24"
+                  r="14"
+                  stroke="url(#footPurple)"
+                  stroke-width="4.5"
+                  stroke-linecap="round"/>
+
+          <path d="M47 30L56 41"
+                stroke="url(#footPurple)"
+                stroke-width="4.5"
+                stroke-linecap="round"/>
+
         </svg>
+
         OQVERA
+
       </a>
-      <p class="foot-tag">Intelligent Systems for Modern Businesses.</p>
+
+      <p class="foot-tag">
+        Intelligent Systems for Modern Businesses.
+      </p>
+
       <div class="socials">
-        <a class="soc" href="https://www.linkedin.com/in/msaadmehmood/" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.5c0-1.31-.02-3-1.9-3-1.9 0-2.2 1.43-2.2 2.9V21h-4z"/></svg></a>
-        <a class="soc" href="https://x.com/saadmehmood_" aria-label="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3.2l-7 8 8.3 10h-6.5l-5-6-5.8 6H1.5l7.5-8.6L1 3h6.7l4.6 5.6L17.5 3z"/></svg></a>
-        <a class="soc" href="https://github.com/saad7420" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.5c.5.08.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .26.18.57.69.47A10 10 0 0 0 12 2z"/></svg></a>
+
+        <!-- LINKEDIN -->
+
+        <a class="soc"
+           href="https://www.linkedin.com/in/msaadmehmood/"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="LinkedIn">
+
+          <svg width="15"
+               height="15"
+               viewBox="0 0 24 24"
+               fill="currentColor">
+
+            <path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.5c0-1.31-.02-3-1.9-3-1.9 0-2.2 1.43-2.2 2.9V21h-4z"/>
+
+          </svg>
+
+        </a>
+
+
+        <!-- X -->
+
+        <a class="soc"
+           href="https://x.com/saadmehmood_"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="X">
+
+          <svg width="14"
+               height="14"
+               viewBox="0 0 24 24"
+               fill="currentColor">
+
+            <path d="M17.5 3h3.2l-7 8 8.3 10h-6.5l-5-6-5.8 6H1.5l7.5-8.6L1 3h6.7l4.6 5.6L17.5 3z"/>
+
+          </svg>
+
+        </a>
+
+
+        <!-- GITHUB -->
+
+        <a class="soc"
+           href="https://github.com/saad7420"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="GitHub">
+
+          <svg width="15"
+               height="15"
+               viewBox="0 0 24 24"
+               fill="currentColor">
+
+            <path d="M12 2a10 10 0 0 0-3.16 19.5c.5.08.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .26.18.57.69.47A10 10 0 0 0 12 2z"/>
+
+          </svg>
+
+        </a>
+
       </div>
+
     </div>
+
+
+    <!-- SOLUTIONS -->
+
     <div>
+
       <h5>Solutions</h5>
-      <ul><li><a href="#solutions">AI Automation</a></li><li><a href="#solutions">AI Agents</a></li><li><a href="#solutions">AI-Powered Software</a></li><li><a href="#about">MCP &amp; AI Engineering</a></li></ul>
+
+      <ul>
+
+        <li><a href="index.html#solutions">AI Automation</a></li>
+
+        <li><a href="index.html#solutions">AI Agents</a></li>
+
+        <li><a href="index.html#solutions">AI-Powered Software</a></li>
+
+        <li><a href="index.html#about">MCP &amp; AI Engineering</a></li>
+
+      </ul>
+
     </div>
+
+
+    <!-- WORK -->
+
     <div>
+
       <h5>Work</h5>
-      <ul><li><a href="case-studies.html">Case Studies</a></li><li><a href="projects.html">All Projects</a></li><li><a href="project-dealership.html">Featured System</a></li><li><a href="#how">Approach</a></li></ul>
+
+      <ul>
+
+        <li>
+          <a href="case-studies.html">
+            Case Studies
+          </a>
+        </li>
+
+        <li>
+          <a href="projects.html">
+            All Projects
+          </a>
+        </li>
+
+        <li>
+          <a href="project-dealership.html">
+            Featured System
+          </a>
+        </li>
+
+        <li>
+          <a href="index.html#how">
+            Approach
+          </a>
+        </li>
+
+      </ul>
+
     </div>
+
+
+    <!-- ABOUT -->
+
     <div>
+
       <h5>About</h5>
-      <ul><li><a href="#about">About OQVERA</a></li><li><a href="#about">Founder</a></li><li><a href="#how">Our Approach</a></li><li><a href="#book">Contact</a></li></ul>
+
+      <ul>
+
+        <li>
+          <a href="index.html#about">
+            About OQVERA
+          </a>
+        </li>
+
+        <li>
+          <a href="index.html#about">
+            Founder
+          </a>
+        </li>
+
+        <li>
+          <a href="index.html#how">
+            Our Approach
+          </a>
+        </li>
+
+        <li>
+          <a href="index.html#book">
+            Contact
+          </a>
+        </li>
+
+      </ul>
+
     </div>
+
+
+    <!-- CONTACT -->
+
     <div>
+
       <h5>Get In Touch</h5>
-      <p class="foot-tag" style="margin-top:0">AI systems, automations, and software built around your business.</p>
-      <div class="contact-line"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></svg>mehmoodsaad042@gmail.com</div>
-      <div class="contact-line"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg> Remote — working worldwide</div>
+
+      <p class="foot-tag"
+         style="margin-top:0">
+
+        AI systems, automations, and software
+        built around your business.
+
+      </p>
+
+      <div class="contact-line">
+
+        <svg width="14"
+             height="14"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.7">
+
+          <rect x="3"
+                y="5"
+                width="18"
+                height="14"
+                rx="3"/>
+
+          <path d="M4 7l8 6 8-6"/>
+
+        </svg>
+
+        mehmoodsaad042@gmail.com
+
+      </div>
+
+
+      <div class="contact-line">
+
+        <svg width="14"
+             height="14"
+             viewBox="0 0 24 24"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.7">
+
+          <path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/>
+
+          <circle cx="12"
+                  cy="10"
+                  r="2.5"/>
+
+        </svg>
+
+        Remote — working worldwide
+
+      </div>
+
     </div>
+
   </div>
-  <div class="wrap"><div class="copyright">© 2026 OQVERA. All rights reserved.</div></div>
+
+
+  <div class="wrap">
+
+    <div class="copyright">
+      © 2026 OQVERA. All rights reserved.
+    </div>
+
+  </div>
+
 </footer>
 
 </body>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>OQVERA — Content Creation Pipeline using LangGraph</title>
+<meta name="description" content="OQVERA case study — an agentic content creation pipeline using LangGraph, Groq, Llama 3.3 70B, structured evaluation, revision loops, and publishing.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#05060e;
+  --bg2:#080a16;
+  --panel:#0d1022;
+  --panel2:#11142b;
+  --line:rgba(255,255,255,.08);
+  --strong:rgba(139,124,255,.35);
+  --txt:#eef0f8;
+  --muted:#8b91a8;
+  --muted2:#666c86;
+  --soft:#a78bfa;
+  --brand-soft:#8b5cf6;
+  --cyan:#38bdf8;
+  --max:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;line-height:1.65}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--max);margin:auto;padding:0 24px}
+
+.nav{position:sticky;top:0;z-index:20;background:rgba(5,6,14,.84);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.navin{height:64px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;letter-spacing:.16em}
+.brandmark{width:30px;height:30px}
+.links{display:flex;gap:30px;color:var(--muted);font-size:14px}
+.links a{transition:.2s ease}.links a:hover{color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 18px;border-radius:10px;border:1px solid var(--line);font-size:13px;transition:.2s ease;cursor:pointer}
+.btn:hover{transform:translateY(-1px)}
+.primary{background:linear-gradient(180deg,#7c6bff,#5b48f0);border:0}
+.ghost{background:rgba(255,255,255,.02)}
+
+.hero{padding:88px 0 65px;border-bottom:1px solid var(--line);background:radial-gradient(circle at 50% 0,rgba(109,92,255,.15),transparent 55%)}
+.eyebrow{font:11px "JetBrains Mono",monospace;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);margin-bottom:15px}
+.hero h1{font-size:clamp(42px,6vw,70px);letter-spacing:-.05em;line-height:1.03;max-width:850px;margin:0 0 20px}
+.hero p{max-width:760px;color:var(--muted);font-size:15px;margin:0;line-height:1.8}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:25px}
+.pill{font:10px "JetBrains Mono",monospace;color:#c5bfff;border:1px solid var(--line);padding:7px 9px;border-radius:7px;background:rgba(255,255,255,.015)}
+
+.section{padding:70px 0}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:24px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:28px}
+.card h2{margin:0 0 13px;font-size:25px;letter-spacing:-.03em}
+.card h3{margin:0 0 8px;font-size:16px}
+.card p,.card li{color:var(--muted);font-size:13px;line-height:1.8}
+.card ul{margin:10px 0 0;padding-left:19px}
+
+.architecture{display:grid;gap:9px;margin-top:22px}
+.node{padding:15px;text-align:center;border:1px solid rgba(139,124,255,.25);border-radius:10px;background:#0d1022;font:11px "JetBrains Mono",monospace;color:#c5bfff}
+.node.main{border-color:rgba(56,189,248,.35);color:#8bdcff;box-shadow:0 0 25px rgba(56,189,248,.05)}
+.node.green{border-color:rgba(52,211,153,.3);color:#86efac}
+.node.purple{border-color:rgba(167,139,250,.3);color:#c4b5fd}
+.arr{text-align:center;color:#4d5271;font-size:14px}
+
+.stage-list{display:grid;gap:13px;margin-top:20px}
+.stage{display:grid;grid-template-columns:52px 1fr;gap:14px;align-items:start;padding:15px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.015)}
+.num{font:12px "JetBrains Mono",monospace;color:var(--soft);padding-top:2px}
+.stage strong{font-size:14px}.stage p{margin:4px 0 0}
+
+.tech{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.tech span{font:10px "JetBrains Mono",monospace;color:#b8bdd0;border:1px solid var(--line);padding:7px 9px;border-radius:7px}
+.highlight{border-color:rgba(139,124,255,.25);background:linear-gradient(145deg,rgba(109,92,255,.08),rgba(56,189,248,.025))}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:25px}
+.github{width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:10px;color:var(--muted);transition:.2s}
+.github:hover{color:#fff;border-color:var(--strong);background:var(--panel2);transform:translateY(-1px)}
+.github svg{width:18px;height:18px}
+.notice{font:11px "JetBrains Mono",monospace;color:var(--muted2);margin-top:12px}
+.section-intro{max-width:780px;color:var(--muted);font-size:13px;line-height:1.85;margin:0 0 24px}
+.scope-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.scope-item{padding:19px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.015)}
+.scope-item .mini{font:10px "JetBrains Mono",monospace;color:var(--soft);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.scope-item h3{margin:0 0 7px;font-size:15px}
+.scope-item p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.75}
+.benefit-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+.benefit{padding:16px 17px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.015)}
+.benefit strong{display:block;font-size:13px;margin-bottom:4px}.benefit p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.75}
+.technical{margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}.technical p{margin:7px 0 0}
+@media(max-width:760px){.scope-grid{grid-template-columns:1fr 1fr}.benefit-list{grid-template-columns:1fr}}
+@media(max-width:480px){.scope-grid{grid-template-columns:1fr}}
+
+.footer{border-top:1px solid var(--line);padding:44px 0 26px;background:var(--bg2)}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr 1.3fr;gap:30px}
+.foot-grid h5{font-size:12px;margin:0 0 14px;letter-spacing:.02em;font-weight:600}
+.foot-grid ul{list-style:none;margin:0;padding:0;font-size:12.5px;color:var(--muted)}
+.foot-grid li{padding:5px 0}.foot-grid a:hover{color:#fff}
+.foot-tag{font-size:12.5px;color:var(--muted);margin:14px 0 18px;max-width:240px;line-height:1.6}
+.socials{display:flex;gap:9px}.soc{width:31px;height:31px;border-radius:8px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--muted);transition:.18s}.soc:hover{color:#fff;border-color:var(--strong);background:var(--panel2)}
+.contact-line{display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--muted);padding:5px 0}.contact-line svg{color:var(--brand-soft);flex:none}
+.copyright{text-align:center;font-size:11.5px;color:var(--muted2);margin-top:34px;padding-top:20px;border-top:1px solid var(--line)}
+.mobile{display:none}
+
+@media(max-width:760px){
+  .links,.nav .btn{display:none}.mobile{display:block;font-size:12px;color:var(--muted)}
+  .hero{padding:65px 0 50px}.grid{grid-template-columns:1fr}.foot-grid{grid-template-columns:1fr 1fr;gap:28px 20px}.foot-grid>div:first-child,.foot-grid>div:last-child{grid-column:1/-1}
+}
+@media(max-width:480px){
+  .wrap{padding:0 18px}.hero h1{font-size:39px}.card{padding:21px}.stage{grid-template-columns:42px 1fr}.foot-grid{grid-template-columns:1fr}.foot-grid>div{grid-column:auto!important}
+}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap navin">
+    <a class="brand" href="index.html">
+      <svg class="brandmark" viewBox="0 0 64 48" fill="none">
+        <circle cx="22" cy="24" r="14" stroke="#38BDF8" stroke-width="4.5"/>
+        <circle cx="42" cy="24" r="14" stroke="#8B5CF6" stroke-width="4.5"/>
+        <path d="M47 30L56 41" stroke="#8B5CF6" stroke-width="4.5" stroke-linecap="round"/>
+      </svg>
+      OQVERA
+    </a>
+    <nav class="links">
+      <a href="index.html#solutions">Solutions</a>
+      <a href="case-studies.html">Case Studies</a>
+      <a href="projects.html">Projects</a>
+      <a href="index.html#about">About</a>
+    </nav>
+    <a class="btn primary" href="index.html#book">Start a Project →</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow">OQVERA / Case Study 04</div>
+    <h1>Content Creation Pipeline using LangGraph.</h1>
+    <p>
+      A graph-based, quality-controlled content generation system that moves from a topic
+      through research, outlining, drafting, editorial evaluation, revision, and publishing.
+      Instead of treating content creation as one prompt, the system models the process as a
+      stateful workflow with explicit stages and a conditional quality gate.
+    </p>
+    <div class="meta-row">
+      <span class="pill">AI AGENTS</span>
+      <span class="pill">LANGGRAPH</span>
+      <span class="pill">CONTENT AI</span>
+      <span class="pill">GROQ</span>
+      <span class="pill">PYTHON</span>
+    </div>
+    <div class="actions">
+      <a class="btn primary" href="https://github.com/saad7420/Content-Creation-Pipeline-using-LangGraph" target="_blank" rel="noopener noreferrer">View GitHub →</a>
+      <span class="btn ghost" aria-disabled="true">Demo Coming Soon</span>
+    </div>
+  </div>
+</section>
+
+<main>
+<section class="section">
+  <div class="wrap grid">
+    <div class="card">
+      <h2>How the system works</h2>
+      <p>
+        The pipeline uses LangGraph to coordinate specialized workflow nodes over a shared state.
+        Each stage reads the information produced by previous stages and returns only the state
+        fields it updates. After drafting, a structured evaluator scores the post and provides
+        editorial feedback. Drafts below the quality threshold are sent back through revision.
+      </p>
+
+      <div class="architecture">
+        <div class="node">TOPIC INPUT</div>
+        <div class="arr">↓</div>
+        <div class="node main">RESEARCH</div>
+        <div class="arr">↓</div>
+        <div class="node">OUTLINE</div>
+        <div class="arr">↓</div>
+        <div class="node">DRAFT</div>
+        <div class="arr">↓</div>
+        <div class="node green">STRUCTURED QUALITY REVIEW</div>
+        <div class="arr">↓</div>
+        <div class="node purple">REVISE ↺ / PUBLISH</div>
+      </div>
+    </div>
+
+    <div class="card highlight">
+      <h2>Quality gate</h2>
+      <p>
+        The editorial evaluator returns a structured score, feedback, and pass/fail signal.
+        The routing logic uses a score of <strong>7/10</strong> as the publication threshold.
+      </p>
+      <ul>
+        <li><strong>Score ≥ 7:</strong> publish the current draft.</li>
+        <li><strong>Score &lt; 7:</strong> revise using the editor feedback.</li>
+        <li><strong>Maximum revisions:</strong> 2, preventing an infinite loop.</li>
+        <li><strong>History:</strong> every draft and its feedback are preserved.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="wrap grid">
+    <div class="card">
+      <h2>Pipeline stages</h2>
+      <div class="stage-list">
+        <div class="stage"><div class="num">01</div><div><strong>Research</strong><p>Generates key insights, facts, trends, and talking points for the supplied topic.</p></div></div>
+        <div class="stage"><div class="num">02</div><div><strong>Outline</strong><p>Transforms the research notes into a structured and engaging blog outline.</p></div></div>
+        <div class="stage"><div class="num">03</div><div><strong>Draft</strong><p>Produces the first complete article and initializes the revision history.</p></div></div>
+        <div class="stage"><div class="num">04</div><div><strong>Review</strong><p>Uses structured output to score quality and generate actionable editorial feedback.</p></div></div>
+        <div class="stage"><div class="num">05</div><div><strong>Revision</strong><p>Rewrites the draft using the latest feedback, increments the revision count, and records the result.</p></div></div>
+        <div class="stage"><div class="num">06</div><div><strong>Publish</strong><p>Formats the accepted draft into the final post with the topic as its title.</p></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Technology stack</h2>
+      <p>
+        The implementation is intentionally lightweight: LangGraph handles orchestration and state,
+        LangChain handles prompt/LLM composition, Groq provides the LLM runtime, and Pydantic defines
+        the structured evaluation contract.
+      </p>
+      <div class="tech">
+        <span>Python</span><span>LangGraph</span><span>LangChain</span><span>ChatGroq</span>
+        <span>Llama 3.3 70B</span><span>Pydantic</span><span>dotenv</span>
+      </div>
+
+      <h3 style="margin-top:30px">Graph design</h3>
+      <p>
+        START → Research → Outline → Draft → Review → Quality Gate. The gate routes either to
+        Revision and back to Review, or to Publish and then END.
+      </p>
+
+      <h3 style="margin-top:26px">Example batch</h3>
+      <p>
+        The supplied implementation demonstrates the workflow against three topics, making it useful
+        as a reusable foundation for programmatic content generation rather than a single hard-coded post.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section class="section" style="padding-top:0">
+  <div class="wrap"><div class="card">
+    <div class="eyebrow">Scope &amp; Business Value</div><h2>Scope &amp; Benefits of the Pipeline</h2>
+    <p class="section-intro">The pipeline is designed as a reusable foundation for structured AI content operations. Its scope goes beyond generating a single article: it establishes a repeatable orchestration layer in which research, planning, generation, evaluation, revision, and publishing are explicit and independently extensible components.</p>
+    <div class="scope-grid">
+      <div class="scope-item"><div class="mini">01 / Input</div><h3>Topic-driven generation</h3><p>Accepts a topic as the primary workflow input and propagates it through the complete content lifecycle without manually coordinating intermediate prompts.</p></div>
+      <div class="scope-item"><div class="mini">02 / Research</div><h3>Research synthesis</h3><p>Produces research notes containing insights, facts, trends, and talking points that become contextual input for downstream generation.</p></div>
+      <div class="scope-item"><div class="mini">03 / Planning</div><h3>Content architecture</h3><p>Separates outlining from drafting so the generation process establishes a coherent information structure before expanding it into the article.</p></div>
+      <div class="scope-item"><div class="mini">04 / Generation</div><h3>LLM-based drafting</h3><p>Uses Groq-hosted Llama 3.3 70B through ChatGroq to transform outline and research context into a complete first draft.</p></div>
+      <div class="scope-item"><div class="mini">05 / QA</div><h3>Automated quality control</h3><p>Applies a dedicated evaluator with structured output, creating a measurable quality gate rather than treating the first response as final.</p></div>
+      <div class="scope-item"><div class="mini">06 / Recovery</div><h3>Bounded revision loop</h3><p>Automatically routes weak drafts back into revision and review while enforcing a maximum of two revision cycles.</p></div>
+    </div>
+    
+    
+</section>
+</main>
+
+<footer class="footer">
+  <div class="wrap foot-grid">
+    <div>
+      <a href="index.html" class="brand">
+        <svg width="30" height="30" viewBox="0 0 64 48" fill="none">
+          <defs>
+            <linearGradient id="footCyan" x1="4" y1="8" x2="36" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#38BDF8"/><stop offset="1" stop-color="#2563EB"/></linearGradient>
+            <linearGradient id="footPurple" x1="28" y1="8" x2="60" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#C084FC"/><stop offset="1" stop-color="#6366F1"/></linearGradient>
+          </defs>
+          <circle cx="22" cy="24" r="14" stroke="url(#footCyan)" stroke-width="4.5" stroke-linecap="round"/>
+          <circle cx="42" cy="24" r="14" stroke="url(#footPurple)" stroke-width="4.5" stroke-linecap="round"/>
+          <path d="M47 30L56 41" stroke="url(#footPurple)" stroke-width="4.5" stroke-linecap="round"/>
+        </svg>
+        OQVERA
+      </a>
+      <p class="foot-tag">Intelligent Systems for Modern Businesses.</p>
+      <div class="socials">
+        <a class="soc" href="https://www.linkedin.com/in/msaadmehmood/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-.95 1.83-1.95 3.77-1.95 4.03 0 4.78 2.5 4.78 5.76V21h-4v-5.5c0-1.31-.02-3-1.9-3-1.9 0-2.2 1.43-2.2 2.9V21h-4z"/></svg></a>
+        <a class="soc" href="https://x.com/saadmehmood_" target="_blank" rel="noopener noreferrer" aria-label="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 3h3.2l-7 8 8.3 10h-6.5l-5-6-5.8 6H1.5l7.5-8.6L1 3h6.7l4.6 5.6L17.5 3z"/></svg></a>
+        <a class="soc" href="https://github.com/saad7420" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-3.16 19.5c.5.08.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-.55-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.75c0 .26.18.57.69.47A10 10 0 0 0 12 2z"/></svg></a>
+      </div>
+    </div>
+
+    <div><h5>Solutions</h5><ul><li><a href="index.html#solutions">AI Automation</a></li><li><a href="index.html#solutions">AI Agents</a></li><li><a href="index.html#solutions">AI-Powered Software</a></li><li><a href="index.html#about">MCP &amp; AI Engineering</a></li></ul></div>
+    <div><h5>Work</h5><ul><li><a href="case-studies.html">Case Studies</a></li><li><a href="projects.html">All Projects</a></li><li><a href="project-dealership.html">Featured System</a></li><li><a href="index.html#how">Approach</a></li></ul></div>
+    <div><h5>About</h5><ul><li><a href="index.html#about">About OQVERA</a></li><li><a href="index.html#about">Founder</a></li><li><a href="index.html#how">Our Approach</a></li><li><a href="index.html#book">Contact</a></li></ul></div>
+    <div><h5>Get In Touch</h5><p class="foot-tag" style="margin-top:0">AI systems, automations, and software built around your business.</p><div class="contact-line"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></svg>mehmoodsaad042@gmail.com</div><div class="contact-line"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 21s7-5.6 7-11a7 7 0 1 0-14 0c0 5.4 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Remote — working worldwide</div></div>
+  </div>
+  <div class="wrap"><div class="copyright">© 2026 OQVERA. All rights reserved.</div></div>
+</footer>
+
+</body>
+</html>
