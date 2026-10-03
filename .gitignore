@@ -1,0 +1,5 @@
+# your private financial data: run it in Supabase, never commit or deploy it
+finance/supabase/seed_my_data.sql
+node_modules/
+.netlify/
+.env

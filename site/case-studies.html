@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Case studies — Saad Mehmood</title>
+<meta name="description" content="In-depth case studies: the problem, architecture, decisions and stack behind 14 AI and software projects.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://oqvera.netlify.app/case-studies.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Case studies — Saad Mehmood">
+<meta property="og:description" content="In-depth case studies: the problem, architecture, decisions and stack behind 14 AI and software projects.">
+<meta property="og:url" content="https://oqvera.netlify.app/case-studies.html">
+<meta property="og:image" content="https://oqvera.netlify.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="site-head"><div class="wrap head-in">
+  <a class="logo" href="/" aria-label="Saad Mehmood, home"><span class="logo-mark" aria-hidden="true">SM</span><span>Saad Mehmood</span></a>
+  <nav class="nav" id="nav" aria-label="Main"><a href="/">Home</a><a href="/projects.html">Projects</a><a href="/case-studies.html" aria-current="page">Case studies</a><a href="/#about">About</a><a href="/#contact">Contact</a></nav>
+  <a class="btn btn-primary btn-sm head-cta" href="/#contact">Hire me</a>
+  <button class="menu-btn" type="button" aria-controls="nav" aria-expanded="false" aria-label="Menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+</div></header>
+<main id="main">
+<section class="page-hero"><div class="wrap">
+  <h1>How the systems actually work.</h1>
+  <p class="lede">The problem each project solves, how it's built, the decisions that mattered and what's still left to do — written from the code.</p>
+</div></section>
+<section class="wrap work-list" style="padding-bottom:clamp(64px,8vw,110px)">
+  <article class="work rv">
+    <div>
+      <div class="meta">Computer vision and Machine learning · 2026</div>
+      <h3>DeepTruth</h3><p class="sub">Deepfake and synthetic-media detection platform</p>
+      <p class="one">Upload a video or image and get a verdict on whether it was manipulated, from an ensemble of fine-tuned vision transformers running behind a queued API, a web console and a browser extension.</p>
+      <ul class="tags" aria-label="Technologies"><li>PyTorch</li><li>ViViT</li><li>ViT-B/16</li><li>LoRA</li><li>MTCNN</li><li>FastAPI</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/deeptruth.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Deep-Truth---DeepFake-Media-Detection" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Upload or URL</li><li>SHA-256 + Redis cache</li><li>Celery queue</li><li>Preprocess: frames, MTCNN faces</li><li>ViViT / ViT-B/16 + LoRA ensemble</li><li>Verdict, PDF report, SSE update</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">AI agents and Automation · 2026 · Client project</div>
+      <h3>Dealership AI Calling Agent</h3><p class="sub">Voice agent and sales automation for National Motors</p>
+      <p class="one">An inbound voice agent for a car dealership that talks to callers, checks live inventory, qualifies the lead, books a test drive and triggers follow-up automatically.</p>
+      <ul class="tags" aria-label="Technologies"><li>Vapi</li><li>Voice AI</li><li>Make</li><li>Google Sheets</li><li>Webhooks</li><li>CRM</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/dealership-ai-agent.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-ghost btn-sm" href="/?topic=demo&project=Dealership%20AI%20Calling%20Agent#contact">Request a demo</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Customer call</li><li>Vapi voice agent</li><li>Live inventory lookup</li><li>Lead qualification</li><li>CRM record</li><li>Test-drive booking</li><li>Automated follow-up</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">AI agents · 2026</div>
+      <h3>Content Creation Pipeline</h3><p class="sub">Agentic writing workflow with a quality gate, built on LangGraph</p>
+      <p class="one">Turns a topic into a researched, outlined, drafted, reviewed and publish-ready post — and sends weak drafts back for revision before anything is published.</p>
+      <ul class="tags" aria-label="Technologies"><li>LangGraph</li><li>LangChain</li><li>Groq</li><li>Llama 3.3 70B</li><li>Pydantic</li><li>Python</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/content-creation-pipeline.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Content-Creation-Pipeline-using-LangGraph" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Topic</li><li>Research</li><li>Outline</li><li>Draft</li><li>Structured review</li><li>Revise ↺ or publish</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">AI agents · 2026</div>
+      <h3>LangGraph Tool-Using Chatbot</h3><p class="sub">Stateful agent with six live tools and persistent threads</p>
+      <p class="one">A chat agent that decides when to search the web, check a stock, get the weather, do maths or convert units — and remembers every conversation thread across restarts.</p>
+      <ul class="tags" aria-label="Technologies"><li>LangGraph</li><li>LangChain</li><li>Groq</li><li>Llama 3.3 70B</li><li>SQLite checkpointer</li><li>Streamlit</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/langgraph-tool-agent.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-ghost btn-sm" href="https://saad7420-chatbot-based-on-langgraph-app-utzuat.streamlit.app/" target="_blank" rel="noopener">Live demo</a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Chatbot-based-on-Langgraph" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>User message</li><li>Chat node (Llama 3.3 70B)</li><li>Tool needed?</li><li>Tool node: search, stocks, weather, maths</li><li>Answer streamed</li><li>Thread saved to SQLite</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">AI agents · 2026</div>
+      <h3>AI Customer Support Platform</h3><p class="sub">Production-style support chatbot API with sessions and tests</p>
+      <p class="one">A FastAPI service that runs support conversations with memory, stores every session and message, rate-limits clients and ships with Docker and a 90% coverage test gate.</p>
+      <ul class="tags" aria-label="Technologies"><li>FastAPI</li><li>LangChain</li><li>Groq</li><li>Llama 3.1 8B</li><li>SQLAlchemy</li><li>SQLite</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/ai-customer-support-platform.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/AI-CUSTOMER-SUPPORT-CHATBOT" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Streamlit UI</li><li>FastAPI + rate limit</li><li>Save message</li><li>Replay history into chain</li><li>Groq Llama 3.1</li><li>Store reply, return</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">RAG &amp; documents and AI agents · 2026</div>
+      <h3>Enterprise Document Intelligence</h3><p class="sub">Hybrid research engine that routes between internal documents and the live web</p>
+      <p class="one">Ask a question and an LLM router decides whether to search internal documents, the web, or both — then writes a report where every fact carries a numbered citation.</p>
+      <ul class="tags" aria-label="Technologies"><li>FastAPI</li><li>ChromaDB</li><li>OpenAI embeddings</li><li>Tavily search</li><li>Llama 3.2 (HF router)</li><li>GPT-4o mini</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/hybrid-research-engine.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Enterprise-Document-Intelligence-Platform" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Query</li><li>LLM router: local / web / hybrid</li><li>ChromaDB + Tavily retrieval</li><li>Merge and rank</li><li>Cited report</li><li>Routing log</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">RAG &amp; documents · 2026</div>
+      <h3>Intelligent Document Processing</h3><p class="sub">Turn PDFs and Word files into structured, validated data</p>
+      <p class="one">Upload a PDF, DOCX or text file and get back a summary, key terms, named entities and action items with owners and due dates — validated against a schema and stored.</p>
+      <ul class="tags" aria-label="Technologies"><li>FastAPI</li><li>PyMuPDF</li><li>python-docx</li><li>Llama 3.2 (HF router)</li><li>Pydantic</li><li>SQLAlchemy</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/intelligent-document-processing.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Intelligent-Document-Processing-Pipeline" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Upload file</li><li>Parse PDF / DOCX / TXT</li><li>LLM extraction</li><li>Pydantic validation</li><li>Store in database</li><li>Summary, entities, action items</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">RAG &amp; documents · 2026</div>
+      <h3>Product Manual Assistant</h3><p class="sub">RAG assistant that answers from technical documentation, with page citations</p>
+      <p class="one">Engineers ask in plain language about installation, ports or troubleshooting, and get an answer grounded in the manual with the exact source file and page.</p>
+      <ul class="tags" aria-label="Technologies"><li>LangChain</li><li>FAISS</li><li>all-MiniLM-L6-v2</li><li>PyPDF</li><li>Hugging Face</li><li>Streamlit</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/product-manual-assistant.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Product-Manual-Assistant" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Question</li><li>Embed query</li><li>FAISS top-3 chunks</li><li>Grounded prompt</li><li>Answer + file and page</li><li>Fallback if not found</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">AI agents · 2026</div>
+      <h3>Smart Form Filler</h3><p class="sub">Agent that turns a sentence into a validated registration form</p>
+      <p class="one">Describe an event registration in plain words; the agent extracts the fields, asks one clear question about anything missing, and only emits JSON once it passes validation.</p>
+      <ul class="tags" aria-label="Technologies"><li>Python</li><li>Pydantic v2</li><li>Regex extraction</li><li>LangChain structured output (drop-in)</li><li>Groq</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/smart-form-filler.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Event-Form-Filling-powered-by-pydantic-output-parser-and-RegEx" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Plain-language input</li><li>Intent check</li><li>Field extraction</li><li>Clarifying question</li><li>Pydantic validation</li><li>JSON output</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">RAG &amp; documents · 2026</div>
+      <h3>Smart FAQ Chatbot</h3><p class="sub">Retrieval-first FAQ bot that refuses to invent answers</p>
+      <p class="one">Searches a knowledge base with embeddings and answers from what it finds — and falls back to a contact message when nothing is relevant enough.</p>
+      <ul class="tags" aria-label="Technologies"><li>Sentence-Transformers</li><li>FAISS</li><li>all-MiniLM-L6-v2</li><li>Python</li><li>Streamlit</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/smart-faq-chatbot.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Smart-FAQ-Chatbot-RAG-Based-System" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Question</li><li>Embed</li><li>FAISS search</li><li>Similarity check</li><li>Answer or fallback</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">Computer vision</div>
+      <h3>Image Colorization</h3><p class="sub">U-Net that brings colour back to black-and-white photos</p>
+      <p class="one">A PyTorch U-Net trained to predict colour channels from a grayscale image, wrapped in a desktop app for loading, colourising and saving photos.</p>
+      <ul class="tags" aria-label="Technologies"><li>PyTorch</li><li>U-Net</li><li>CIE Lab colour space</li><li>scikit-image</li><li>Tkinter</li><li>Kaggle</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/image-colorization.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Image-Colorization-using-PyTorch-with-U-Net-Architecture-" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Grayscale photo</li><li>L channel</li><li>U-Net encoder</li><li>Skip connections</li><li>Decoder predicts a, b</li><li>Lab → RGB</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">Computer vision and Machine learning</div>
+      <h3>Driving Decisions with CNN-LSTM</h3><p class="sub">Webcam model that decides stop, continue or slow down from a sequence of frames</p>
+      <p class="one">A CNN reads each camera frame, an LSTM reads the last five, and the system decides an action in real time — steadier than judging one frame at a time.</p>
+      <ul class="tags" aria-label="Technologies"><li>TensorFlow / Keras</li><li>CNN</li><li>LSTM</li><li>OpenCV</li><li>NumPy</li><li>Kaggle</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/cnn-lstm-driving.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Autonomous-Driving-Logic-via-CNN-LSTM-Fusion-with-Keras" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Webcam frame</li><li>Centre crop 32×32</li><li>CNN features (128-d)</li><li>5-frame buffer</li><li>LSTM</li><li>Action + confidence</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">Web &amp; AR</div>
+      <h3>Nexora WebAR</h3><p class="sub">SaaS for publishing 3D products in augmented reality</p>
+      <p class="one">Businesses upload 3D models, the platform converts them for web and iPhone AR, and customers open them in AR from a short link — with workspaces, teams, analytics and subscriptions.</p>
+      <ul class="tags" aria-label="Technologies"><li>TypeScript</li><li>React 18</li><li>Express</li><li>Drizzle ORM</li><li>PostgreSQL</li><li>Stripe</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/nexora-webar.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/Nexora-WebAR" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>3D upload</li><li>Blender conversion</li><li>GLB / USDZ + thumbnail</li><li>Short link</li><li>AR viewer</li><li>Analytics</li></ol>
+  </article>
+  <article class="work rv">
+    <div>
+      <div class="meta">Web &amp; AR</div>
+      <h3>WebAR Model Viewer</h3><p class="sub">MERN app for uploading, viewing and sharing 3D models in AR</p>
+      <p class="one">Upload a 3D model, preview it in the browser, launch it in AR and share it with a QR code — with accounts, an admin dashboard and view analytics.</p>
+      <ul class="tags" aria-label="Technologies"><li>MongoDB</li><li>Express</li><li>React</li><li>Node.js</li><li>three.js</li><li>React Three Fiber</li></ul>
+      <div class="actions"><a class="btn btn-primary btn-sm" href="/case-studies/webar-viewer.html">Read the case study <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn btn-quiet btn-sm" href="https://github.com/saad7420/WebAR" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Upload</li><li>S3 storage</li><li>three.js preview</li><li>AR launch</li><li>QR share</li><li>Analytics</li></ol>
+  </article>
+</section>
+</main><footer class="site-foot"><div class="wrap foot-in">
+  <span>© 2026 Saad Mehmood · AI/ML Engineer · Founder of OQVERA</span>
+  <div class="foot-links"><a href="/projects.html">Projects</a><a href="/case-studies.html">Case studies</a><a href="https://github.com/saad7420" target="_blank" rel="noopener">GitHub</a><a href="https://www.linkedin.com/in/msaadmehmood/" target="_blank" rel="noopener">LinkedIn</a><a href="https://x.com/saadmehmood_" target="_blank" rel="noopener">X</a><a href="mailto:mehmoodsaad042@gmail.com">Email</a></div>
+</div></footer>
+<button class="chat-fab" type="button" aria-controls="chat" aria-expanded="false"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg></span><span>Ask my AI assistant</span></button>
+<section class="chat" id="chat" hidden aria-label="Chat with Saad's AI assistant">
+  <div class="chat-head"><img src="/assets/saad.webp" alt="" width="36" height="36"><div><b>Saad's assistant</b><span><i></i>Answers about my work, usually instantly</span></div><button class="chat-close" type="button" aria-label="Close chat"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="chat-log" role="log" aria-live="polite"></div>
+  <div class="chat-sugs"><button type="button">What has Saad built with LangGraph?</button><button type="button">Tell me about DeepTruth</button><button type="button">Is he available for freelance work?</button></div>
+  <form class="chat-form"><label class="hp" for="chatIn">Message</label><input id="chatIn" type="text" placeholder="Ask about projects, skills, hiring…" autocomplete="off" maxlength="1500"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+  <div class="chat-note">AI can make mistakes. For anything important, use the contact form.</div>
+</section>
+<script src="/assets/kb.js" defer></script>
+<script src="/assets/site.js" defer></script>
+</body>
+</html>

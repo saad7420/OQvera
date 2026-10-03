@@ -1,0 +1,2138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="referrer" content="no-referrer">
+<title>Projects Record</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<style>
+/* Layout: a studio ledger. Header with live FX chip, tab views (Dashboard / Records / Salary / Money / Audit / Settings). Data lives in Supabase (table pr_docs), one row per document., entry sheet as a slide-over with a live money waterfall. */
+:root{
+  --bg:#eef1ec; --surface:#fbfcf9; --surface-2:#f3f5f0; --line:#d9ded5; --line-2:#c6cdc1;
+  --ink:#141c18; --ink-2:#47524b; --ink-3:#6f7a72;
+  --accent:#17684c; --accent-ink:#ffffff; --accent-soft:#dcebe2;
+  --brass:#9a6a12; --brass-soft:#f3e7cc;
+  --good:#1d7a45; --good-soft:#ddf0e3; --warn:#a45f00; --warn-soft:#fbead0; --bad:#b3261e; --bad-soft:#f8dedb;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --shadow:0 1px 2px rgba(20,28,24,.06),0 8px 24px -12px rgba(20,28,24,.18);
+  --f-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --f-body:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1311; --surface:#141c19; --surface-2:#1a2420; --line:#26332d; --line-2:#344239;
+  --ink:#e8efe9; --ink-2:#b2bfb6; --ink-3:#86938a;
+  --accent:#4cc495; --accent-ink:#06130d; --accent-soft:#183a2c;
+  --brass:#e0b45c; --brass-soft:#3a2e15;
+  --good:#5bd08a; --good-soft:#173524; --warn:#f0a845; --warn-soft:#3b2a12; --bad:#ff8a80; --bad-soft:#3f1d1a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -12px rgba(0,0,0,.6);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1311; --surface:#141c19; --surface-2:#1a2420; --line:#26332d; --line-2:#344239;
+  --ink:#e8efe9; --ink-2:#b2bfb6; --ink-3:#86938a;
+  --accent:#4cc495; --accent-ink:#06130d; --accent-soft:#183a2c;
+  --brass:#e0b45c; --brass-soft:#3a2e15;
+  --good:#5bd08a; --good-soft:#173524; --warn:#f0a845; --warn-soft:#3b2a12; --bad:#ff8a80; --bad-soft:#3f1d1a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -12px rgba(0,0,0,.6);
+  color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+.num,.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:0 96px}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1240px;margin:0 auto;padding:12px clamp(16px,3vw,32px);display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto;min-width:0}
+.mark{width:34px;height:34px;border-radius:9px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-family:var(--f-display);font-weight:800;font-size:15px;letter-spacing:-.02em}
+.brand h1{font-family:var(--f-display);font-size:20px;font-weight:800;letter-spacing:-.02em;margin:0;line-height:1}
+.brand small{display:block;color:var(--ink-3);font-size:12px;margin-top:3px}
+.tabs{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px}
+.tab{border:0;background:none;padding:7px 14px;border-radius:7px;cursor:pointer;color:var(--ink-2);font-weight:500;font-size:14px}
+.tab[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow)}
+.fx-chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 6px 5px 12px;font-size:13px;color:var(--ink-2)}
+.fx-chip b{font-family:var(--f-mono);font-weight:500;color:var(--ink)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:2px;background:var(--surface-2)}
+.seg button{border:0;background:none;padding:3px 10px;border-radius:999px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--ink-3)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line-2);background:var(--surface);color:var(--ink);padding:8px 14px;border-radius:9px;cursor:pointer;font-weight:600;font-size:14px;white-space:nowrap}
+.btn:hover{border-color:var(--ink-3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{border-color:transparent;background:none}
+.btn.small{padding:5px 10px;font-size:13px}
+.btn.danger{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 40%,transparent)}
+.btn svg{width:16px;height:16px}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.notice{margin-top:16px;padding:10px 14px;border-radius:9px;background:var(--warn-soft);color:var(--ink);font-size:13.5px;border:1px solid color-mix(in srgb,var(--warn) 30%,transparent)}
+
+/* period bar */
+.periodbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin:24px 0 18px}
+.periodbar h2{font-family:var(--f-display);font-size:clamp(24px,3.4vw,34px);font-weight:800;letter-spacing:-.025em;margin:0;line-height:1.05;text-wrap:balance}
+.periodbar .range{color:var(--ink-3);font-size:13.5px;margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);padding:6px 12px;border-radius:999px;cursor:pointer;font-size:13px;font-weight:500;color:var(--ink-2)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.custom{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:-6px 0 18px}
+.custom input{border:1px solid var(--line-2);background:var(--surface);border-radius:8px;padding:6px 8px;font-size:13.5px}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:640px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi .val{font-size:22px}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px 14px;min-width:0}
+.kpi.hero{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.kpi .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600}
+.kpi.hero .lbl,.kpi.hero .sub{color:color-mix(in srgb,var(--accent-ink) 78%,transparent)}
+.kpi .val{font-family:var(--f-display);font-weight:700;font-size:clamp(24px,2.6vw,30px);letter-spacing:-.02em;margin-top:6px;line-height:1.1;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.kpi .sub{font-size:12.5px;color:var(--ink-3);margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.delta{font-family:var(--f-mono);font-size:11.5px;padding:1px 6px;border-radius:5px;font-weight:500}
+.delta.up{background:var(--good-soft);color:var(--good)} .delta.down{background:var(--bad-soft);color:var(--bad)} .delta.flat{background:var(--surface-2);color:var(--ink-3)}
+.kpi.hero .delta{background:color-mix(in srgb,var(--accent-ink) 16%,transparent);color:var(--accent-ink)}
+
+/* panels */
+.grid2{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;margin-top:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:960px){.grid2,.grid3{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;min-width:0}
+.panel h3{font-family:var(--f-display);font-size:17px;font-weight:700;letter-spacing:-.01em;margin:0}
+.panel .hint{color:var(--ink-3);font-size:12.5px;margin:2px 0 12px}
+.panel-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.chartbox{position:relative;height:280px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:12.5px;color:var(--ink-2);margin:4px 0 10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.empty{color:var(--ink-3);font-size:14px;padding:28px 8px;text-align:center}
+
+/* waterfall */
+.flow{display:flex;flex-direction:column;gap:9px}
+.flow-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:baseline}
+.flow-row .k{font-size:13.5px;color:var(--ink-2)}
+.flow-row .v{font-family:var(--f-mono);font-size:13.5px;text-align:right}
+.flow-row .bar{grid-column:1/-1;height:6px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.flow-row .bar span{display:block;height:100%;border-radius:3px}
+.flow-row.total{border-top:1px dashed var(--line-2);padding-top:9px}
+.flow-row.total .k{color:var(--ink);font-weight:600}
+.flow-row.total .v{font-weight:500;color:var(--ink)}
+.minus{color:var(--ink-3)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:600;background:var(--surface-2);position:sticky;top:0}
+th.sortable{cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--ink)}
+td.r,th.r{text-align:right}
+td.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+tbody tr:hover td{background:color-mix(in srgb,var(--accent-soft) 40%,transparent)}
+tfoot td{font-weight:600;background:var(--surface-2);border-bottom:0}
+.proj{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+.proj b{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis}
+.proj span{color:var(--ink-3);font-size:12.5px}
+.mini td{padding:7px 0;border-bottom:1px solid var(--line);background:none!important}
+.mini tr:last-child td{border-bottom:0}
+.mini .share{height:4px;background:var(--surface-2);border-radius:2px;margin-top:4px;overflow:hidden}
+.mini .share span{display:block;height:100%;background:var(--s1);border-radius:2px}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:2px 8px 2px 7px;border-radius:999px;border:0;cursor:pointer;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.Paid{background:var(--good-soft);color:var(--good)}
+.pill.Pending{background:var(--warn-soft);color:var(--warn)}
+.pill.NA{background:var(--surface-2);color:var(--ink-3);cursor:default}
+.pills{display:flex;gap:4px}
+.pills .tagk{font-size:10.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:2px}
+.acts{display:flex;gap:2px}
+.icon-btn{border:0;background:none;padding:6px;border-radius:7px;cursor:pointer;color:var(--ink-3)}
+.icon-btn:hover{background:var(--surface-2);color:var(--ink)}
+.icon-btn svg{width:16px;height:16px;display:block}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:24px 0 12px}
+.toolbar h2{font-family:var(--f-display);font-size:28px;font-weight:800;letter-spacing:-.025em;margin:0 auto 0 0}
+.toolbar input,.toolbar select{border:1px solid var(--line-2);background:var(--surface);border-radius:9px;padding:8px 10px;font-size:14px;min-width:0}
+.toolbar input[type=search]{width:220px;max-width:100%}
+
+/* open items */
+.open-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.open-grid{grid-template-columns:minmax(0,1fr)}}
+.open{border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;background:var(--surface)}
+.open .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600}
+.open .amt{font-family:var(--f-display);font-size:22px;font-weight:700;margin:4px 0 8px;font-variant-numeric:tabular-nums}
+.open ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:13px}
+.open li{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.open li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.open .clear{color:var(--good);font-size:13px}
+
+/* sheet / modal */
+.scrim{position:fixed;inset:0;background:rgba(8,12,10,.45);z-index:40;display:flex;justify-content:flex-end}
+.sheet{width:min(860px,100%);height:100%;background:var(--bg);overflow-y:auto;box-shadow:var(--shadow);padding:calc(env(safe-area-inset-top,0px) + 20px) clamp(16px,3vw,28px) calc(env(safe-area-inset-bottom,0px) + 24px);animation:slide .22s ease-out}
+@keyframes slide{from{transform:translateX(24px);opacity:.6}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.sheet{animation:none}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
+.sheet-head h2{font-family:var(--f-display);font-size:26px;font-weight:800;letter-spacing:-.02em;margin:0}
+.form-grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.form-grid{grid-template-columns:minmax(0,1fr)}}
+fieldset{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:14px 16px 16px;margin:0 0 12px;min-width:0}
+legend{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:600;padding:0 6px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px}
+.row:first-of-type{margin-top:0}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field label{font-size:12.5px;color:var(--ink-2);font-weight:500}
+.field input,.field select,.field textarea{border:1px solid var(--line-2);background:var(--surface-2);border-radius:8px;padding:8px 10px;font-size:14.5px;width:100%;min-width:0}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+.field .help{font-size:11.5px;color:var(--ink-3)}
+.field input.bad{border-color:var(--bad)}
+.inline-btn{border:0;background:none;color:var(--accent);font-weight:600;font-size:12px;cursor:pointer;padding:0;text-align:left}
+.statusrow{display:flex;flex-wrap:wrap;gap:14px}
+.statusrow .field{flex:1 1 140px}
+.preview{position:sticky;top:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.preview h4{margin:0 0 2px;font-family:var(--f-display);font-size:16px}
+.preview .net{font-family:var(--f-display);font-size:30px;font-weight:800;letter-spacing:-.02em;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.preview .netpk{font-family:var(--f-mono);font-size:13px;color:var(--brass)}
+.preview .flow{margin-top:14px}
+.preview .fx-note{font-size:12px;color:var(--ink-3);margin-top:12px;line-height:1.45}
+.sheet-foot{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:6px}
+.err{color:var(--bad);font-size:13px;margin-right:auto;align-self:center}
+
+.dialog{margin:auto;background:var(--surface);border-radius:12px;padding:20px;width:min(420px,calc(100% - 32px));box-shadow:var(--shadow)}
+.dialog h3{margin:0 0 6px;font-family:var(--f-display)}
+.dialog p{margin:0 0 16px;color:var(--ink-2);font-size:14px}
+.scrim.center{justify-content:center;align-items:center}
+
+/* settings */
+.set-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.src-list{display:flex;flex-direction:column;gap:8px}
+.src-item{display:grid;grid-template-columns:minmax(0,1fr) 90px auto;gap:8px;align-items:center}
+.src-item input{border:1px solid var(--line-2);background:var(--surface-2);border-radius:8px;padding:7px 9px;width:100%;min-width:0}
+.stack{display:flex;flex-direction:column;gap:10px}
+.stack p{margin:0;color:var(--ink-2);font-size:13.5px}
+.math{font-family:var(--f-mono);font-size:12.5px;background:var(--surface-2);border-radius:8px;padding:12px 14px;line-height:1.7;color:var(--ink-2);overflow-x:auto;white-space:pre}
+
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 22px);transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;z-index:60;box-shadow:var(--shadow);max-width:calc(100% - 32px)}
+.fab{position:fixed;right:16px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);z-index:30;display:none;border-radius:999px;padding:13px 18px;box-shadow:var(--shadow)}
+.storage-tag{font-size:12px;color:var(--ink-3);display:flex;align-items:center;gap:6px}
+.storage-tag i{width:7px;height:7px;border-radius:50%;background:var(--ink-3)}
+.storage-tag.cloud i{background:var(--good)}
+.storage-tag.local i{background:var(--warn)}
+@media (max-width:640px){
+  .top-in{gap:10px}
+  .tabs{order:3;width:100%}
+  .tab{flex:1}
+  .fx-chip{order:2}
+  #newBtnTop{display:none}
+  .fab{display:inline-flex}
+  .brand small{display:none}
+}
+[hidden]{display:none!important}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+<style>
+/* additions: more tabs, money ledger, salary, audit */
+.tabs{overflow-x:auto;scrollbar-width:none;max-width:100%;flex:0 1 auto;min-width:0}
+@media (min-width:641px){.top-in{flex-wrap:nowrap}.brand{flex:0 1 auto}.fx-chip{flex:none}#newBtnTop{flex:none}}
+@media (min-width:641px) and (max-width:1180px){.top-in{flex-wrap:wrap}.tabs{order:3;width:100%}.tab{flex:1}}
+.mini td:first-child{white-space:normal}
+.tabs::-webkit-scrollbar{display:none}
+.tab{white-space:nowrap}
+.fx-chip .today{font-size:11.5px;color:var(--ink-3)}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:1100px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.grid4{grid-template-columns:minmax(0,1fr)}}
+.tag{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:5px;background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line);white-space:nowrap}
+.tag.type{background:var(--accent-soft);color:var(--accent);border-color:transparent}
+.tag.est{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.tag.prog{background:var(--brass-soft);color:var(--brass);border-color:transparent}
+.tag.cancel{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.tag.sal{background:color-mix(in srgb,var(--s1) 16%,transparent);color:var(--s1);border-color:transparent}
+.acct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
+.acct{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;min-width:0;cursor:pointer;text-align:left;width:100%}
+.acct[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.acct .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600;display:flex;justify-content:space-between;gap:6px}
+.acct .val{font-family:var(--f-display);font-weight:700;font-size:24px;margin-top:6px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.acct .sub{font-size:12px;color:var(--ink-3);margin-top:4px}
+.in{color:var(--good)} .out{color:var(--ink)}
+.desc{max-width:320px;overflow:hidden;text-overflow:ellipsis}
+.desc b{font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis}
+.desc span{color:var(--ink-3);font-size:12.5px}
+.callout{border:1px solid color-mix(in srgb,var(--warn) 35%,transparent);background:var(--warn-soft);border-radius:var(--r);padding:10px 14px;font-size:13.5px;margin:12px 0 0;display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.log{display:flex;flex-direction:column;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.log-day{font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600;padding:10px 16px 6px;background:var(--surface-2);border-bottom:1px solid var(--line)}
+.log-row{display:grid;grid-template-columns:64px minmax(0,1fr);gap:4px 14px;padding:10px 16px;border-bottom:1px solid var(--line)}
+.log-row:last-child{border-bottom:0}
+.log-row time{font-family:var(--f-mono);font-size:12.5px;color:var(--ink-3);padding-top:2px}
+.log-row .what{font-size:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.log-row .what b{font-weight:600}
+.act{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:1px 6px;border-radius:4px}
+.act.create,.act.restore{background:var(--good-soft);color:var(--good)} .act.update{background:var(--brass-soft);color:var(--brass)} .act.delete{background:var(--bad-soft);color:var(--bad)} .act.import{background:color-mix(in srgb,var(--s1) 16%,transparent);color:var(--s1)}
+.changes{grid-column:2;font-size:12.5px;color:var(--ink-2);display:flex;flex-direction:column;gap:2px;font-family:var(--f-mono)}
+.changes s{color:var(--ink-3)}
+.who{font-size:12px;color:var(--ink-3)}
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}
+.acct-row{display:grid;grid-template-columns:minmax(0,1fr) 80px 110px auto;gap:8px;align-items:center}
+.acct-row input,.acct-row select{border:1px solid var(--line-2);background:var(--surface-2);border-radius:8px;padding:7px 9px;width:100%;min-width:0}
+.money-in-form{font-family:var(--f-display);font-size:26px;font-weight:800;margin:4px 0}
+.rate-line{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--ink-3)}
+@media (max-width:640px){.log-row{grid-template-columns:minmax(0,1fr)}.changes{grid-column:1}.acct-row{grid-template-columns:minmax(0,1fr) 70px;}}
+
+/* ledger */
+.ledger-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:960px){.ledger-grid{grid-template-columns:minmax(0,1fr)}}
+.stmt td,.stmt th{padding:8px 10px}
+.stmt .part{white-space:normal;min-width:180px;max-width:340px}
+.stmt .part b{font-weight:600}
+.stmt .part span{display:block;color:var(--ink-3);font-size:12px}
+.stmt tr.ob td{background:var(--surface-2);font-weight:600}
+.stmt tr.transit td{color:var(--ink-3);font-style:italic}
+.stmt th small{display:block;font-size:10px;letter-spacing:.04em;opacity:.8}
+.dr{color:var(--good)} .cr{color:var(--ink)}
+.drcr-note{font-size:12px;color:var(--ink-3);margin:10px 2px 0}
+.proof{font-family:var(--f-mono);font-size:12.5px;margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--good-soft);color:var(--good);overflow-wrap:anywhere}
+.proof.bad{background:var(--bad-soft);color:var(--bad)}
+.pl{width:100%;border-collapse:collapse;font-size:13.5px}
+.pl td{padding:7px 4px;border-bottom:1px solid var(--line);white-space:normal}
+.pl td.num{text-align:right;white-space:nowrap}
+.pl tr.h td{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);font-weight:600;padding-top:14px;border-bottom:1px solid var(--line-2)}
+.pl tr.sub td{font-weight:600;background:var(--surface-2)}
+.pl tr.net td{font-weight:700;font-size:15px;border-top:2px solid var(--ink);border-bottom:0}
+.pl td small{display:block;color:var(--ink-3);font-size:11.5px}
+.checks{display:flex;flex-direction:column;gap:0;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.check{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:4px 12px;padding:11px 14px;border-bottom:1px solid var(--line);align-items:start}
+.check:last-child{border-bottom:0}
+.check .ic{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;margin-top:1px}
+.check.ok .ic{background:var(--good-soft);color:var(--good)}
+.check.warn .ic{background:var(--warn-soft);color:var(--warn)}
+.check.info .ic{background:var(--surface-2);color:var(--ink-3)}
+.check b{font-weight:600}
+.check .det{font-size:12.5px;color:var(--ink-2);margin-top:2px}
+.check .det ul{margin:4px 0 0;padding-left:18px}
+.check .amt{font-family:var(--f-mono);font-size:13px;text-align:right;white-space:nowrap}
+.check .acts2{grid-column:2/-1;display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+@media (max-width:640px){.check{grid-template-columns:28px minmax(0,1fr)}.check .amt{grid-column:2;text-align:left}}
+.score{font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px}
+.score.ok{background:var(--good-soft);color:var(--good)} .score.warn{background:var(--warn-soft);color:var(--warn)}
+
+/* login */
+.login{position:fixed;inset:0;z-index:80;background:var(--bg);display:grid;place-items:center;padding:24px 16px}
+.login-card{width:min(400px,100%);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px 24px;box-shadow:var(--shadow)}
+.login-card h2{font-family:var(--f-display);font-size:26px;font-weight:800;letter-spacing:-.02em;margin:14px 0 4px}
+.login-card p{color:var(--ink-3);font-size:13.5px;margin:0 0 18px}
+.login-card .field{margin-bottom:12px}
+.login-card .btn{width:100%;justify-content:center}
+.login-msg{min-height:20px;font-size:13px;color:var(--ink-2);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="login" id="login" hidden>
+  <form class="login-card" id="lgForm" novalidate>
+    <div class="mark" aria-hidden="true">PR</div>
+    <h2>Projects Record</h2>
+    <p>Sign in to see your records. Everything syncs across your devices.</p>
+    <div class="field"><label for="lgEmail">Email</label><input id="lgEmail" type="email" autocomplete="email" required></div>
+    <div class="field"><label for="lgPass">Password</label><input id="lgPass" type="password" autocomplete="current-password"></div>
+    <button class="btn primary" id="lgBtn" type="submit">Sign in</button>
+    <button class="btn ghost" id="lgLink" type="button" style="margin-top:6px">Email me a sign-in link instead</button>
+    <div class="login-msg" id="lgMsg" role="status"></div>
+  </form>
+</div>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <div class="mark" aria-hidden="true">PR</div>
+      <div><h1>Projects Record</h1><small id="storageTag" class="storage-tag"><i></i><span>Connecting…</span></small></div>
+    </div>
+    <div class="fx-chip" title="Today's dollar rate, used when you pick 'Use today's rate'. Each entry keeps its own rate.">1 USD = Rs <b id="fxTop">—</b> <span class="today" id="fxTopDate"></span>
+      <div class="seg" role="group" aria-label="Display currency">
+        <button type="button" data-cur="USD" aria-pressed="true">$ USD</button>
+        <button type="button" data-cur="PKR" aria-pressed="false">Rs PKR</button>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-view="dash" aria-selected="true">Dashboard</button>
+      <button class="tab" role="tab" data-view="records" aria-selected="false">Records</button>
+      <button class="tab" role="tab" data-view="salary" aria-selected="false">Salary</button>
+      <button class="tab" role="tab" data-view="money" aria-selected="false">Money</button>
+      <button class="tab" role="tab" data-view="ledger" aria-selected="false">Ledger</button>
+      <button class="tab" role="tab" data-view="audit" aria-selected="false">Audit</button>
+      <button class="tab" role="tab" data-view="settings" aria-selected="false">Settings</button>
+    </nav>
+    <button class="btn ghost small" id="signOut" type="button" hidden>Sign out</button>
+    <button class="btn primary" id="newBtnTop" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="newBtnLbl">New entry</span></button>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="auditNotice" class="notice" hidden></div>
+  <div id="localNotice" class="notice" hidden>Supabase is not connected yet, so everything is saved in this browser only. Add your project URL and anon key to config.js (see README.md) to turn on login and sync.</div>
+
+  <!-- DASHBOARD -->
+  <section id="view-dash">
+    <div class="periodbar">
+      <div><h2 id="periodTitle">All time</h2><div class="range" id="periodRange"></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" id="dlSummary" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>Download summary (.xlsx)</button>
+      </div>
+    </div>
+    <div class="chips" id="periodChips" role="group" aria-label="Time span" style="margin:-6px 0 18px"></div>
+    <div class="custom" id="customRange" hidden>
+      <label for="cFrom">From</label><input type="date" id="cFrom">
+      <label for="cTo">To</label><input type="date" id="cTo">
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grid2">
+      <div class="panel">
+        <div class="panel-head"><div><h3>Where the money went</h3><p class="hint" id="chartHint">Revenue split into net profit, worker pay, Allah's share and fees</p></div></div>
+        <div class="legend" id="chartLegend"></div>
+        <div class="chartbox"><canvas id="flowChart" aria-label="Revenue breakdown over time"></canvas><div class="empty" id="chartFail" hidden>The chart library could not load. All totals on this page are still accurate.</div></div>
+      </div>
+      <div class="panel">
+        <h3>From revenue to net profit</h3>
+        <p class="hint">Every deduction in the selected period</p>
+        <div class="flow" id="waterfall"></div>
+      </div>
+    </div>
+
+    <div class="grid4">
+      <div class="panel"><h3>Clients</h3><p class="hint">By revenue</p><div id="byClient"></div></div>
+      <div class="panel"><h3>Project types</h3><p class="hint">What kind of work pays</p><div id="byType"></div></div>
+      <div class="panel"><h3>Workers</h3><p class="hint">Pieces and pay in rupees</p><div id="byWorker"></div></div>
+      <div class="panel"><h3>Sources and payment route</h3><p class="hint">Where work came from, how it was paid</p><div id="bySource"></div></div>
+    </div>
+
+    <div class="panel" style="margin-top:12px">
+      <div class="panel-head"><div><h3>Open items</h3><p class="hint">Everything still pending, across all dates. Click an amount's pill to mark it paid.</p></div></div>
+      <div class="open-grid" id="openItems"></div>
+    </div>
+  </section>
+
+  <!-- RECORDS -->
+  <section id="view-records" hidden>
+    <div class="toolbar">
+      <h2>Records</h2>
+      <input type="search" id="q" placeholder="Search project, type, client, worker" aria-label="Search records">
+      <select id="fYear" aria-label="Year"></select>
+      <select id="fType" aria-label="Project type"></select>
+      <select id="fStatus" aria-label="Status filter">
+        <option value="">All statuses</option>
+        <option value="client">Client payment pending</option>
+        <option value="worker">Worker pay pending</option>
+        <option value="charity">Allah's share pending</option>
+      </select>
+      <button class="btn" id="dlAll" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>Download workbook</button>
+    </div>
+    <div class="tbl-wrap"><table id="recTable"><thead></thead><tbody></tbody><tfoot></tfoot></table></div>
+  </section>
+
+  <!-- SALARY -->
+  <section id="view-salary" hidden>
+    <div class="toolbar">
+      <h2>Salary</h2>
+      <select id="sYear" aria-label="Year"></select>
+      <button class="btn primary" id="newSalary" type="button">Add salary</button>
+    </div>
+    <div class="kpis" id="salKpis" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))"></div>
+    <div class="tbl-wrap" style="margin-top:12px"><table id="salTable"><thead></thead><tbody></tbody><tfoot></tfoot></table></div>
+  </section>
+
+  <!-- MONEY -->
+  <section id="view-money" hidden>
+    <div class="toolbar">
+      <h2>Money</h2>
+      <button class="btn primary" id="newTxn" type="button">Add transaction</button>
+    </div>
+    <div class="acct-grid" id="acctCards"></div>
+    <div id="estCallout"></div>
+    <div class="grid3" id="moneyKpis" style="margin-top:12px"></div>
+    <div class="toolbar" style="margin-top:20px">
+      <h3 style="font-family:var(--f-display);font-size:20px;margin:0 auto 0 0" id="ledgerTitle">All transactions</h3>
+      <input type="search" id="tq" placeholder="Search who, reference, note" aria-label="Search transactions">
+      <select id="tYear" aria-label="Year"></select>
+      <select id="tType" aria-label="Type">
+        <option value="">All types</option><option value="in">Money in</option><option value="out">Money out</option><option value="transfer">Transfers</option><option value="salary">Salary</option>
+      </select>
+    </div>
+    <div class="tbl-wrap"><table id="txnTable"><thead></thead><tbody></tbody></table></div>
+  </section>
+
+  <!-- LEDGER -->
+  <section id="view-ledger" hidden>
+    <div class="toolbar">
+      <h2>Ledger</h2>
+      <select id="lgYear" aria-label="Period"></select>
+      <button class="btn" id="dlLedger" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></svg>Download workbook</button>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><div><h3>Reconciliation</h3><p class="hint">Checks that your project records, salary and account balances agree. Anything flagged means a balance below may not be the full story.</p></div><div id="recScore"></div></div>
+      <div class="checks" id="recChecks"></div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="panel">
+        <div class="panel-head"><div><h3>Account statement</h3><p class="hint">Every entry for one account, oldest first, with the balance after each line. Shown in the account's own currency.</p></div></div>
+        <div class="subtabs" id="lgAccts" role="group" aria-label="Account"></div>
+        <div class="tbl-wrap"><table id="lgTable" class="stmt"><thead></thead><tbody></tbody><tfoot></tfoot></table></div>
+        <p class="drcr-note">Dr / Cr follow your own books: money coming into the account is a <b>debit (Dr)</b>, money leaving it is a <b>credit (Cr)</b>. Lines marked “on the way” are not in the balance until they are completed.</p>
+        <div class="proof" id="lgProof"></div>
+      </div>
+    </div>
+    <div class="grid2 ledger-grid">
+      <div class="panel">
+        <div class="panel-head"><div><h3>Earnings and expenses</h3><p class="hint" id="plHint"></p></div></div>
+        <div id="plTable"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><div><h3>What you hold</h3><p class="hint">Closing balance of every account, and the total at today's rate.</p></div></div>
+        <div id="worth"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AUDIT -->
+  <section id="view-audit" hidden>
+    <div class="toolbar"><h2>Audit</h2>
+      <div class="seg" role="group" aria-label="Audit view" id="auditSeg">
+        <button type="button" data-aud="statement" aria-pressed="true">Monthly statement</button>
+        <button type="button" data-aud="log" aria-pressed="false">Change log</button>
+      </div>
+    </div>
+    <div id="aud-statement">
+      <p class="hint" style="color:var(--ink-3);font-size:13px;margin:-4px 0 12px">Every month at a glance: project earnings, salary and tax, and what moved through your accounts. Shown in the currency picked at the top.</p>
+      <div class="tbl-wrap"><table id="stmtTable"><thead></thead><tbody></tbody><tfoot></tfoot></table></div>
+    </div>
+    <div id="aud-log" hidden>
+      <div class="toolbar" style="margin-top:0">
+        <span style="margin-right:auto;color:var(--ink-3);font-size:13px" id="logCount"></span>
+        <input type="search" id="aq" placeholder="Search changes" aria-label="Search audit log">
+        <select id="aMod" aria-label="Module"><option value="">Everything</option><option value="records">Project records</option><option value="salaries">Salary</option><option value="txns">Transactions</option><option value="settings">Settings</option></select>
+        <select id="aAct" aria-label="Action"><option value="">All actions</option><option value="create">Added</option><option value="update">Changed</option><option value="delete">Deleted</option><option value="import">Imported</option><option value="restore">Restored</option></select>
+        <input type="date" id="aFrom" aria-label="From date"><input type="date" id="aTo" aria-label="To date">
+      </div>
+      <div class="log" id="auditLog"></div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="view-settings" hidden>
+    <div class="toolbar"><h2>Settings</h2></div>
+    <div class="set-grid">
+      <div class="panel stack">
+        <h3>Today's dollar rate</h3>
+        <p>Used by every “Use today's rate” button and by projects charged in rupees at the current dollar rate.</p>
+        <div class="row">
+          <div class="field"><label for="sLive">1 USD = Rs</label><input id="sLive" type="number" step="0.01" min="1" inputmode="decimal"></div>
+          <div class="field"><label for="sLiveDate">Rate date</label><input id="sLiveDate" type="date"></div>
+        </div>
+        <div class="field"><label for="sLiveNote">Where it came from</label><input id="sLiveNote" type="text" placeholder="e.g. open market buying rate"></div>
+        <div><button class="btn primary small" id="saveLive" type="button">Save today's rate</button></div>
+      </div>
+      <div class="panel stack">
+        <h3>Defaults for new entries</h3>
+        <div class="row">
+          <div class="field"><label for="sFx">Default USD → PKR rate</label><input id="sFx" type="number" step="0.01" min="1" inputmode="decimal"><span class="help">Saved on each entry, so past records keep their own rate.</span></div>
+          <div class="field"><label for="sCharity">Allah's share %</label><input id="sCharity" type="number" step="0.5" min="0" max="100" inputmode="decimal"><span class="help">Taken from profit after worker pay and fees.</span></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="sClient">Default client</label><input id="sClient" type="text"></div>
+          <div class="field"><label for="sWorkerRate">Default worker rate (Rs / piece)</label><input id="sWorkerRate" type="number" step="1" min="0"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="sVia">Default “received via”</label><input id="sVia" type="text" list="dlVia"></div>
+          <div class="field"><label for="sXferFee">Payoneer → wallet fee %</label><input id="sXferFee" type="number" step="0.01" min="0" max="100"><span class="help">Used only to estimate transfers that have no receipt yet.</span></div>
+        </div>
+        <div><button class="btn primary small" id="saveSettings" type="button">Save defaults</button></div>
+      </div>
+      <div class="panel stack">
+        <h3>Accounts</h3>
+        <p>Where your money sits. Opening balance is what the account held before the first transaction recorded here.</p>
+        <div class="src-list" id="acctList"></div>
+        <div style="display:flex;gap:8px"><button class="btn small" id="addAcct" type="button">Add account</button><button class="btn primary small" id="saveAcct" type="button">Save accounts</button></div>
+      </div>
+      <div class="panel stack">
+        <h3>Project sources and fees</h3>
+        <p>Platform fee taken from the client payment. Picking a source in a new entry fills its fee.</p>
+        <div class="src-list" id="srcList"></div>
+        <div style="display:flex;gap:8px"><button class="btn small" id="addSrc" type="button">Add source</button><button class="btn primary small" id="saveSrc" type="button">Save sources</button></div>
+      </div>
+      <div class="panel stack">
+        <h3>Project types</h3>
+        <p>Suggestions shown when you add a project. One per line.</p>
+        <div class="field"><textarea id="sTypes" rows="8"></textarea></div>
+        <div><button class="btn primary small" id="saveTypes" type="button">Save types</button></div>
+      </div>
+      <div class="panel stack">
+        <h3>How each entry is calculated</h3>
+        <div class="math">Paid in USD:  amounts are dollars
+Paid in PKR:  amounts are rupees, ÷ rate for $
+PKR at today's rate: price in $, client
+              pays $ × today's rate in rupees
+
+Revenue        = pieces × price + adjustment
+Worker pay $   = worker pay Rs ÷ entry rate
+Profit         = revenue − fees − worker pay
+Allah's share  = profit × share %   (0 if loss)
+Net profit     = profit − Allah's share
+
+Salary net     = gross − tax − other deductions
+Transfer       = total leaves the account
+                 (fee is part of it); the other
+                 account receives what arrived</div>
+      </div>
+      <div class="panel stack">
+        <h3>Backup and import</h3>
+        <p>The workbook has Records (with live formulas), Salary, Transactions, Balances, Monthly statement and the Audit log. You can edit Records in Excel and import them back; rows are matched by their Record ID.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" id="dlAll2" type="button">Download workbook</button>
+          <label class="btn" for="importFile" style="cursor:pointer">Import workbook</label>
+          <input type="file" id="importFile" accept=".xlsx" class="sr-only">
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<button class="btn primary fab" id="newBtnFab" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="newFabLbl">New entry</span></button>
+
+<datalist id="dlClients"></datalist>
+<datalist id="dlWorkers"></datalist>
+<datalist id="dlSources"></datalist>
+<datalist id="dlTypes"></datalist>
+<datalist id="dlVia"></datalist>
+<datalist id="dlEmployers"></datalist>
+<datalist id="dlParties"></datalist>
+
+<!-- Project entry sheet -->
+<div class="scrim" id="entryScrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="entryTitle">
+    <div class="sheet-head">
+      <h2 id="entryTitle">New entry</h2>
+      <button class="icon-btn" data-close="entryScrim" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <form id="entryForm" novalidate>
+      <div class="form-grid">
+        <div>
+          <fieldset><legend>Project</legend>
+            <div class="row">
+              <div class="field"><label for="eDate">Date</label><input id="eDate" type="date" required></div>
+              <div class="field"><label for="eSr">Sr. no.</label><input id="eSr" type="number" min="1" step="1"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="eType">Project type</label><input id="eType" list="dlTypes" type="text" placeholder="e.g. Video Editing"></div>
+              <div class="field"><label for="eProject">Project name</label><input id="eProject" type="text" placeholder="e.g. MAG Shadow War" required></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="eClient">Client</label><input id="eClient" list="dlClients" type="text"></div>
+              <div class="field"><label for="eSource">Source</label><input id="eSource" list="dlSources" type="text"></div>
+            </div>
+          </fieldset>
+          <fieldset><legend>Client payment</legend>
+            <div class="row">
+              <div class="field"><label for="eCur">Paid in</label>
+                <select id="eCur"><option value="USD">Dollars (USD)</option><option value="PKR">Rupees, fixed price (PKR)</option><option value="PKR_FX">Rupees at today's dollar rate</option></select></div>
+              <div class="field"><label for="eVia">Received via</label><input id="eVia" list="dlVia" type="text" placeholder="Payoneer, JazzCash, bank…"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="ePieces">No. of pieces</label><input id="ePieces" type="number" min="0" step="1" inputmode="numeric"></div>
+              <div class="field"><label for="ePrice" id="ePriceLbl">Price per piece ($)</label><input id="ePrice" type="number" min="0" step="0.01" inputmode="decimal"></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="eAdj" id="eAdjLbl">Adjustment ($)</label><input id="eAdj" type="number" step="0.01" inputmode="decimal"><span class="help">Discount as negative, bonus or tip as positive.</span></div>
+              <div class="field"><label for="eFees" id="eFeesLbl">Fees and deductions ($)</label><input id="eFees" type="number" min="0" step="0.01" inputmode="decimal"><button type="button" class="inline-btn" id="feeSuggest" hidden></button></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="eFx">USD → PKR rate</label><input id="eFx" type="number" min="1" step="0.01" inputmode="decimal"><button type="button" class="inline-btn" data-today="eFx"></button></div>
+              <div class="field" id="eChargeBox" hidden><label>Client pays</label><div class="money-in-form num" id="eCharge">Rs 0</div></div>
+            </div>
+          </fieldset>
+          <fieldset><legend>Worker (PKR)</legend>
+            <div class="row">
+              <div class="field"><label for="eWorker">Worker name</label><input id="eWorker" list="dlWorkers" type="text" placeholder="Leave empty if you did it yourself"></div>
+              <div class="field"><label for="ePayType">Pay type</label>
+                <select id="ePayType"><option value="piece">Per piece</option><option value="fixed">Fixed amount</option></select></div>
+            </div>
+            <div class="row">
+              <div class="field"><label for="eWorkerAmt" id="eWorkerAmtLbl">Rate per piece (Rs)</label><input id="eWorkerAmt" type="number" min="0" step="1" inputmode="decimal"></div>
+            </div>
+          </fieldset>
+          <fieldset><legend>Allah's share and status</legend>
+            <div class="row">
+              <div class="field"><label for="eCharity">Allah's share %</label><input id="eCharity" type="number" min="0" max="100" step="0.5" inputmode="decimal"></div>
+              <div class="field"><label for="eNotes">Notes</label><input id="eNotes" type="text"></div>
+            </div>
+            <div class="statusrow" style="margin-top:10px">
+              <div class="field"><label for="eCStatus">Client payment</label><select id="eCStatus"><option>Paid</option><option>Pending</option></select></div>
+              <div class="field"><label for="eWStatus">Worker pay</label><select id="eWStatus"><option>Paid</option><option>Pending</option><option value="N/A">No worker</option></select></div>
+              <div class="field"><label for="eChStatus">Allah's share</label><select id="eChStatus"><option>Pending</option><option>Paid</option><option value="N/A">Not tracked</option></select></div>
+            </div>
+          </fieldset>
+        </div>
+        <aside class="preview" aria-live="polite">
+          <h4>Net profit</h4>
+          <div class="net" id="pvNet">$0.00</div>
+          <div class="netpk" id="pvNetPk">Rs 0</div>
+          <div class="flow" id="pvFlow"></div>
+          <div class="fx-note" id="pvNote"></div>
+        </aside>
+      </div>
+      <div class="sheet-foot">
+        <span class="err" id="formErr"></span>
+        <button type="button" class="btn danger" id="delEntry" hidden>Delete</button>
+        <button type="button" class="btn" id="saveAnother">Save and add another</button>
+        <button type="submit" class="btn primary">Save entry</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Salary sheet -->
+<div class="scrim" id="salScrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="salTitle" style="width:min(720px,100%)">
+    <div class="sheet-head">
+      <h2 id="salTitle">Add salary</h2>
+      <button class="icon-btn" data-close="salScrim" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <form id="salForm" novalidate>
+      <fieldset><legend>Salary</legend>
+        <div class="row">
+          <div class="field"><label for="slMonth">For month</label><input id="slMonth" type="month"></div>
+          <div class="field"><label for="slDate">Date received</label><input id="slDate" type="date"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="slEmployer">Employer</label><input id="slEmployer" list="dlEmployers" type="text"></div>
+          <div class="field"><label for="slVia">Received via</label><input id="slVia" list="dlVia" type="text"><span class="help">Received salary is added to this account's balance.</span></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="slCur">Currency</label><select id="slCur"><option value="PKR">Rupees (PKR)</option><option value="USD">Dollars (USD)</option></select></div>
+          <div class="field"><label for="slGross" id="slGrossLbl">Gross salary</label><input id="slGross" type="number" min="0" step="0.01" inputmode="decimal"></div>
+        </div>
+      </fieldset>
+      <fieldset><legend>Taxes and deductions</legend>
+        <div class="row">
+          <div class="field"><label for="slTaxPct">Income tax %</label><input id="slTaxPct" type="number" min="0" max="100" step="0.01" inputmode="decimal"><span class="help">Fills the amount. Or type the amount directly.</span></div>
+          <div class="field"><label for="slTax" id="slTaxLbl">Income tax amount</label><input id="slTax" type="number" min="0" step="0.01" inputmode="decimal"></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="slDed" id="slDedLbl">Other deductions</label><input id="slDed" type="number" min="0" step="0.01" inputmode="decimal"><span class="help">EOBI, provident fund, bank charges…</span></div>
+          <div class="field"><label for="slFx">USD → PKR rate</label><input id="slFx" type="number" min="1" step="0.01"><button type="button" class="inline-btn" data-today="slFx"></button></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="slStatus">Status</label><select id="slStatus"><option>Received</option><option>Pending</option></select></div>
+          <div class="field"><label for="slNotes">Notes</label><input id="slNotes" type="text"></div>
+        </div>
+      </fieldset>
+      <div class="panel" style="margin-bottom:12px"><div class="flow" id="slPreview"></div></div>
+      <div class="sheet-foot">
+        <span class="err" id="slErr"></span>
+        <button type="button" class="btn danger" id="delSal" hidden>Delete</button>
+        <button type="submit" class="btn primary">Save salary</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Transaction sheet -->
+<div class="scrim" id="txnScrim" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="txnTitle" style="width:min(720px,100%)">
+    <div class="sheet-head">
+      <h2 id="txnTitle">Add transaction</h2>
+      <button class="icon-btn" data-close="txnScrim" type="button" aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <form id="txnForm" novalidate>
+      <fieldset><legend>What happened</legend>
+        <div class="row">
+          <div class="field"><label for="tkType">Type</label><select id="tkType"><option value="transfer">Transfer between my accounts</option><option value="in">Money in</option><option value="out">Money out</option></select></div>
+          <div class="field"><label for="tkDate">Date</label><input id="tkDate" type="date"></div>
+        </div>
+        <div class="row">
+          <div class="field" id="tkFromBox"><label for="tkFrom">From account</label><select id="tkFrom"></select></div>
+          <div class="field" id="tkToBox"><label for="tkTo">To account</label><select id="tkTo"></select></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="tkParty" id="tkPartyLbl">Paid to / received from</label><input id="tkParty" list="dlParties" type="text"></div>
+          <div class="field"><label for="tkCat">Category</label><input id="tkCat" type="text" list="dlCats" placeholder="Client payment, Fee, Withdrawal…"><datalist id="dlCats"><option value="Client payment"><option value="Withdrawal"><option value="Account fee"><option value="Worker pay"><option value="Allah's share"><option value="Personal"><option value="Bills"></datalist></div>
+        </div>
+      </fieldset>
+      <fieldset><legend>Amounts</legend>
+        <div class="row">
+          <div class="field"><label for="tkAmt" id="tkAmtLbl">Total amount</label><input id="tkAmt" type="number" min="0" step="0.01" inputmode="decimal"><span class="help" id="tkAmtHelp">Everything that left the account, fee included.</span></div>
+          <div class="field"><label for="tkFee" id="tkFeeLbl">Fee (part of the total)</label><input id="tkFee" type="number" min="0" step="0.01" inputmode="decimal"></div>
+        </div>
+        <div class="row" id="tkFxRow">
+          <div class="field"><label for="tkRate">Exchange rate</label><input id="tkRate" type="number" min="0" step="0.01"><button type="button" class="inline-btn" data-today="tkRate"></button></div>
+          <div class="field"><label for="tkRecv" id="tkRecvLbl">Amount received</label><input id="tkRecv" type="number" min="0" step="0.01" inputmode="decimal"><span class="help">From the receipt. Left empty, it is worked out from the rate.</span></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="tkRef">Reference / TID</label><input id="tkRef" type="text"></div>
+          <div class="field"><label for="tkStatus">Status</label><select id="tkStatus"><option>Completed</option><option>In progress</option><option>Canceled</option></select></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="tkNotes">Notes</label><input id="tkNotes" type="text"></div>
+          <div class="field"><label for="tkEst">Amounts confirmed?</label><select id="tkEst"><option value="0">Yes, from a receipt</option><option value="1">No, estimated</option></select></div>
+        </div>
+      </fieldset>
+      <div class="panel" style="margin-bottom:12px"><div class="flow" id="tkPreview"></div></div>
+      <div class="sheet-foot">
+        <span class="err" id="tkErr"></span>
+        <button type="button" class="btn danger" id="delTxn" hidden>Delete</button>
+        <button type="submit" class="btn primary">Save transaction</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="scrim center" id="confirmScrim" hidden>
+  <div class="dialog" role="alertdialog" aria-modal="true" aria-labelledby="cfTitle">
+    <h3 id="cfTitle">Delete this entry?</h3>
+    <p id="cfText"></p>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" id="cfNo" type="button">Cancel</button><button class="btn primary" id="cfYes" type="button" style="background:var(--bad);border-color:var(--bad);color:#fff">Delete</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<script>
+(() => {
+'use strict';
+/* ---------- state ---------- */
+const DEFAULT_SETTINGS = { fxRate: 280, charityPct: 10, defaultClient: 'Kushmir Power', workerRate: 1000, defaultVia: 'Payoneer', xferFeePct: 5.78,
+  liveRate: { rate: 280, date: '', note: '' },
+  sources: [{name:'WhatsApp',fee:0},{name:'Fiverr',fee:20},{name:'Upwork',fee:10},{name:'Direct',fee:0}],
+  accounts: [{name:'Payoneer',currency:'USD',opening:0},{name:'JazzCash',currency:'PKR',opening:0},{name:'SadaPay',currency:'PKR',opening:0},{name:'Bank',currency:'PKR',opening:0},{name:'Cash',currency:'PKR',opening:0}],
+  projectTypes: ['Web Development','Web Design','App Development','App Design','Video Editing','Picture Editing','Graphic Design','Presentation','Other'] };
+let records = [], txns = [], salaries = [], audit = [];
+let settings = structuredClone(DEFAULT_SETTINGS);
+let currency = 'USD';
+let period = 'all';
+let view = 'dash';
+let audView = 'statement';
+let selAcct = '';
+let sort = { key: 'date', dir: 'desc' };
+let mode = 'pending';  // cloud | local
+let db = null, dlCap = null, myId = null;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const F = id => document.getElementById(id);
+const ls = { get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+             set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+try { const c = ls.get('pr.currency'); if (c === 'USD' || c === 'PKR') currency = c; const p = ls.get('pr.period'); if (p) period = p; } catch {}
+
+/* ---------- formatting ---------- */
+const n = v => { const x = typeof v === 'number' ? v : parseFloat(v); return Number.isFinite(x) ? x : 0; };
+// round to 2 decimals, half away from zero; the tiny nudge fixes binary cases like 1.005
+const r2 = v => { v = n(v); const s = v < 0 ? -1 : 1; const x = s * Math.round(Math.abs(v) * 100 * (1 + 1e-12) + 1e-9) / 100; return x === 0 ? 0 : x; };
+// exact sum of 2-decimal amounts (adds whole cents, so no floating drift)
+const sum2 = arr => { let c = 0; for (const v of arr) c += Math.round(n(v) * 100); return c / 100; };
+const fUSD = new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fPKR = new Intl.NumberFormat('en-US',{maximumFractionDigits:0});
+const fRate = new Intl.NumberFormat('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function usd(v){ const s = fUSD.format(Math.abs(v)); return (v < -0.004 ? '−$' : '$') + s; }
+function pkr(v){ const s = fPKR.format(Math.abs(Math.round(v))); return (Math.round(v) < 0 ? '−Rs ' : 'Rs ') + s; }
+const fmtIn = (v, cur) => cur === 'USD' ? usd(v) : pkr(v);
+const money = v => currency === 'PKR' ? pkr(v) : usd(v);
+function compact(v){ const sym = currency==='PKR'?'Rs ':'$'; const a=Math.abs(v);
+  const s = a>=1e6? (a/1e6).toFixed(1)+'M' : a>=1e4? (a/1e3).toFixed(0)+'k' : a>=1e3? (a/1e3).toFixed(1)+'k' : a.toFixed(0);
+  return (v<0?'−':'')+sym+s; }
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const live = () => n(settings.liveRate?.rate) || n(settings.fxRate) || 280;
+// convert an amount in `cur` into the display currency, at `rate` rupees per dollar
+const toDisp = (v, cur, rate) => cur === currency ? v : currency === 'PKR' ? v * (n(rate) || n(settings.fxRate)) : v / (n(rate) || n(settings.fxRate));
+const toCur = (v, from, to, rate) => from === to ? v : to === 'PKR' ? v * (n(rate) || n(settings.fxRate)) : v / (n(rate) || n(settings.fxRate));
+
+/* ---------- dates ---------- */
+const pad = x => String(x).padStart(2,'0');
+const iso = d => `${d.getUTCFullYear()}-${pad(d.getUTCMonth()+1)}-${pad(d.getUTCDate())}`;
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(Date.UTC(y,(m||1)-1,d||1)); };
+const addDays = (s,k) => { const d = parse(s); d.setUTCDate(d.getUTCDate()+k); return iso(d); };
+const addMonths = (s,k) => { const d = parse(s); const day = d.getUTCDate(); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth()+k); const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth()+1, 0)).getUTCDate(); d.setUTCDate(Math.min(day,last)); return iso(d); };
+const daysBetween = (a,b) => Math.round((parse(b)-parse(a))/864e5);
+function today(){ const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const pretty = s => { if (!s) return ''; const d = parse(s); return `${d.getUTCDate()} ${MON[d.getUTCMonth()]} ${d.getUTCFullYear()}`; };
+const prettyMonth = k => { if (!k) return ''; const [y,m] = k.split('-'); return `${MON[+m-1]} ${y}`; };
+
+/* ---------- project math ---------- */
+const CUR_LBL = { USD: 'USD', PKR: 'PKR', PKR_FX: 'PKR at $ rate' };
+// Every amount is rounded to the cent / paisa at the line level (round half away from zero),
+// and the dollar and rupee columns are each built so that
+//   revenue − fees − worker pay − Allah's share = net profit   holds exactly in both.
+function calc(r){
+  const fx = n(r.fxRate) > 0 ? n(r.fxRate) : n(settings.fxRate) || 1;
+  const cur = r.currency || 'USD';
+  const k = cur === 'PKR' ? 1/fx : 1;            // native → USD
+  const pieces = n(r.pieces);
+  const nativeGross = r2(pieces * n(r.price) + n(r.adjustment));
+  const nativeFees = r2(n(r.fees));
+  const workerPkr = r2(r.workerPayType === 'fixed' ? n(r.workerAmount) : pieces * n(r.workerAmount));
+  const pct = n(r.charityPct);
+  // dollar column
+  const gross = r2(nativeGross * k), fees = r2(nativeFees * k), workerUsd = r2(workerPkr / fx);
+  const profit = r2(gross - fees - workerUsd);
+  const charityUsd = r2(Math.max(0, profit) * pct / 100);
+  const net = r2(profit - charityUsd);
+  // rupee column (rupee amounts typed in rupees are kept exactly as typed)
+  const grossPkr = cur === 'PKR' ? nativeGross : r2(gross * fx);
+  const feesPkr = cur === 'PKR' ? nativeFees : r2(fees * fx);
+  const profitPkr = r2(grossPkr - feesPkr - workerPkr);
+  const charityPkr = r2(Math.max(0, profitPkr) * pct / 100);
+  const netPkr = r2(profitPkr - charityPkr);
+  return { fx, cur, k, pieces, nativeGross, gross, fees, workerPkr, workerUsd, profit, charityUsd, net,
+    chargePkr: cur === 'USD' ? null : (cur === 'PKR' ? nativeGross : grossPkr),
+    grossPkr, feesPkr, profitPkr, charityPkr, netPkr };
+}
+const FIELDS = ['gross','fees','worker','profit','charity','net'];
+function pick(c, f){
+  if (currency === 'PKR') return f==='worker' ? c.workerPkr : c[f+'Pkr'];
+  return f==='worker' ? c.workerUsd : c[f==='charity'?'charityUsd':f];
+}
+function agg(list){
+  const a = { count: list.length, pieces: 0, usd:{}, pkr:{} };
+  FIELDS.forEach(f => { a.usd[f]=0; a.pkr[f]=0; });
+  // accumulate whole cents / paisa so totals equal the sum of the rows shown
+  const ce = v => Math.round(v * 100);
+  for (const r of list){ const c = calc(r); a.pieces += c.pieces;
+    a.usd.gross+=ce(c.gross); a.usd.fees+=ce(c.fees); a.usd.worker+=ce(c.workerUsd); a.usd.profit+=ce(c.profit); a.usd.charity+=ce(c.charityUsd); a.usd.net+=ce(c.net);
+    a.pkr.gross+=ce(c.grossPkr); a.pkr.fees+=ce(c.feesPkr); a.pkr.worker+=ce(c.workerPkr); a.pkr.profit+=ce(c.profitPkr); a.pkr.charity+=ce(c.charityPkr); a.pkr.net+=ce(c.netPkr); }
+  FIELDS.forEach(f => { a.usd[f] /= 100; a.pkr[f] /= 100; });
+  a.cur = currency === 'PKR' ? a.pkr : a.usd;
+  return a;
+}
+const projTitle = r => { const t = (r.projectType||'').trim(), p = (r.project||'').trim(); return p || t || 'Untitled'; };
+
+/* ---------- salary math ---------- */
+function salCalc(s){
+  const fx = n(s.fxRate) > 0 ? n(s.fxRate) : n(settings.fxRate) || 1; const cur = s.currency || 'PKR';
+  const gross = r2(s.gross), tax = r2(s.tax), ded = r2(s.deductions), net = r2(gross - tax - ded);
+  const d = v => r2(toDisp(v, cur, fx));
+  const dGross = d(gross), dTax = d(tax), dDed = d(ded);
+  return { fx, cur, gross, tax, ded, net, dGross, dTax, dDed, dNet: r2(dGross - dTax - dDed) };
+}
+
+/* ---------- money math ---------- */
+const acctOf = name => (settings.accounts||[]).find(a => a.name === name);
+const acctCur = name => acctOf(name)?.currency || 'PKR';
+function txnRecv(t){
+  if (n(t.received) > 0) return r2(t.received);
+  const net = n(t.amount) - n(t.fee); const fc = acctCur(t.from), tc = acctCur(t.to);
+  return r2(toCur(net, fc, tc, n(t.rate) || rateOn(t.date)));
+}
+// Dollar rate for an entry that has none of its own: the rate on the latest project
+// recorded on or before that date (so old money is valued at the rate of its time),
+// falling back to the default rate.
+let rateCache = null;
+function rateOn(date){
+  if (!rateCache || rateCache.src !== records){ rateCache = { src: records, list: records.filter(r => r.date && n(r.fxRate) > 0).map(r => [r.date, n(r.fxRate)]).sort((a,b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0) }; }
+  let best = 0; for (const [d, x] of rateCache.list){ if (d <= (date||'')) best = x; else break; }
+  return best || n(settings.fxRate) || 1;
+}
+const txRate = t => n(t.rate) || rateOn(t.date);
+function salaryRows(){
+  return salaries.filter(s => s.status === 'Received' && (s.via||'').trim()).map(s => { const c = salCalc(s); const tc = acctCur(s.via);
+    return { id: 'sal:'+s.id, salaryId: s.id, date: s.date || (s.month ? s.month+'-01' : ''), type: 'salary', to: s.via, amount: r2(toCur(c.net, c.cur, tc, c.fx)), fee: 0, rate: c.fx,
+      party: s.employer || 'Salary', category: 'Salary', status: 'Completed', notes: `${prettyMonth(s.month)} salary · gross ${fmtIn(c.gross,c.cur)}, tax ${fmtIn(c.tax,c.cur)}`, ref: '' }; });
+}
+// Each transaction's effect on the accounts: [{a: account, d: change in that account's currency, transit}]
+// "In progress": money has left the sending account, but is not counted in the receiving
+// account until it is marked Completed (it shows as "on the way").
+function flows(t){
+  if (t.status === 'Canceled') return [];
+  const pend = t.status === 'In progress';
+  if (t.type === 'in' || t.type === 'salary') return [{a:t.to, d: r2(n(t.amount) - n(t.fee)), transit: pend}];
+  if (t.type === 'out') return [{a:t.from, d: -r2(t.amount)}];
+  return [{a:t.from, d: -r2(t.amount)}, {a:t.to, d: txnRecv(t), transit: pend}];
+}
+const allLedger = () => [...txns, ...salaryRows()];
+const ledgerOrder = (a,b) => (a.date||'').localeCompare(b.date||'') || (a.seq||0)-(b.seq||0) || String(a.id).localeCompare(String(b.id));
+function balances(){
+  // totals are kept in whole cents / paisa so they are exact
+  const m = {}; const blank = (name, cur, open) => ({ name, currency:cur, bal:0, inn:0, out:0, transit:0, count:0, est:0, last:'', open: Math.round(n(open)*100) });
+  (settings.accounts||[]).forEach(a => m[a.name] = blank(a.name, a.currency, a.opening));
+  for (const t of allLedger()){ for (const f of flows(t)){ if (!f.a) continue; if (!m[f.a]) m[f.a] = blank(f.a, acctCur(f.a), 0);
+    const x = m[f.a]; const c = Math.round(f.d * 100); x.count++; if (t.estimated) x.est++; if ((t.date||'') > x.last) x.last = t.date;
+    if (f.transit){ x.transit += c; continue; }
+    if (c >= 0) x.inn += c; else x.out -= c; } }
+  return Object.values(m).map(x => ({ ...x, opening: x.open/100, inn: x.inn/100, out: x.out/100, transit: x.transit/100, bal: (x.open + x.inn - x.out)/100 }));
+}
+function txnTitle(t){
+  if (t.type === 'transfer') return `${t.from||'?'} → ${t.to||'?'}`;
+  if (t.type === 'in') return `${t.party ? 'From '+t.party : 'Money in'} → ${t.to||'?'}`;
+  if (t.type === 'salary') return `Salary from ${t.party||'employer'} → ${t.to}`;
+  return `${t.from||'?'} → ${t.party || t.category || 'Money out'}`;
+}
+const feeDisp = t => toDisp(n(t.fee), acctCur(t.type==='in'||t.type==='salary'?t.to:t.from), txRate(t));
+// a money-out whose category is a fee: the whole amount is a fee (its fee field is part of that amount, so not added again)
+const isFeeOut = t => t.type==='out' && /fee/i.test(t.category||'');
+const feeOf = (t, conv) => isFeeOut(t) ? conv(n(t.amount), acctCur(t.from)) : conv(n(t.fee), acctCur(t.type==='in'||t.type==='salary'?t.to:t.from));
+
+/* ---------- periods ---------- */
+const PERIODS = [
+  ['today','Today'],['7d','7 days'],['30d','30 days'],['month','This month'],['3m','3 months'],['6m','6 months'],['12m','12 months'],['year','This year'],['all','All time'],['custom','Custom']];
+function range(p){
+  const t = today();
+  switch(p){
+    case 'today': return [t,t];
+    case '7d': return [addDays(t,-6),t];
+    case '30d': return [addDays(t,-29),t];
+    case 'month': return [t.slice(0,8)+'01',t];
+    case '3m': return [addDays(addMonths(t,-3),1),t];
+    case '6m': return [addDays(addMonths(t,-6),1),t];
+    case '12m': return [addDays(addMonths(t,-12),1),t];
+    case 'year': return [t.slice(0,4)+'-01-01',t];
+    case 'custom': { const a = F('cFrom').value || t, b = F('cTo').value || t; return a<=b?[a,b]:[b,a]; }
+    default: { const ds = [...records.map(r=>r.date), ...salaries.map(s=>s.date || (s.month ? s.month+'-01' : '')), ...txns.map(t=>t.date)].filter(Boolean).sort(); const lo = ds[0]||t; const hi = ds[ds.length-1] > t ? ds[ds.length-1] : t; return [lo,hi]; }
+  }
+}
+function prevRange(p,[a,b]){
+  if (p === 'all') return null;
+  if (p === 'month') { const s = addMonths(a,-1); const len = daysBetween(a,b); return [s, addDays(s,len)]; }
+  if (p === 'year') { return [addMonths(a,-12), addMonths(b,-12)]; }
+  const len = daysBetween(a,b)+1; return [addDays(a,-len), addDays(a,-1)];
+}
+const inRange = (r,[a,b]) => r.date >= a && r.date <= b;
+
+/* ---------- storage ---------- */
+const LISTS = { records: () => records, txns: () => txns, salaries: () => salaries };
+function setList(mod, v){ if (mod==='records') records = v; else if (mod==='txns') txns = v; else if (mod==='salaries') salaries = v; }
+/* ---------- Supabase connection ---------- */
+const CFG = window.PR_CONFIG || {};
+let sb = null, uid = null, userEmail = '', channel = null;
+const TABLE = 'pr_docs';
+const sbErr = e => { const x = new Error((e && e.message) || 'Supabase error'); x.code = e && e.code; return x; };
+// A small adapter with the same shape the app already uses: db.collection(c).doc(id).set()/delete(), db.doc('c/id').set()
+function makeDb(){
+  const ref = (c, id) => ({ set: body => upsertDoc(c, id, body), delete: () => deleteDoc(c, id) });
+  return { collection: c => ({ doc: id => ref(c, id) }), doc: path => { const [c, id] = path.split('/'); return ref(c, id); } };
+}
+async function upsertDoc(c, id, data){
+  const row = { user_id: uid, collection: c, id, data };
+  // the audit log is append-only in the database, so new entries are plain inserts
+  const q = c === 'audit' ? sb.from(TABLE).insert(row) : sb.from(TABLE).upsert(row, { onConflict: 'user_id,collection,id' });
+  const { error } = await q; if (error) throw sbErr(error);
+  applyChange(c, id, data);
+}
+async function deleteDoc(c, id){
+  const { error } = await sb.from(TABLE).delete().match({ user_id: uid, collection: c, id }); if (error) throw sbErr(error);
+  applyRemove(c, id);
+}
+function applyChange(c, id, data){
+  if (c === 'config'){ if (id === 'settings'){ settings = {...structuredClone(DEFAULT_SETTINGS), ...data}; lastSettings = structuredClone(settings); fillSettings(); renderAll(); } return; }
+  if (c === 'audit'){ if (!audit.some(a => a.id === id)) audit.unshift({...data, id}); if (view==='audit') renderAudit(); return; }
+  if (!LISTS[c]) return;
+  const l = LISTS[c]().slice(); const i = l.findIndex(x => x.id === id); const doc = {...data, id};
+  if (i >= 0) l[i] = doc; else l.push(doc); setList(c, l); renderAll();
+}
+function applyRemove(c, id){
+  if (c === 'audit'){ audit = audit.filter(a => a.id !== id); if (view==='audit') renderAudit(); return; }
+  if (!LISTS[c]) return; setList(c, LISTS[c]().filter(x => x.id !== id)); renderAll();
+}
+async function loadAll(){
+  const rows = []; const page = 1000;
+  for (let from = 0; ; from += page){
+    const { data, error } = await sb.from(TABLE).select('collection,id,data').eq('user_id', uid).order('collection').order('id').range(from, from + page - 1);
+    if (error) throw sbErr(error);
+    rows.push(...data); if (data.length < page) break;
+  }
+  const by = { records: [], txns: [], salaries: [], audit: [] }; let cfg = null;
+  for (const r of rows){ if (r.collection === 'config' && r.id === 'settings') cfg = r.data; else if (by[r.collection]) by[r.collection].push({...r.data, id: r.id}); }
+  records = by.records; txns = by.txns; salaries = by.salaries; audit = by.audit.sort((a,b) => (b.ts||'').localeCompare(a.ts||''));
+  settings = cfg ? {...structuredClone(DEFAULT_SETTINGS), ...cfg} : structuredClone(DEFAULT_SETTINGS);
+  lastSettings = structuredClone(settings);
+  renderAll(); fillSettings();
+}
+function subscribe(){
+  if (channel) sb.removeChannel(channel);
+  channel = sb.channel('pr-docs-' + uid)
+    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE, filter: `user_id=eq.${uid}` }, p => {
+      if (p.eventType === 'DELETE'){ if (p.old && p.old.collection) applyRemove(p.old.collection, p.old.id); }
+      else if (p.new) applyChange(p.new.collection, p.new.id, p.new.data || {});
+    })
+    .subscribe(status => { if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') setSync('offline'); else if (status === 'SUBSCRIBED') setSync('live'); });
+}
+let syncState = '';
+function setSync(s){ syncState = s; setStorageTag(); }
+function setStorageTag(){
+  const el = F('storageTag'); el.className = 'storage-tag ' + (mode === 'cloud' ? (syncState === 'offline' ? 'local' : 'cloud') : mode);
+  el.querySelector('span').textContent = mode === 'cloud' ? (syncState === 'offline' ? 'Live sync paused · changes still save' : `Synced · ${userEmail}`) : mode === 'local' ? 'Saved in this browser' : 'Connecting…';
+  F('localNotice').hidden = mode !== 'local';
+  const aq = (ls.get('pr.auditQueue') || []).length; F('auditNotice').hidden = !aq; F('auditNotice').textContent = aq ? `${aq} audit ${aq===1?'note is':'notes are'} saved in this browser and will be written to the log when the connection is back. Keep this tab open or reload later.` : '';
+  F('signOut').hidden = mode !== 'cloud';
+}
+function showLogin(msg){
+  F('login').hidden = false; document.body.style.overflow = 'hidden';
+  F('lgMsg').textContent = msg || ''; setTimeout(() => F('lgEmail').focus(), 30);
+}
+async function start(session){
+  uid = session.user.id; myId = uid; userEmail = session.user.email || '';
+  F('login').hidden = true; document.body.style.overflow = '';
+  mode = 'cloud'; db = makeDb(); setStorageTag();
+  try { await loadAll(); await flushAuditQueue(); } catch(e){ toast('Could not load your records: ' + e.message); }
+  subscribe();
+}
+async function boot(){
+  if (!CFG.supabaseUrl || !CFG.supabaseAnonKey || /YOUR-/.test(CFG.supabaseUrl + CFG.supabaseAnonKey) || typeof supabase === 'undefined'){
+    mode = 'local'; setStorageTag();
+    records = ls.get('pr.records') || []; txns = ls.get('pr.txns') || []; salaries = ls.get('pr.salaries') || []; audit = ls.get('pr.audit') || [];
+    const s = ls.get('pr.settings'); if (s) settings = {...settings, ...s};
+    renderAll(); fillSettings(); return;
+  }
+  sb = supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT'){ uid = null; mode = 'pending'; records = []; txns = []; salaries = []; audit = []; renderAll(); showLogin('You are signed out.'); }
+    else if (event === 'SIGNED_IN' && session && session.user.id !== uid) start(session);
+  });
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) start(session); else showLogin();
+}
+F('lgForm').addEventListener('submit', async e => {
+  e.preventDefault(); const email = F('lgEmail').value.trim(), password = F('lgPass').value;
+  if (!email || !password) return F('lgMsg').textContent = 'Enter your email and password.';
+  F('lgBtn').disabled = true; F('lgMsg').textContent = 'Signing in…';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  F('lgBtn').disabled = false;
+  if (error) return F('lgMsg').textContent = error.message === 'Invalid login credentials' ? 'Wrong email or password.' : error.message;
+  F('lgPass').value = ''; start(data.session);
+});
+F('lgLink').addEventListener('click', async () => {
+  const email = F('lgEmail').value.trim(); if (!email) return F('lgMsg').textContent = 'Type your email first, then ask for a link.';
+  F('lgMsg').textContent = 'Sending…';
+  const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: location.origin + location.pathname } });
+  F('lgMsg').textContent = error ? error.message : 'Check your inbox for a sign-in link.';
+});
+F('signOut').addEventListener('click', () => sb && sb.auth.signOut());
+function saveErr(e){ toast(e && e.code==='invalid_argument' ? 'You can view these records but not change them.' : e && e.code==='quota_exceeded' ? 'Storage is full. Download a backup and remove old entries.' : 'Could not save. Check your connection and try again.'); }
+async function putDoc(mod, obj, opts = {}){
+  const before = LISTS[mod]().find(x => x.id === obj.id) || null;
+  if (mode === 'cloud'){
+    const body = {...obj}; delete body.id;
+    try { await db.collection(mod).doc(obj.id).set(body); } catch(e){ saveErr(e); throw e; }
+  } else { const l = LISTS[mod]().slice(); const i = l.findIndex(x => x.id === obj.id); if (i>=0) l[i] = obj; else l.push(obj); setList(mod, l); ls.set('pr.'+mod, l); renderAll(); }
+  if (!opts.noAudit) await logAudit(mod, opts.action || (before ? 'update' : 'create'), obj, before);
+}
+async function delDoc(mod, id){
+  const before = LISTS[mod]().find(x => x.id === id);
+  if (mode === 'cloud'){ try { await db.collection(mod).doc(id).delete(); } catch(e){ toast('Could not delete. Try again.'); throw e; } }
+  else { setList(mod, LISTS[mod]().filter(r => r.id !== id)); ls.set('pr.'+mod, LISTS[mod]()); renderAll(); }
+  if (before) await logAudit(mod, 'delete', before, before);
+}
+let lastSettings = null;
+async function putSettings(msg){
+  const before = lastSettings || {};
+  if (mode === 'cloud'){ try { await db.doc('config/settings').set(structuredClone(settings)); } catch { toast('Could not save settings.'); return; } }
+  else { ls.set('pr.settings', settings); }
+  lastSettings = structuredClone(settings);
+  renderAll(); toast(msg || 'Settings saved');
+  await logAudit('settings', 'update', {...settings, id: 'settings'}, {...before, id: 'settings'});
+}
+const newId = p => (p||'r') + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+
+/* ---------- audit ---------- */
+const FIELD_LBL = { project:'Project name', projectType:'Project type', client:'Client', source:'Source', currency:'Paid in', via:'Received via', pieces:'Pieces', price:'Price', adjustment:'Adjustment', fees:'Fees',
+  worker:'Worker', workerPayType:'Pay type', workerAmount:'Worker amount', fxRate:'Rate', charityPct:"Allah's share %", clientStatus:'Client payment', workerStatus:'Worker pay', charityStatus:"Allah's share", notes:'Notes', date:'Date', sr:'Sr.',
+  month:'Month', employer:'Employer', gross:'Gross', taxPct:'Tax %', tax:'Tax', deductions:'Deductions', status:'Status', type:'Type', from:'From', to:'To', amount:'Amount', fee:'Fee', rate:'Rate', received:'Received', party:'Party', category:'Category', ref:'Reference', estimated:'Estimated',
+  liveRate:"Today's rate", accounts:'Accounts', sources:'Sources', projectTypes:'Project types', defaultClient:'Default client', workerRate:'Default worker rate', defaultVia:'Default via', xferFeePct:'Transfer fee %' };
+const fmtVal = v => v == null || v === '' ? '—' : typeof v === 'object' ? JSON.stringify(v).slice(0,140) : String(v).slice(0,140);
+function diffOf(a, b){
+  const keys = new Set([...Object.keys(a||{}), ...Object.keys(b||{})]); const out = [];
+  for (const k of keys){ if (k === 'id') continue; const x = a?.[k], y = b?.[k];
+    if (JSON.stringify(x ?? '') !== JSON.stringify(y ?? '')) out.push({ f: k, from: fmtVal(x), to: fmtVal(y) }); }
+  return out;
+}
+function labelOf(mod, o){
+  if (!o) return '';
+  if (mod === 'records') return `#${o.sr} ${o.projectType ? o.projectType+' · ' : ''}${projTitle(o)}`;
+  if (mod === 'txns') return txnTitle(o);
+  if (mod === 'salaries') return `${prettyMonth(o.month)} salary${o.employer ? ' · '+o.employer : ''}`;
+  return 'Settings';
+}
+function summaryOf(mod, o){
+  if (!o) return '';
+  if (mod === 'records'){ const c = calc(o); return `${usd(c.gross)} from ${o.client||'—'} · paid in ${CUR_LBL[c.cur]}${o.via?' via '+o.via:''} · net ${usd(c.net)}`; }
+  if (mod === 'txns') return `${fmtIn(n(o.amount), acctCur(o.type==='in'?o.to:o.from))}${n(o.fee)?' (fee '+fmtIn(n(o.fee), acctCur(o.type==='in'?o.to:o.from))+')':''} · ${o.status}${o.ref?' · ref '+o.ref:''}`;
+  if (mod === 'salaries'){ const c = salCalc(o); return `Gross ${fmtIn(c.gross,c.cur)} · tax ${fmtIn(c.tax,c.cur)} · net ${fmtIn(c.net,c.cur)}${o.via?' via '+o.via:''}`; }
+  return '';
+}
+// The audit log is append-only. Every save, delete, mark-paid, restore and import writes one entry.
+// Deletes keep a full copy of what was removed so it can be restored from the change log.
+// If an entry can't be written (e.g. connection drops right after a save), it is kept in this
+// browser and written on the next successful connection, so no change goes unrecorded.
+const AQ = 'pr.auditQueue';
+async function writeAudit(id, e){
+  if (mode === 'cloud'){ await db.collection('audit').doc(id).set(e); }
+  else { audit.unshift({...e, id}); ls.set('pr.audit', audit.slice(0, 5000)); if (view==='audit') renderAudit(); }
+}
+async function logAudit(mod, action, obj, before){
+  const changes = action === 'update' ? diffOf(before, obj) : [];
+  if (action === 'update' && !changes.length) return;
+  const e = { ts: new Date().toISOString(), module: mod, action, docId: (obj||before)?.id || '', label: labelOf(mod, obj||before), summary: action === 'update' ? '' : summaryOf(mod, obj||before), changes: changes.slice(0, 60), by: myId || '' };
+  if (action === 'delete' && before){ e.snapshot = {...before}; }
+  const id = 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+  for (let attempt = 0; attempt < 2; attempt++){
+    try { await writeAudit(id, e); return; } catch { await new Promise(r => setTimeout(r, 600)); }
+  }
+  const q = ls.get(AQ) || []; q.push({ id, e }); ls.set(AQ, q);
+  setTimeout(() => toast('Saved. The audit note could not be written yet; it will be added when the connection is back.'), 60);
+  setStorageTag();
+}
+async function flushAuditQueue(){
+  const q = ls.get(AQ) || []; if (!q.length) return;
+  const left = [];
+  for (const it of q){ try { await writeAudit(it.id, it.e); } catch { left.push(it); } }
+  ls.set(AQ, left); setStorageTag();
+}
+async function restoreDeleted(entry){
+  const mod = entry.module, snap = entry.snapshot; if (!snap || !LISTS[mod]) return;
+  if (LISTS[mod]().some(x => x.id === snap.id)) return toast('That item already exists.');
+  try { await putDoc(mod, snap, { action: 'restore' }); toast(`${labelOf(mod, snap)} restored`); } catch {}
+}
+
+/* ---------- toast ---------- */
+let tt; function toast(m){ const t = F('toast'); t.textContent = m; t.hidden = false; clearTimeout(tt); tt = setTimeout(()=> t.hidden = true, 3200); }
+
+/* ---------- dashboard ---------- */
+function deltaHtml(cur, prev){
+  if (prev == null) return '';
+  if (Math.abs(prev) < 0.005) return cur > 0.005 ? '<span class="delta up">new</span>' : '';
+  const d = (cur - prev) / Math.abs(prev) * 100;
+  const cls = Math.abs(d) < 0.5 ? 'flat' : d > 0 ? 'up' : 'down';
+  return `<span class="delta ${cls}">${d>0?'+':''}${d.toFixed(Math.abs(d)<10?1:0)}%</span>`;
+}
+function renderDash(){
+  F('periodChips').innerHTML = PERIODS.map(([k,l]) => `<button type="button" class="chip" data-p="${k}" aria-pressed="${k===period}">${l}</button>`).join('');
+  F('customRange').hidden = period !== 'custom';
+  const rg = range(period), pr = prevRange(period, rg);
+  const list = records.filter(r => inRange(r,rg));
+  const prev = pr ? agg(records.filter(r => inRange(r,pr))) : null;
+  const a = agg(list);
+  F('periodTitle').textContent = PERIODS.find(p=>p[0]===period)?.[1] || 'All time';
+  F('periodRange').textContent = `${pretty(rg[0])} – ${pretty(rg[1])} · ${a.count} ${a.count===1?'project':'projects'}` + (pr ? ` · compared with ${pretty(pr[0])} – ${pretty(pr[1])}` : '');
+  const other = currency === 'PKR' ? a.usd : a.pkr; const oFmt = currency === 'PKR' ? usd : pkr;
+  const P = prev ? prev.cur : null;
+  const sal = salaries.filter(s => { const d = s.date || (s.month||'')+'-01'; return d >= rg[0] && d <= rg[1]; }).reduce((t,s) => { const c = salCalc(s); t.net = sum2([t.net, c.dNet]); t.tax = sum2([t.tax, c.dTax]); t.n++; return t; }, {net:0,tax:0,n:0});
+  F('kpis').innerHTML = [
+    ['hero','Net profit', money(a.cur.net), `${oFmt(other.net)} ${deltaHtml(a.cur.net, P&&P.net)}`],
+    ['','Revenue', money(a.cur.gross), `${oFmt(other.gross)} ${deltaHtml(a.cur.gross, P&&P.gross)}`],
+    ['','Paid to workers', money(a.cur.worker), `${currency==='PKR'?usd(a.usd.worker):pkr(a.pkr.worker)} ${deltaHtml(a.cur.worker, P&&P.worker)}`],
+    ['',"Allah's share", money(a.cur.charity), `${oFmt(other.charity)}`],
+    ['','Projects', String(a.count), `${a.pieces} pieces ${prev?deltaHtml(a.count, prev.count):''}`],
+    ['','Salary (net)', money(sal.net), sal.n ? `${sal.n} ${sal.n===1?'month':'months'} · tax ${money(sal.tax)}` : 'none in this period']
+  ].map(([cls,l,v,s]) => `<div class="kpi ${cls}"><div class="lbl">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>`).join('');
+
+  const g = Math.max(a.cur.gross, 0.0001);
+  const wrow = (k,v,col,neg,total) => `<div class="flow-row${total?' total':''}"><span class="k">${k}</span><span class="v">${neg?'<span class="minus">−</span> ':''}${money(Math.abs(v))}</span><div class="bar"><span style="width:${Math.max(0,Math.min(100,Math.abs(v)/g*100))}%;background:${col}"></span></div></div>`;
+  F('waterfall').innerHTML = a.count ? [
+    wrow('Revenue', a.cur.gross, 'var(--ink-3)'),
+    wrow('Fees and deductions', a.cur.fees, 'var(--s4)', true),
+    wrow('Worker pay', a.cur.worker, 'var(--s2)', true),
+    wrow('Profit before share', a.cur.profit, 'var(--accent)', false, true),
+    wrow(`Allah's share`, a.cur.charity, 'var(--s3)', true),
+    wrow('Net profit', a.cur.net, 'var(--s1)', false, true)
+  ].join('') : `<div class="empty">No projects in this period.</div>`;
+  renderBreakdowns(list); renderOpen(); renderChart(list, rg);
+}
+function groupBy(list, key){ const m = new Map(); for (const r of list){ const k = (typeof key === 'function' ? key(r) : (r[key]||'')).trim() || '—'; if(!m.has(k)) m.set(k,[]); m.get(k).push(r); } return m; }
+function renderBreakdowns(list){
+  const mk = rows => rows.length ? `<table class="mini"><tbody>${rows.join('')}</tbody></table>` : `<div class="empty">Nothing yet.</div>`;
+  const total = agg(list).cur.gross || 1;
+  const bar = (k,a,extra) => `<tr><td style="width:100%"><div>${esc(k)} <span style="color:var(--ink-3);font-size:12px">· ${a.count}</span></div>${extra||''}<div class="share"><span style="width:${Math.max(0,a.cur.gross/total*100).toFixed(1)}%"></span></div></td><td class="num r" style="padding-left:12px">${money(a.cur.gross)}<div style="font-size:11.5px;color:var(--ink-3)">net ${money(a.cur.net)}</div></td></tr>`;
+  const grp = key => [...groupBy(list,key)].map(([k,v]) => [k, agg(v)]).sort((x,y)=>y[1].cur.gross-x[1].cur.gross);
+  F('byClient').innerHTML = mk(grp('client').slice(0,8).map(([k,a]) => bar(k,a)));
+  F('byType').innerHTML = mk(grp('projectType').slice(0,8).map(([k,a]) => bar(k,a)));
+  const workers = [...groupBy(list.filter(r=>calc(r).workerPkr>0 || (r.worker||'').trim()),'worker')].map(([k,v]) => {
+    const a = agg(v); const pend = v.filter(r=>r.workerStatus==='Pending'); const pend2 = sum2(v.filter(r=>r.workerStatus==='Pending').map(r=>calc(r).workerPkr)); return [k,a,pend2,v.reduce((s,r)=>s+n(r.pieces),0)]; }).sort((x,y)=>y[1].pkr.worker-x[1].pkr.worker);
+  F('byWorker').innerHTML = mk(workers.map(([k,a,pend,pc]) => `<tr><td style="width:100%">${esc(k)}<div style="font-size:12px;color:var(--ink-3)">${a.count} projects · ${pc} pieces${pend>0?` · <span style="color:var(--warn)">${pkr(pend)} pending</span>`:''}</div></td><td class="num r" style="padding-left:12px">${pkr(a.pkr.worker)}</td></tr>`));
+  const routes = [...groupBy(list, r => `${(r.source||'—')} · ${CUR_LBL[r.currency||'USD']}${r.via?' via '+r.via:''}`)].map(([k,v]) => [k, agg(v)]).sort((x,y)=>y[1].cur.gross-x[1].cur.gross);
+  F('bySource').innerHTML = mk(routes.map(([k,a]) => `<tr><td style="width:100%">${esc(k)}<div style="font-size:12px;color:var(--ink-3)">${a.count} projects · ${(a.cur.gross/total*100).toFixed(0)}% of revenue${a.cur.fees>0?` · fees ${money(a.cur.fees)}`:''}</div></td><td class="num r" style="padding-left:12px">${money(a.cur.gross)}</td></tr>`));
+}
+function renderOpen(){
+  const blocks = [
+    ['Client payments due', 'clientStatus', r => currency==='PKR'?calc(r).grossPkr:calc(r).gross, money],
+    ['Worker pay due', 'workerStatus', r => calc(r).workerPkr, pkr],
+    ["Allah's share due", 'charityStatus', r => calc(r).charityPkr, pkr]];
+  F('openItems').innerHTML = blocks.map(([lbl,key,val,fmt]) => {
+    const items = records.filter(r => r[key]==='Pending').sort((a,b)=>a.date<b.date?-1:1);
+    const tot = sum2(items.map(val));
+    return `<div class="open"><div class="lbl">${lbl}</div><div class="amt">${fmt(tot)}</div>${items.length ? `<ul>${items.slice(0,6).map(r=>`<li><span title="${esc(projTitle(r))}">${esc(projTitle(r))} <span style="color:var(--ink-3)">· ${key==='workerStatus'?esc(r.worker):esc(r.client)}</span></span><button class="pill Pending" data-mark="${r.id}" data-key="${key}" title="Mark paid">${fmt(val(r))}</button></li>`).join('')}${items.length>6?`<li><span style="color:var(--ink-3)">and ${items.length-6} more in Records</span></li>`:''}</ul>` : `<div class="clear">All settled</div>`}</div>`;
+  }).join('');
+}
+
+/* chart */
+let chart;
+function cssVar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function buckets([a,b]){
+  const len = daysBetween(a,b);
+  const unit = len <= 31 ? 'day' : len <= 190 ? 'week' : 'month';
+  const keys = []; const label = {};
+  const keyOf = s => { if (unit==='day') return s; if (unit==='month') return s.slice(0,7);
+    const d = parse(s); const wd = (d.getUTCDay()+6)%7; d.setUTCDate(d.getUTCDate()-wd); return iso(d); };
+  let cur = keyOf(a);
+  while (true){
+    keys.push(cur);
+    if (unit==='day'){ label[cur] = `${parse(cur).getUTCDate()} ${MON[parse(cur).getUTCMonth()]}`; cur = addDays(cur,1); if (cur > b) break; }
+    else if (unit==='week'){ label[cur] = `${parse(cur).getUTCDate()} ${MON[parse(cur).getUTCMonth()]}`; cur = addDays(cur,7); if (cur > b) break; }
+    else { const [y,m] = cur.split('-').map(Number); label[cur] = `${MON[m-1]} ${String(y).slice(2)}`; cur = m===12?`${y+1}-01`:`${y}-${pad(m+1)}`; if (cur > b.slice(0,7)) break; }
+    if (keys.length > 400) break;
+  }
+  return { unit, keys, label, keyOf };
+}
+function renderChart(list, rg){
+  const cv = F('flowChart');
+  const S = [['net','Net profit','--s1'],['worker','Worker pay','--s2'],['charity',"Allah's share",'--s3'],['fees','Fees','--s4']];
+  F('chartLegend').innerHTML = S.map(([,l,c]) => `<span><i style="background:var(${c})"></i>${l}</span>`).join('');
+  if (typeof Chart === 'undefined'){ cv.hidden = true; F('chartFail').hidden = false; return; }
+  if (view !== 'dash') return;
+  const bk = buckets(rg);
+  const data = {}; S.forEach(([f]) => data[f] = Object.fromEntries(bk.keys.map(k=>[k,0])));
+  const gross = Object.fromEntries(bk.keys.map(k=>[k,0]));
+  for (const r of list){ const k = bk.keyOf(r.date); if (!(k in gross)) continue; const c = calc(r);
+    gross[k] += pick(c,'gross'); S.forEach(([f]) => data[f][k] += Math.max(0, pick(c,f))); }
+  F('chartHint').textContent = `Revenue per ${bk.unit} split into net profit, worker pay, Allah's share and fees`;
+  const ink2 = cssVar('--ink-3'), line = cssVar('--line'), surface = cssVar('--surface');
+  const cfg = {
+    type: 'bar',
+    data: { labels: bk.keys.map(k=>bk.label[k]), datasets: S.map(([f,l,c]) => ({ label: l, data: bk.keys.map(k=>+data[f][k].toFixed(2)), backgroundColor: cssVar(c), borderColor: surface, borderWidth: {top:2,bottom:0,left:0,right:0}, borderSkipped: false, borderRadius: 3, maxBarThickness: 34, stack: 's' })) },
+    options: { responsive: true, maintainAspectRatio: false, animation: { duration: 250 },
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: { display: false },
+        tooltip: { backgroundColor: cssVar('--ink'), titleColor: cssVar('--bg'), bodyColor: cssVar('--bg'), footerColor: cssVar('--bg'), padding: 10, boxPadding: 4,
+          titleFont:{family:'Instrument Sans',weight:'600'}, bodyFont:{family:'IBM Plex Mono'}, footerFont:{family:'IBM Plex Mono',weight:'500'},
+          callbacks: { label: ctx => ` ${ctx.dataset.label}: ${money(ctx.parsed.y)}`, footer: items => items.length ? `Revenue: ${money(gross[bk.keys[items[0].dataIndex]])}` : '' } } },
+      scales: { x: { stacked: true, grid: { display: false }, border: { color: line }, ticks: { color: ink2, font: { family: 'Instrument Sans', size: 11 }, maxRotation: 0, autoSkipPadding: 12 } },
+                y: { stacked: true, beginAtZero: true, grid: { color: line }, border: { display: false }, ticks: { color: ink2, font: { family: 'IBM Plex Mono', size: 11 }, maxTicksLimit: 6, callback: v => compact(v) } } } }
+  };
+  if (chart) chart.destroy();
+  chart = new Chart(cv, cfg);
+}
+
+/* ---------- records table ---------- */
+const COLS = [
+  ['sr','Sr.','r'],['date','Date'],['project','Project · Client'],['currency','Paid in · Via'],['pieces','Pieces × price','r'],
+  ['gross','Revenue','r'],['worker','Worker pay','r'],['profit','Profit','r'],['charity',"Allah's share",'r'],['net','Net profit','r'],['status','Client · Worker · Share'],['act','']];
+function sortVal(r,k){ const c = calc(r);
+  if (['gross','worker','profit','charity','net'].includes(k)) return pick(c,k);
+  if (k==='pieces') return c.pieces; if (k==='sr') return n(r.sr); return String(r[k]||'').toLowerCase(); }
+function filtered(){
+  const q = F('q').value.trim().toLowerCase(), y = F('fYear').value, st = F('fStatus').value, ty = F('fType').value;
+  return records.filter(r => {
+    if (y && !(r.date||'').startsWith(y)) return false;
+    if (ty && (r.projectType||'') !== ty) return false;
+    if (st==='client' && r.clientStatus!=='Pending') return false;
+    if (st==='worker' && r.workerStatus!=='Pending') return false;
+    if (st==='charity' && r.charityStatus!=='Pending') return false;
+    if (q && ![r.project,r.projectType,r.client,r.worker,r.source,r.via,r.notes].join(' ').toLowerCase().includes(q)) return false;
+    return true; });
+}
+const pill = (st, id, key, mod) => st==='Paid'||st==='Pending'||st==='Received' ? `<button class="pill ${st==='Received'?'Paid':st}" data-toggle="${id}" data-key="${key}" data-mod="${mod||'records'}" title="Click to switch">${st}</button>` : `<span class="pill NA">—</span>`;
+const yearsOf = list => [...new Set(list.map(r => (r.date||r.month||'').slice(0,4)).filter(Boolean))].sort().reverse();
+function fillSelect(el, opts, allLbl){ const cur = el.value; el.innerHTML = `<option value="">${allLbl}</option>` + opts.map(o=>`<option ${o===cur?'selected':''}>${esc(o)}</option>`).join(''); }
+const ICON = {
+  edit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4z"/></svg>',
+  dup: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/></svg>',
+  del: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>' };
+function renderRecords(){
+  fillSelect(F('fYear'), yearsOf(records), 'All years');
+  fillSelect(F('fType'), [...new Set(records.map(r=>(r.projectType||'').trim()).filter(Boolean))].sort(), 'All types');
+  const list = filtered().sort((a,b) => { const x = sortVal(a,sort.key), y = sortVal(b,sort.key); let d = x<y?-1:x>y?1:0; if (!d) d = n(a.sr)-n(b.sr); return sort.dir==='asc'?d:-d; });
+  F('recTable').tHead.innerHTML = `<tr>${COLS.map(([k,l,c]) => `<th class="${c||''} ${['status','act','project'].includes(k)?'':'sortable'}" data-sort="${k}">${l}${sort.key===k?(sort.dir==='asc'?' ↑':' ↓'):''}</th>`).join('')}</tr>`;
+  const tb = F('recTable').tBodies[0], tf = F('recTable').tFoot;
+  if (!list.length){ tb.innerHTML = `<tr><td colspan="${COLS.length}"><div class="empty">${records.length ? 'No records match these filters.' : 'No records yet. Use New entry to add your first project.'}</div></td></tr>`; tf.innerHTML=''; return; }
+  tb.innerHTML = list.map(r => { const c = calc(r); const nat = c.cur==='PKR' ? pkr : usd; return `<tr>
+    <td class="num r">${esc(r.sr)}</td><td class="num">${r.date?pretty(r.date):''}</td>
+    <td class="proj"><b title="${esc(projTitle(r))}">${r.projectType && r.projectType!==projTitle(r)?`<span class="tag type">${esc(r.projectType)}</span> `:''}${esc(projTitle(r))}</b><span>${esc(r.client)}${r.worker?` · ${esc(r.worker)}`:''}</span></td>
+    <td>${esc(CUR_LBL[c.cur])}${c.chargePkr!=null?` <span style="color:var(--ink-3);font-size:12px">${pkr(c.chargePkr)}</span>`:''}<div style="font-size:12px;color:var(--ink-3)">${esc(r.source||'')}${r.via?` · via ${esc(r.via)}`:''}</div></td>
+    <td class="num r">${c.pieces} × ${nat(n(r.price))}${n(r.adjustment)?`<div style="font-size:11.5px;color:var(--ink-3)">adj ${nat(n(r.adjustment))}</div>`:''}</td>
+    <td class="num r">${money(pick(c,'gross'))}</td>
+    <td class="num r">${c.workerPkr?money(pick(c,'worker')):'<span style="color:var(--ink-3)">—</span>'}</td>
+    <td class="num r">${money(pick(c,'profit'))}</td>
+    <td class="num r">${c.charityUsd?money(pick(c,'charity')):'<span style="color:var(--ink-3)">—</span>'}</td>
+    <td class="num r" style="font-weight:500">${money(pick(c,'net'))}</td>
+    <td><div class="pills">${pill(r.clientStatus,r.id,'clientStatus')}${pill(r.workerStatus,r.id,'workerStatus')}${pill(r.charityStatus,r.id,'charityStatus')}</div></td>
+    <td><div class="acts">
+      <button class="icon-btn" data-edit="${r.id}" aria-label="Edit">${ICON.edit}</button>
+      <button class="icon-btn" data-dup="${r.id}" aria-label="Duplicate">${ICON.dup}</button>
+      <button class="icon-btn" data-del="${r.id}" aria-label="Delete">${ICON.del}</button>
+    </div></td></tr>`; }).join('');
+  const a = agg(list);
+  tf.innerHTML = `<tr><td></td><td colspan="3">${a.count} shown</td><td class="num r">${a.pieces} pcs</td><td class="num r">${money(a.cur.gross)}</td><td class="num r">${money(a.cur.worker)}</td><td class="num r">${money(a.cur.profit)}</td><td class="num r">${money(a.cur.charity)}</td><td class="num r">${money(a.cur.net)}</td><td colspan="2"></td></tr>`;
+}
+
+/* ---------- salary view ---------- */
+function renderSalary(){
+  fillSelect(F('sYear'), yearsOf(salaries.map(s=>({date:s.month||s.date}))), 'All years');
+  const y = F('sYear').value;
+  const list = salaries.filter(s => !y || (s.month||s.date||'').startsWith(y)).sort((a,b) => (b.month||'').localeCompare(a.month||''));
+  const t = list.reduce((t,s) => { const c = salCalc(s); t.g=sum2([t.g,c.dGross]); t.t=sum2([t.t,c.dTax]); t.d=sum2([t.d,c.dDed]); t.n=sum2([t.n,c.dNet]); if (s.status==='Received') t.rec++; else t.pend = sum2([t.pend,c.dNet]); return t; }, {g:0,t:0,d:0,n:0,rec:0,pend:0});
+  F('salKpis').innerHTML = [
+    ['hero','Net salary', money(t.n), `${list.length} ${list.length===1?'month':'months'}${y?' in '+y:''}`],
+    ['','Gross salary', money(t.g), ''],
+    ['','Income tax', money(t.t), t.g ? `${(t.t/t.g*100).toFixed(1)}% of gross` : ''],
+    ['','Other deductions', money(t.d), ''],
+    ['','Still to receive', money(t.pend), `${t.rec} received`]
+  ].map(([cls,l,v,s]) => `<div class="kpi ${cls}"><div class="lbl">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>`).join('');
+  const tbl = F('salTable');
+  tbl.tHead.innerHTML = `<tr><th>Month</th><th>Employer</th><th>Received</th><th class="r">Gross</th><th class="r">Tax</th><th class="r">Deductions</th><th class="r">Net</th><th class="r">Net (${currency})</th><th>Status</th><th></th></tr>`;
+  if (!list.length){ tbl.tBodies[0].innerHTML = `<tr><td colspan="10"><div class="empty">No salary added yet. Use Add salary for each month you are paid.</div></td></tr>`; tbl.tFoot.innerHTML = ''; return; }
+  tbl.tBodies[0].innerHTML = list.map(s => { const c = salCalc(s); const f = v => fmtIn(v, c.cur); return `<tr>
+    <td><b>${esc(prettyMonth(s.month))}</b></td><td>${esc(s.employer||'—')}</td>
+    <td>${s.date?pretty(s.date):'—'}<div style="font-size:12px;color:var(--ink-3)">${s.via?'via '+esc(s.via):'no account set'} · ${c.cur}${c.cur==='USD'?' @ '+fRate.format(c.fx):''}</div></td>
+    <td class="num r">${f(c.gross)}</td><td class="num r">${c.tax?f(c.tax):'—'}${n(s.taxPct)?`<div style="font-size:11.5px;color:var(--ink-3)">${n(s.taxPct)}%</div>`:''}</td><td class="num r">${c.ded?f(c.ded):'—'}</td>
+    <td class="num r" style="font-weight:600">${f(c.net)}</td><td class="num r">${money(c.dNet)}</td>
+    <td>${pill(s.status, s.id, 'status', 'salaries')}</td>
+    <td><div class="acts"><button class="icon-btn" data-sedit="${s.id}" aria-label="Edit">${ICON.edit}</button><button class="icon-btn" data-sdup="${s.id}" aria-label="Copy to next month">${ICON.dup}</button><button class="icon-btn" data-sdel="${s.id}" aria-label="Delete">${ICON.del}</button></div></td></tr>`; }).join('');
+  tbl.tFoot.innerHTML = `<tr><td colspan="3">${list.length} shown</td><td class="num r">${money(t.g)}</td><td class="num r">${money(t.t)}</td><td class="num r">${money(t.d)}</td><td></td><td class="num r">${money(t.n)}</td><td colspan="2"></td></tr>`;
+}
+
+/* ---------- money view ---------- */
+function renderMoney(){
+  const bals = balances();
+  F('acctCards').innerHTML = bals.map(b => `<button type="button" class="acct" data-acct="${esc(b.name)}" aria-pressed="${selAcct===b.name}">
+    <div class="lbl"><span>${esc(b.name)}</span><span>${b.currency}</span></div>
+    <div class="val">${fmtIn(b.bal, b.currency)}</div>
+    <div class="sub">in ${fmtIn(b.inn,b.currency)} · out ${fmtIn(b.out,b.currency)}</div>${b.transit?`<div class="sub" style="color:var(--brass)">+ ${fmtIn(b.transit,b.currency)} on the way (in progress)</div>`:''}
+    <div class="sub">${b.count} transactions${b.est?` · <span style="color:var(--warn)">${b.est} estimated</span>`:''}${b.currency!==currency?` · ≈ ${money(toDisp(b.bal,b.currency,live()))}`:''}</div></button>`).join('');
+  const est = txns.filter(t => t.estimated && t.status !== 'Canceled');
+  const prog = allLedger().filter(t => t.status === 'In progress');
+  F('estCallout').innerHTML = (prog.length ? `<div class="callout"><span><b>${prog.length} ${prog.length===1?'transaction is':'transactions are'} still in progress.</b> The money has left the sending account but is not counted in the receiving account until you mark it Completed.</span></div>` : '') + (est.length ? `<div class="callout"><span><b>${est.length} transfers are estimates.</b> The rupee amount that arrived is worked out from a typical fee and rate. Open each one and type the figures from its JazzCash receipt to make the balances exact.</span><button class="btn small" id="showEst" type="button">Show them</button></div>` : '');
+  // KPIs
+  const live_ = txns.filter(t => t.status !== 'Canceled');
+  const feesUsd = sum2(live_.map(t => feeOf(t, (v, c) => r2(toCur(v, c, 'USD', txRate(t))))));
+  const home = live_.filter(t => t.type==='transfer' && acctCur(t.from)==='USD' && acctCur(t.to)==='PKR');
+  const homeUsd = sum2(home.map(t=>n(t.amount))), homePkr = sum2(home.map(txnRecv));
+  const conf = home.filter(t => !t.estimated); const cu = sum2(conf.map(t=>n(t.amount))), cp = sum2(conf.map(txnRecv));
+  const clientIn = sum2(live_.filter(t => t.type==='in').map(t => r2(toCur(n(t.amount)-n(t.fee), acctCur(t.to), 'USD', txRate(t)))));
+  F('moneyKpis').innerHTML = [
+    ['Money received', usd(clientIn), `${live_.filter(t=>t.type==='in').length} payments in, shown in dollars`],
+    ['Dollars brought home', `${usd(homeUsd)} → ${pkr(homePkr)}`, homeUsd ? `average ${fRate.format(homePkr/homeUsd)} Rs per $ after fees${cu?` · ${fRate.format(cp/cu)} on receipts`:''}` : 'no transfers yet'],
+    ['Fees paid', `${usd(feesUsd)}`, `≈ ${pkr(feesUsd*live())} · transfer and account fees`]
+  ].map(([l,v,s]) => `<div class="panel"><div class="lbl" style="font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:600">${l}</div><div style="font-family:var(--f-display);font-size:22px;font-weight:700;margin-top:6px;overflow-wrap:anywhere">${v}</div><div style="font-size:12.5px;color:var(--ink-3);margin-top:4px">${s}</div></div>`).join('');
+  // ledger
+  const all = allLedger();
+  fillSelect(F('tYear'), yearsOf(all), 'All years');
+  const q = F('tq').value.trim().toLowerCase(), y = F('tYear').value, ty = F('tType').value;
+  let list = all.filter(t => (!y || (t.date||'').startsWith(y)) && (!ty || t.type===ty) && (!selAcct || t.from===selAcct || t.to===selAcct)
+    && (!q || [t.party,t.ref,t.notes,t.category,t.from,t.to].join(' ').toLowerCase().includes(q)) && (!showEstOnly || t.estimated));
+  list.sort(ledgerOrder);
+  let run = selAcct ? n(acctOf(selAcct)?.opening) : 0; const runMap = {};
+  if (selAcct){ let c = Math.round(run*100); for (const t of all.slice().sort(ledgerOrder)) { for (const f of flows(t)) if (f.a===selAcct && !f.transit) c += Math.round(f.d*100); runMap[t.id] = c/100; } }
+  list.reverse();
+  F('ledgerTitle').textContent = selAcct ? `${selAcct} transactions` : showEstOnly ? 'Estimated transfers' : 'All transactions';
+  const tbl = F('txnTable');
+  tbl.tHead.innerHTML = `<tr><th>Date</th><th>What</th><th class="r">Out of</th><th class="r">Into</th><th class="r">Fee</th><th class="r">Rate</th>${selAcct?'<th class="r">Balance</th>':''}<th>Status</th><th></th></tr>`;
+  if (!list.length){ tbl.tBodies[0].innerHTML = `<tr><td colspan="9"><div class="empty">${all.length?'No transactions match.':'No transactions yet. Use Add transaction to record money moving in, out or between your accounts.'}</div></td></tr>`; return; }
+  tbl.tBodies[0].innerHTML = list.map(t => {
+    const fc = acctCur(t.from), tc = acctCur(t.to); const fl = flows({...t, status:'Completed'});
+    const outF = fl.find(f => f.d < 0), inF = fl.find(f => f.d >= 0);
+    const feeCur = t.type==='in'||t.type==='salary' ? tc : fc;
+    const eff = t.type==='transfer' && fc!==tc && n(t.amount) ? (fc==='USD' ? txnRecv(t)/n(t.amount) : n(t.amount)/txnRecv(t)) : 0;
+    const stTag = t.status==='Canceled' ? '<span class="tag cancel">Canceled</span>' : t.status==='In progress' ? '<span class="tag prog">In progress</span>' : '<span class="tag">Completed</span>';
+    return `<tr${t.status==='Canceled'?' style="opacity:.6"':''}>
+      <td class="num">${pretty(t.date)}</td>
+      <td class="desc"><b>${esc(txnTitle(t))}</b><span>${t.type==='salary'?'<span class="tag sal">Salary</span> ':''}${t.estimated?'<span class="tag est">Estimated</span> ':''}${esc([t.category, t.ref?'Ref '+t.ref:'', t.notes].filter(Boolean).join(' · '))}</span></td>
+      <td class="num r">${outF?`${fmtIn(-outF.d, fc)}<div style="font-size:11.5px;color:var(--ink-3)">${esc(t.from)}</div>`:'<span style="color:var(--ink-3)">—</span>'}</td>
+      <td class="num r in">${inF?`+${fmtIn(inF.d, inF.a===t.to?tc:fc)}<div style="font-size:11.5px;color:var(--ink-3)">${esc(t.to)}</div>`:'<span style="color:var(--ink-3)">—</span>'}</td>
+      <td class="num r">${n(t.fee)?fmtIn(n(t.fee), feeCur):'—'}</td>
+      <td class="num r">${eff?`${fRate.format(n(t.rate)||eff)}<div style="font-size:11.5px;color:var(--ink-3)">${fRate.format(eff)} after fees</div>`:'—'}</td>
+      ${selAcct?`<td class="num r">${fmtIn(runMap[t.id]??0, acctCur(selAcct))}</td>`:''}
+      <td>${stTag}</td>
+      <td><div class="acts">${t.type==='salary' ? `<button class="icon-btn" data-sedit="${t.salaryId}" aria-label="Edit salary">${ICON.edit}</button>` : `<button class="icon-btn" data-tedit="${t.id}" aria-label="Edit">${ICON.edit}</button><button class="icon-btn" data-tdup="${t.id}" aria-label="Duplicate">${ICON.dup}</button><button class="icon-btn" data-tdel="${t.id}" aria-label="Delete">${ICON.del}</button>`}</div></td></tr>`; }).join('');
+}
+let showEstOnly = false;
+
+/* ---------- ledger: account statements, earnings vs expenses, reconciliation ---------- */
+let lgAcct = '';
+const ALLR = ['0000-01-01','9999-12-31'];
+function lgRange(){ const y = F('lgYear').value; return y ? [y+'-01-01', y+'-12-31'] : ALLR; }
+const fmtC = (v, cur) => cur === 'USD' ? usd(v) : pkr2(v);
+function pkr2(v){ const a = Math.abs(v); return (v < -0.004 ? '−Rs ' : 'Rs ') + fUSD.format(a); }
+// One line per effect on the account. Particulars say what happened in words.
+function acctLines(name){
+  const out = [];
+  for (const t of allLedger().slice().sort(ledgerOrder)){
+    for (const f of flows(t)){ if (f.a !== name) continue;
+      const fc = acctCur(t.from), tc = acctCur(t.to); let part, sub = [];
+      if (t.type === 'salary'){ part = `Salary · ${t.party}`; sub.push(t.notes); }
+      else if (t.type === 'in'){ part = `Received from ${t.party || 'unknown'}`; if (n(t.fee)) sub.push(`${fmtC(n(t.amount), tc)} less ${fmtC(n(t.fee), tc)} fee`); }
+      else if (t.type === 'out'){ part = `Paid to ${t.party || t.category || 'unknown'}`; if (n(t.fee)) sub.push(`includes ${fmtC(n(t.fee), fc)} fee`); }
+      else if (f.d < 0){ part = `Transfer to ${t.to}`; if (n(t.fee)) sub.push(`includes ${fmtC(n(t.fee), fc)} fee`); }
+      else { part = `Transfer from ${t.from}`; if (fc !== tc) sub.push(`${fmtC(n(t.amount) - n(t.fee), fc)} after fee${t.estimated ? ` × ~${fRate.format(txRate(t))}` : n(t.received)>0 ? ' · amount from receipt' : ` × ${fRate.format(txRate(t))}`}`); }
+      if (t.category && t.type !== 'salary') sub.unshift(t.category);
+      if (t.estimated) sub.push('estimated, no receipt yet');
+      out.push({ id: t.id, date: t.date, part, sub: sub.filter(Boolean).join(' · '), ref: t.ref || '', d: f.d, transit: !!f.transit, est: !!t.estimated, t });
+    }
+  }
+  return out;
+}
+function acctStatement(name, [a, b]){
+  const acc = acctOf(name); const cur = acctCur(name);
+  let c = Math.round(n(acc?.opening) * 100); // running balance in cents
+  const lines = acctLines(name); const rows = []; let dr = 0, cr = 0, transit = 0, before = 0;
+  for (const L of lines){ const k = Math.round(L.d * 100);
+    if (L.date < a){ if (!L.transit) c += k; continue; }
+    if (L.date > b) break;
+    if (L.transit){ transit += k; rows.push({ ...L, bal: c/100 }); continue; }
+    if (k >= 0) dr += k; else cr -= k; c += k; rows.push({ ...L, bal: c/100 });
+  }
+  // opening for the period = closing minus what happened in it
+  const closing = c, opening = closing - dr + cr;
+  return { name, cur, opening: opening/100, dr: dr/100, cr: cr/100, closing: closing/100, transit: transit/100, rows,
+    // independent check: account opening + every completed flow up to the period end
+    check: (Math.round(n(acc?.opening)*100) + lines.filter(L => !L.transit && L.date <= b).reduce((s,L) => s + Math.round(L.d*100), 0)) / 100 };
+}
+function plData([a, b]){
+  const inR = d => (d||'') >= a && (d||'') <= b;
+  const recs = records.filter(r => inR(r.date)); const A = agg(recs);
+  const sal = salaries.filter(s => inR(s.month ? s.month+'-01' : s.date)).map(salCalc);
+  const tx = txns.filter(t => inR(t.date) && t.status !== 'Canceled');
+  const D_ = (t, v, c) => r2(toDisp(v, c, txRate(t)));
+  const settle = t => /worker|allah|share|charity/i.test(t.category||'');
+  const acctFees = sum2(tx.filter(isFeeOut).map(t => D_(t, n(t.amount), acctCur(t.from))));
+  const xferFees = sum2(tx.filter(t => t.type === 'transfer').map(t => D_(t, n(t.fee), acctCur(t.from))));
+  const inFees = sum2(tx.filter(t => t.type === 'in').map(t => D_(t, n(t.fee), acctCur(t.to))));
+  const otherFee = sum2(tx.filter(t => t.type === 'out' && !isFeeOut(t)).map(t => D_(t, n(t.fee), acctCur(t.from))));
+  const otherOut = sum2(tx.filter(t => t.type === 'out' && !isFeeOut(t) && !settle(t)).map(t => D_(t, n(t.amount) - n(t.fee), acctCur(t.from))));
+  const C = A.cur;
+  const credits = [
+    ['Project revenue', C.gross, `${A.count} ${A.count===1?'project':'projects'} · by project date`],
+    ['Salary (gross)', sum2(sal.map(c => c.dGross)), `${sal.length} ${sal.length===1?'month':'months'}`]];
+  const debits = [
+    ['Project fees and deductions', C.fees, 'on project records'],
+    ['Worker pay', C.worker, 'on project records'],
+    ["Allah's share", C.charity, 'on project records'],
+    ['Income tax', sum2(sal.map(c => c.dTax)), 'on salary'],
+    ['Other salary deductions', sum2(sal.map(c => c.dDed)), 'on salary'],
+    ['Transfer fees', sum2([xferFees, inFees, otherFee]), 'Payoneer → wallet and payment fees, from Money'],
+    ['Account fees', acctFees, 'e.g. Payoneer annual fee, from Money'],
+    ['Other spending', otherOut, 'money out that is not a fee, worker pay or share']];
+  const tc = sum2(credits.map(x => x[1])), td = sum2(debits.map(x => x[1]));
+  return { credits, debits, tc, td, net: r2(tc - td) };
+}
+function reconChecks(){
+  const out = []; const add = (state, title, det, amt, acts) => out.push({ state, title, det, amt: amt || '', acts: acts || '' });
+  // 1. every statement adds up
+  const bad = []; for (const b of balances()){ const st = acctStatement(b.name, ALLR); if (Math.abs(st.closing - st.check) > 0.004 || Math.abs(st.closing - b.bal) > 0.004 || Math.abs(st.opening + st.dr - st.cr - st.closing) > 0.004) bad.push(b.name); }
+  add(bad.length ? 'warn' : 'ok', bad.length ? `Statements do not add up for ${bad.join(', ')}` : 'Every account statement adds up', 'Opening balance + money in − money out = closing balance, checked to the cent for every account.');
+  // 2. client money: projects paid "via" an account vs money in recorded there
+  const accNames = (settings.accounts||[]).map(a => a.name);
+  const byVia = groupBy(records.filter(r => r.clientStatus === 'Paid' && accNames.includes((r.via||'').trim())), r => r.via.trim());
+  for (const [acc, list] of byVia){ const cur = acctCur(acc);
+    const exp = sum2(list.map(r => { const c = calc(r); return cur === 'USD' ? c.gross : c.grossPkr; }));
+    const ins = txns.filter(t => t.type === 'in' && t.to === acc && t.status !== 'Canceled');
+    const got = sum2(ins.map(t => n(t.amount))); const gap = r2(exp - got);
+    const first = ins.map(t => t.date).sort()[0] || '';
+    const early = list.filter(r => first && r.date < first);
+    if (Math.abs(gap) < 0.005) add('ok', `Client payments match ${acc}`, `${list.length} paid projects received via ${acc} total ${fmtC(exp,cur)}, the same as the money in recorded there.`);
+    else add('warn', gap > 0 ? `${fmtC(gap,cur)} of client payments is not in ${acc}` : `${acc} received ${fmtC(-gap,cur)} more than your paid projects`,
+      `${list.length} projects marked paid via ${acc}: ${fmtC(exp,cur)}. Money in recorded in ${acc}: ${fmtC(got,cur)} (before fees).` + (early.length ? ` ${early.length} of the projects (${fmtC(sum2(early.map(r => cur==='USD'?calc(r).gross:calc(r).grossPkr)),cur)}) are dated before the first payment recorded in ${acc} (${pretty(first)}), so their money in was never entered.` : '') + ' Add the missing payments under Money, or fix "Received via" on the projects.',
+      fmtC(gap, cur), `<button class="btn small" type="button" data-rec-add="in" data-acc="${esc(acc)}" data-amt="${Math.max(0,gap)}">Add a payment into ${esc(acc)}</button>`);
+  }
+  const noVia = records.filter(r => r.clientStatus === 'Paid' && !accNames.includes((r.via||'').trim()));
+  if (noVia.length) add('warn', `${noVia.length} paid ${noVia.length===1?'project is':'projects are'} not linked to an account`, `“Received via” is empty or not one of your accounts, so this money is not in any balance:<ul>${noVia.slice(0,8).map(r => `<li>#${esc(r.sr)} ${esc(projTitle(r))} · ${esc(r.client)} · ${pretty(r.date)} · ${usd(calc(r).gross)}${r.via?` (via “${esc(r.via)}”)`:''}</li>`).join('')}</ul>`, usd(sum2(noVia.map(r => calc(r).gross))));
+  // 3. worker pay and Allah's share marked paid vs money out recorded
+  for (const [key, cat, lbl, f] of [['workerStatus', /worker/i, 'Worker pay', c => c.workerPkr], ['charityStatus', /allah|share|charity/i, "Allah's share", c => c.charityPkr]]){
+    const paid = sum2(records.filter(r => r[key] === 'Paid').map(r => f(calc(r))));
+    const outs = txns.filter(t => t.type === 'out' && t.status !== 'Canceled' && cat.test(t.category||''));
+    const rec = sum2(outs.map(t => r2(toCur(n(t.amount), acctCur(t.from), 'PKR', txRate(t)))));
+    const gap = r2(paid - rec);
+    if (paid === 0 && rec === 0) continue;
+    if (Math.abs(gap) < 0.5) add('ok', `${lbl} paid matches your accounts`, `${pkr2(paid)} marked paid on projects, ${pkr2(rec)} recorded as money out.`);
+    else add('warn', gap > 0 ? `${pkr2(gap)} of ${lbl==='Worker pay'?'worker pay':lbl} marked paid has not left any account` : `More ${lbl==='Worker pay'?'worker pay':lbl} left your accounts than is marked paid`,
+      `Marked paid on projects: ${pkr2(paid)}. Recorded as money out (category “${lbl}”): ${pkr2(rec)}. Until it is recorded, the account it was paid from shows more money than it really has.`,
+      pkr2(gap), gap > 0 ? `<button class="btn small" type="button" data-rec-add="out" data-cat="${esc(lbl)}" data-amt="${gap}">Record ${esc(lbl==='Worker pay'?'worker pay':lbl)} paid</button>` : '');
+  }
+  // 4. receipts that don't match amount − fee × rate
+  const off = txns.filter(t => t.type === 'transfer' && t.status !== 'Canceled' && n(t.received) > 0 && acctCur(t.from) !== acctCur(t.to) && n(t.rate) > 0 && Math.abs(n(t.received) - toCur(n(t.amount)-n(t.fee), acctCur(t.from), acctCur(t.to), n(t.rate))) > 1);
+  add(off.length ? 'warn' : 'ok', off.length ? `${off.length} transfer receipts don't match their rate` : 'Transfer receipts match their rates', off.length ? `Amount received differs from (total − fee) × rate by more than Rs 1:<ul>${off.slice(0,6).map(t => `<li>${pretty(t.date)} ${esc(txnTitle(t))}: received ${fmtC(n(t.received), acctCur(t.to))}, expected ${fmtC(toCur(n(t.amount)-n(t.fee), acctCur(t.from), acctCur(t.to), n(t.rate)), acctCur(t.to))}</li>`).join('')}</ul>` : 'For every transfer with a receipt, received = (total − fee) × rate, within Rs 1.');
+  // 5. in progress / estimated
+  const prog = allLedger().filter(t => t.status === 'In progress');
+  add(prog.length ? 'info' : 'ok', prog.length ? `${prog.length} ${prog.length===1?'transaction is':'transactions are'} in progress` : 'Nothing in progress', prog.length ? `Counted as left the sending account, not yet in the receiving one: ${prog.map(t => `${pretty(t.date)} ${esc(txnTitle(t))}`).join('; ')}. Mark it Completed once the money arrives.` : 'Every transaction is completed or canceled.');
+  const est = txns.filter(t => t.estimated && t.status !== 'Canceled');
+  add(est.length ? 'info' : 'ok', est.length ? `${est.length} transfers use estimated amounts` : 'No estimated amounts', est.length ? `Their rupee amounts were worked out from a typical fee and rate, so balances can be off by a few rupees each. Replace them with receipt figures under Money.` : 'Every transfer amount is from a receipt.', est.length ? fmtC(sum2(est.map(txnRecv)), 'PKR') : '');
+  // 6. data hygiene
+  const srs = groupBy(records, r => String(r.sr)); const dup = [...srs].filter(([k,v]) => v.length > 1).map(([k]) => k);
+  if (dup.length) add('warn', `Sr. numbers used twice: ${dup.join(', ')}`, 'Two projects share the same number. Edit one so every project has its own.');
+  const q = ls.get(AQ) || [];
+  add(q.length ? 'warn' : 'ok', q.length ? `${q.length} audit notes waiting to be written` : 'Audit log is complete', q.length ? 'They are saved in this browser and will be written when the connection is back.' : 'Every change made in the app has an entry in the change log.');
+  return out;
+}
+function renderLedger(){
+  const yrs = yearsOf([...records, ...txns, ...salaries.map(s => ({ date: s.month || s.date }))]);
+  const yv = F('lgYear').value; F('lgYear').innerHTML = `<option value="">All time</option>` + yrs.map(y => `<option ${y===yv?'selected':''}>${y}</option>`).join('');
+  const rg = lgRange();
+  // reconciliation
+  const ch = reconChecks(); const warn = ch.filter(c => c.state === 'warn').length;
+  F('recScore').innerHTML = `<span class="score ${warn?'warn':'ok'}">${warn ? `${warn} to look at` : 'All clear'} · ${ch.filter(c=>c.state==='ok').length}/${ch.length} checks pass</span>`;
+  F('recChecks').innerHTML = ch.map(c => `<div class="check ${c.state}"><span class="ic">${c.state==='ok'?'✓':c.state==='warn'?'!':'i'}</span><div><b>${c.title}</b><div class="det">${c.det}</div></div><div class="amt">${c.amt}</div>${c.acts?`<div class="acts2">${c.acts}</div>`:''}</div>`).join('');
+  // account statement
+  const accts = balances(); if (!accts.some(a => a.name === lgAcct)) lgAcct = (accts.find(a => a.count) || accts[0] || {}).name || '';
+  F('lgAccts').innerHTML = accts.map(a => `<button type="button" class="chip" data-lgacct="${esc(a.name)}" aria-pressed="${a.name===lgAcct}">${esc(a.name)} <span style="opacity:.7">${a.currency}</span></button>`).join('');
+  const st = lgAcct ? acctStatement(lgAcct, rg) : null; const tbl = F('lgTable');
+  tbl.tHead.innerHTML = `<tr><th>Date</th><th>Particulars</th><th>Ref</th><th class="r">Money in<small>Dr</small></th><th class="r">Money out<small>Cr</small></th><th class="r">Balance</th></tr>`;
+  if (!st){ tbl.tBodies[0].innerHTML = `<tr><td colspan="6"><div class="empty">Add an account in Settings.</div></td></tr>`; tbl.tFoot.innerHTML = ''; F('lgProof').textContent = ''; }
+  else {
+    const f = v => fmtC(v, st.cur); const z = '<span style="color:var(--ink-3)">—</span>';
+    tbl.tBodies[0].innerHTML = `<tr class="ob"><td class="num">${rg===ALLR ? '' : pretty(rg[0])}</td><td colspan="4">Opening balance</td><td class="num r">${f(st.opening)}</td></tr>` +
+      (st.rows.length ? st.rows.map(L => `<tr class="${L.transit?'transit':''}"><td class="num">${pretty(L.date)}</td><td class="part"><b>${esc(L.part)}</b>${L.sub||L.transit?`<span>${L.transit?'On the way · not in balance yet · ':''}${esc(L.sub)}</span>`:''}</td><td class="mono" style="font-size:12px">${esc(L.ref)}</td><td class="num r dr">${L.d>=0?f(L.d):z}</td><td class="num r cr">${L.d<0?f(-L.d):z}</td><td class="num r">${L.transit?z:f(L.bal)}</td></tr>`).join('')
+        : `<tr><td colspan="6"><div class="empty">No entries for ${esc(lgAcct)} in this period.</div></td></tr>`);
+    tbl.tFoot.innerHTML = `<tr><td colspan="3">Totals · ${st.rows.filter(r=>!r.transit).length} entries</td><td class="num r dr">${f(st.dr)}</td><td class="num r">${f(st.cr)}</td><td class="num r">${f(st.closing)}</td></tr>`;
+    const okp = Math.abs(st.opening + st.dr - st.cr - st.closing) < 0.005 && Math.abs(st.closing - st.check) < 0.005;
+    F('lgProof').className = 'proof' + (okp ? '' : ' bad');
+    F('lgProof').textContent = `${okp?'✓':'✗'} Opening ${f(st.opening)} + in ${f(st.dr)} − out ${f(st.cr)} = closing ${f(st.closing)}` + (st.transit ? ` · plus ${f(st.transit)} on the way` : '');
+  }
+  // earnings and expenses
+  const P = plData(rg); const m = v => money(v);
+  F('plHint').textContent = `${rg===ALLR ? 'All time' : F('lgYear').value} · in ${currency === 'PKR' ? 'rupees' : 'dollars'} (switch at the top). Projects at their own rate; transactions at their own rate or the rate of that time.`;
+  F('plTable').innerHTML = `<table class="pl"><tbody>
+    <tr class="h"><td>Earned</td><td class="num">Cr</td></tr>
+    ${P.credits.map(([k,v,s]) => `<tr><td>${k}<small>${s}</small></td><td class="num">${m(v)}</td></tr>`).join('')}
+    <tr class="sub"><td>Total earned</td><td class="num">${m(P.tc)}</td></tr>
+    <tr class="h"><td>Paid out and deducted</td><td class="num">Dr</td></tr>
+    ${P.debits.map(([k,v,s]) => `<tr><td>${k}<small>${s}</small></td><td class="num">${Math.abs(v)<0.005?'<span style="color:var(--ink-3)">—</span>':m(v)}</td></tr>`).join('')}
+    <tr class="sub"><td>Total paid out and deducted</td><td class="num">${m(P.td)}</td></tr>
+    <tr class="net"><td>What you kept</td><td class="num" style="color:${P.net<0?'var(--bad)':'var(--good)'}">${m(P.net)}</td></tr>
+  </tbody></table>`;
+  // what you hold
+  const tot = sum2(accts.map(b => r2(toCur(b.bal, b.currency, currency, live()))));
+  F('worth').innerHTML = `<table class="pl"><tbody>${accts.map(b => `<tr><td>${esc(b.name)}<small>${b.currency}${b.transit?` · ${fmtC(b.transit,b.currency)} on the way`:''}${b.est?` · ${b.est} estimated`:''}</small></td><td class="num">${fmtC(b.bal,b.currency)}${b.currency!==currency?`<small>≈ ${money(r2(toCur(b.bal,b.currency,currency,live())))}</small>`:''}</td></tr>`).join('')}
+    <tr class="net"><td>Total at today's rate (Rs ${live().toFixed(2)} per $)</td><td class="num">${money(tot)}</td></tr></tbody></table>`;
+}
+F('lgYear').addEventListener('input', renderLedger);
+F('dlLedger').addEventListener('click', () => downloadAll());
+
+/* ---------- audit view ---------- */
+function monthKeys(){
+  const ks = new Set();
+  records.forEach(r => r.date && ks.add(r.date.slice(0,7)));
+  salaries.forEach(s => (s.month||s.date) && ks.add((s.month||s.date).slice(0,7)));
+  allLedger().forEach(t => t.date && ks.add(t.date.slice(0,7)));
+  return [...ks].sort().reverse();
+}
+function statementRows(){
+  return monthKeys().map(k => {
+    const rec = records.filter(r => (r.date||'').startsWith(k)); const a = agg(rec);
+    const sal = salaries.filter(s => (s.month || (s.date||'').slice(0,7)) === k).map(salCalc);
+    const tx = allLedger().filter(t => (t.date||'').startsWith(k) && t.status !== 'Canceled');
+    const I = [], O = [], Fe = [], M = [];
+    for (const t of tx){ const D_ = (v, c) => r2(toDisp(v, c, txRate(t)));
+      if (t.type==='in' || t.type==='salary') I.push(D_(n(t.amount)-n(t.fee), acctCur(t.to)));
+      if (t.type==='out') O.push(D_(n(t.amount), acctCur(t.from)));
+      if (t.type==='transfer') M.push(D_(n(t.amount), acctCur(t.from)));
+      Fe.push(feeOf(t, D_));
+    }
+    const inn = sum2(I), out = sum2(O), fees = sum2(Fe), moved = sum2(M);
+    return { k, projects: a.count, rev: a.cur.gross, net: a.cur.net, workers: a.cur.worker, share: a.cur.charity,
+      salNet: sum2(sal.map(c=>c.dNet)), tax: sum2(sal.map(c=>c.dTax)), inn, out, moved, fees };
+  });
+}
+function renderAudit(){
+  $$('#auditSeg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.aud===audView));
+  F('aud-statement').hidden = audView !== 'statement'; F('aud-log').hidden = audView !== 'log';
+  if (audView === 'statement'){
+    const rows = statementRows(); const tbl = F('stmtTable');
+    tbl.tHead.innerHTML = `<tr><th>Month</th><th class="r">Projects</th><th class="r">Revenue</th><th class="r">Worker pay</th><th class="r">Allah's share</th><th class="r">Project net</th><th class="r">Salary net</th><th class="r">Tax</th><th class="r">Money in</th><th class="r">Money out</th><th class="r">Transferred</th><th class="r">Fees</th></tr>`;
+    if (!rows.length){ tbl.tBodies[0].innerHTML = `<tr><td colspan="12"><div class="empty">Nothing recorded yet.</div></td></tr>`; tbl.tFoot.innerHTML=''; return; }
+    const z = v => Math.abs(v) < 0.005 ? '<span style="color:var(--ink-3)">—</span>' : money(v);
+    tbl.tBodies[0].innerHTML = rows.map(r => `<tr><td><b>${prettyMonth(r.k)}</b></td><td class="num r">${r.projects||'—'}</td><td class="num r">${z(r.rev)}</td><td class="num r">${z(r.workers)}</td><td class="num r">${z(r.share)}</td><td class="num r" style="font-weight:500">${z(r.net)}</td><td class="num r">${z(r.salNet)}</td><td class="num r">${z(r.tax)}</td><td class="num r in">${z(r.inn)}</td><td class="num r">${z(r.out)}</td><td class="num r">${z(r.moved)}</td><td class="num r">${z(r.fees)}</td></tr>`).join('');
+    const T = {}; for (const k of ['projects','rev','workers','share','net','salNet','tax','inn','out','moved','fees']) T[k] = k==='projects' ? rows.reduce((s,r)=>s+r[k],0) : sum2(rows.map(r=>r[k]));
+    tbl.tFoot.innerHTML = `<tr><td>${rows.length} months</td><td class="num r">${T.projects}</td><td class="num r">${money(T.rev)}</td><td class="num r">${money(T.workers)}</td><td class="num r">${money(T.share)}</td><td class="num r">${money(T.net)}</td><td class="num r">${money(T.salNet)}</td><td class="num r">${money(T.tax)}</td><td class="num r">${money(T.inn)}</td><td class="num r">${money(T.out)}</td><td class="num r">${money(T.moved)}</td><td class="num r">${money(T.fees)}</td></tr>`;
+    return;
+  }
+  const q = F('aq').value.trim().toLowerCase(), mod = F('aMod').value, act = F('aAct').value, fr = F('aFrom').value, to = F('aTo').value;
+  const MODN = { records: 'Project', salaries: 'Salary', txns: 'Transaction', settings: 'Settings' };
+  const ACTN = { create: 'Added', update: 'Changed', delete: 'Deleted', import: 'Imported', restore: 'Restored' };
+  const local = ts => { const d = new Date(ts); return { day: `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`, time: `${pad(d.getHours())}:${pad(d.getMinutes())}` }; };
+  const list = audit.filter(e => (!mod || e.module===mod) && (!act || e.action===act)
+    && (!fr || local(e.ts).day >= fr) && (!to || local(e.ts).day <= to)
+    && (!q || [e.label, e.summary, ...(e.changes||[]).map(c=>`${c.f} ${c.from} ${c.to}`)].join(' ').toLowerCase().includes(q))).sort((a,b) => (b.ts||'').localeCompare(a.ts||''));
+  F('logCount').textContent = `${list.length} of ${audit.length} changes`;
+  if (!list.length){ F('auditLog').innerHTML = `<div class="empty">${audit.length ? 'No changes match these filters.' : 'Every change you make from now on — adding, editing, deleting, marking paid — is recorded here with the time.'}</div>`; return; }
+  const who = e => e.by === 'claude' ? 'Claude (setup)' : e.by && myId && e.by === myId ? 'You' : e.by ? 'Someone with access' : '';
+  let day = ''; const out = [];
+  for (const e of list.slice(0, 600)){ const L = local(e.ts);
+    if (L.day !== day){ day = L.day; out.push(`<div class="log-day">${pretty(day)}</div>`); }
+    out.push(`<div class="log-row"><time>${L.time}</time><div><div class="what"><span class="act ${esc(e.action)}">${ACTN[e.action]||esc(e.action)}</span><span class="tag">${MODN[e.module]||esc(e.module)}</span><b>${esc(e.label)}</b>${who(e)?`<span class="who">by ${who(e)}</span>`:''}${e.action==='delete' && e.snapshot && LISTS[e.module] && !LISTS[e.module]().some(x=>x.id===e.snapshot.id) ? `<button class="btn small" type="button" data-restore="${esc(e.id)}">Restore</button>` : ''}</div>
+      ${e.summary?`<div style="font-size:13px;color:var(--ink-2);margin-top:2px">${esc(e.summary)}</div>`:''}</div>
+      ${(e.changes||[]).length?`<div class="changes">${e.changes.map(c=>`<div>${esc(FIELD_LBL[c.f]||c.f)}: <s>${esc(c.from)}</s> → ${esc(c.to)}</div>`).join('')}</div>`:''}</div>`); }
+  if (list.length > 600) out.push(`<div class="empty">Showing the latest 600. Download the workbook for the full log.</div>`);
+  F('auditLog').innerHTML = out.join('');
+}
+
+/* ---------- lists / settings ---------- */
+function renderLists(){
+  const uniq = (arr, k) => [...new Set(arr.map(r => (r[k]||'').trim()).filter(Boolean))].sort();
+  const opts = a => a.map(v=>`<option value="${esc(v)}">`).join('');
+  F('dlClients').innerHTML = opts(uniq(records,'client'));
+  F('dlWorkers').innerHTML = opts(uniq(records,'worker'));
+  F('dlSources').innerHTML = opts([...new Set([...settings.sources.map(s=>s.name), ...uniq(records,'source')])]);
+  F('dlTypes').innerHTML = opts([...new Set([...(settings.projectTypes||[]), ...uniq(records,'projectType')])]);
+  F('dlVia').innerHTML = opts([...new Set([...(settings.accounts||[]).map(a=>a.name), 'Fiverr', 'Upwork', ...uniq(records,'via'), ...uniq(salaries,'via')])]);
+  F('dlEmployers').innerHTML = opts(uniq(salaries,'employer'));
+  F('dlParties').innerHTML = opts(uniq(txns,'party'));
+  F('fxTop').textContent = live().toFixed(2);
+  F('fxTopDate').textContent = settings.liveRate?.date ? `· ${pretty(settings.liveRate.date).replace(/ \d{4}$/,'')}` : '';
+  $$('[data-today]').forEach(b => b.textContent = `Use today's rate: Rs ${live().toFixed(2)}${settings.liveRate?.date?' ('+pretty(settings.liveRate.date)+')':''}`);
+  const acctOpts = (settings.accounts||[]).map(a => `<option value="${esc(a.name)}">${esc(a.name)} (${a.currency})</option>`).join('');
+  ['tkFrom','tkTo'].forEach(id => { const v = F(id).value; F(id).innerHTML = acctOpts; if (v) F(id).value = v; });
+}
+function fillSettings(){
+  if (!lastSettings) lastSettings = structuredClone(settings);
+  F('sFx').value = settings.fxRate; F('sCharity').value = settings.charityPct;
+  F('sClient').value = settings.defaultClient || ''; F('sWorkerRate').value = settings.workerRate ?? '';
+  F('sVia').value = settings.defaultVia || ''; F('sXferFee').value = settings.xferFeePct ?? '';
+  F('sLive').value = live(); F('sLiveDate').value = settings.liveRate?.date || ''; F('sLiveNote').value = settings.liveRate?.note || '';
+  F('sTypes').value = (settings.projectTypes||[]).join('\n');
+  F('srcList').innerHTML = settings.sources.map((s,i) => `<div class="src-item"><input value="${esc(s.name)}" data-si="${i}" data-sf="name" aria-label="Source name"><input type="number" step="0.1" min="0" max="100" value="${s.fee}" data-si="${i}" data-sf="fee" aria-label="Fee percent"><button class="icon-btn" data-srm="${i}" aria-label="Remove source"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>`).join('');
+  F('acctList').innerHTML = (settings.accounts||[]).map((a,i) => `<div class="acct-row"><input value="${esc(a.name)}" data-ai="${i}" data-af="name" aria-label="Account name"><select data-ai="${i}" data-af="currency" aria-label="Currency"><option ${a.currency==='PKR'?'selected':''}>PKR</option><option ${a.currency==='USD'?'selected':''}>USD</option></select><input type="number" step="0.01" value="${n(a.opening)}" data-ai="${i}" data-af="opening" aria-label="Opening balance" title="Opening balance"><button class="icon-btn" data-arm="${i}" aria-label="Remove account"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>`).join('');
+}
+function renderAll(){
+  renderLists();
+  if (view==='dash') renderDash();
+  if (view==='records') renderRecords();
+  if (view==='salary') renderSalary();
+  if (view==='money') renderMoney();
+  if (view==='ledger') renderLedger();
+  if (view==='audit') renderAudit();
+}
+function showView(v){
+  view = v; $$('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.view===v));
+  ['dash','records','salary','money','ledger','audit','settings'].forEach(x => F('view-'+x).hidden = x !== v);
+  const lbl = v==='salary' ? 'Add salary' : v==='money' ? 'Add transaction' : 'New entry';
+  F('newBtnLbl').textContent = lbl; F('newFabLbl').textContent = lbl;
+  ls.set('pr.view', v); renderAll();
+}
+
+/* ---------- open / close sheets ---------- */
+function openSheet(id){ F(id).hidden = false; document.body.style.overflow = 'hidden'; }
+function closeSheet(id){ F(id).hidden = true; if ($$('.scrim.sheetwrap,.scrim').every(s => s.hidden)) document.body.style.overflow = ''; }
+
+/* ---------- project entry form ---------- */
+let editing = null, feesTouched = false;
+function openEntry(r, dup){
+  editing = r && !dup ? r.id : null; feesTouched = !!(r);
+  const nextSr = records.reduce((m,x)=>Math.max(m,n(x.sr)),0)+1;
+  const d = r ? {...r} : { date: today(), client: settings.defaultClient||'', source: settings.sources[0]?.name||'', currency: 'USD', via: settings.defaultVia||'', projectType: '', pieces: 1, price: '', adjustment: '', fees: '', worker: '', workerPayType: 'piece', workerAmount: settings.workerRate||'', fxRate: live(), charityPct: settings.charityPct, clientStatus: 'Pending', workerStatus: 'Pending', charityStatus: 'Pending', notes: '' };
+  if (dup){ d.date = today(); d.clientStatus = 'Pending'; d.workerStatus = d.worker ? 'Pending' : 'N/A'; d.charityStatus = 'Pending'; if (d.currency==='PKR_FX') d.fxRate = live(); }
+  F('entryTitle').textContent = editing ? `Edit entry #${d.sr}` : dup ? 'Duplicate entry' : 'New entry';
+  F('eDate').value = d.date||today(); F('eSr').value = editing ? d.sr : nextSr;
+  F('eProject').value = d.project||''; F('eType').value = d.projectType||''; F('eClient').value = d.client||''; F('eSource').value = d.source||'';
+  F('eCur').value = d.currency||'USD'; F('eVia').value = d.via||'';
+  F('ePieces').value = d.pieces ?? ''; F('ePrice').value = d.price ?? ''; F('eAdj').value = d.adjustment || ''; F('eFees').value = d.fees || '';
+  F('eWorker').value = d.worker||''; F('ePayType').value = d.workerPayType||'piece'; F('eWorkerAmt').value = d.workerAmount || '';
+  F('eFx').value = d.fxRate ?? live(); F('eCharity').value = d.charityPct ?? settings.charityPct;
+  F('eCStatus').value = d.clientStatus||'Pending'; F('eWStatus').value = d.workerStatus||'Pending'; F('eChStatus').value = d.charityStatus||'Pending'; F('eNotes').value = d.notes||'';
+  F('delEntry').hidden = !editing; F('formErr').textContent = '';
+  $$('#entryForm input').forEach(i => i.classList.remove('bad'));
+  openSheet('entryScrim'); updatePreview(); setTimeout(() => F('eType').focus(), 30);
+}
+function readForm(){
+  return { id: editing || newId('r'), sr: Math.round(n(F('eSr').value)), date: F('eDate').value, project: F('eProject').value.trim(), projectType: F('eType').value.trim(), client: F('eClient').value.trim(), source: F('eSource').value.trim(),
+    currency: F('eCur').value, via: F('eVia').value.trim(),
+    pieces: n(F('ePieces').value), price: n(F('ePrice').value), adjustment: n(F('eAdj').value), fees: n(F('eFees').value),
+    worker: F('eWorker').value.trim(), workerPayType: F('ePayType').value, workerAmount: n(F('eWorkerAmt').value), fxRate: n(F('eFx').value), charityPct: n(F('eCharity').value),
+    clientStatus: F('eCStatus').value, workerStatus: F('eWStatus').value, charityStatus: F('eChStatus').value, notes: F('eNotes').value.trim() };
+}
+function sourceFee(name){ const s = settings.sources.find(s => s.name.toLowerCase() === (name||'').trim().toLowerCase()); return s ? n(s.fee) : null; }
+function updatePreview(){
+  const r = readForm();
+  const sym = r.currency === 'PKR' ? 'Rs' : '$';
+  F('ePriceLbl').textContent = `Price per piece (${sym})`; F('eAdjLbl').textContent = `Adjustment (${sym})`; F('eFeesLbl').textContent = `Fees and deductions (${sym})`;
+  F('eWorkerAmtLbl').textContent = r.workerPayType === 'fixed' ? 'Total paid to worker (Rs)' : 'Rate per piece (Rs)';
+  const pct = sourceFee(r.source); const sug = pct ? Math.round((r.pieces*r.price + r.adjustment) * pct) / 100 : 0;
+  const fs = F('feeSuggest');
+  if (pct){ fs.hidden = false; fs.textContent = `Use ${r.source} ${pct}% = ${r.currency==='PKR'?pkr(sug):usd(sug)}`; fs.dataset.v = sug; if (!feesTouched) F('eFees').value = sug ? sug.toFixed(2) : ''; }
+  else fs.hidden = true;
+  const r2 = readForm(); const c2 = calc(r2);
+  F('eChargeBox').hidden = r2.currency === 'USD';
+  F('eCharge').textContent = c2.chargePkr != null ? pkr(c2.chargePkr) : '';
+  F('pvNet').textContent = usd(c2.net); F('pvNet').style.color = c2.net < 0 ? 'var(--bad)' : '';
+  F('pvNetPk').textContent = pkr(c2.netPkr);
+  const g = Math.max(c2.gross, 0.0001);
+  const row = (k,v,sub,col,neg,tot) => `<div class="flow-row${tot?' total':''}"><span class="k">${k}${sub?`<div style="font-size:11.5px;color:var(--ink-3)">${sub}</div>`:''}</span><span class="v">${neg?'<span class="minus">−</span> ':''}${usd(Math.abs(v))}</span>${col?`<div class="bar"><span style="width:${Math.max(0,Math.min(100,Math.abs(v)/g*100))}%;background:${col}"></span></div>`:''}</div>`;
+  const nat = r2.currency === 'PKR' ? pkr : usd;
+  F('pvFlow').innerHTML = [
+    row('Revenue', c2.gross, `${c2.pieces} × ${nat(r2.price)}${r2.adjustment?` ${r2.adjustment<0?'−':'+'} ${nat(Math.abs(r2.adjustment))}`:''}${r2.currency==='PKR'?` = ${pkr(c2.nativeGross)}`:''}`, 'var(--ink-3)'),
+    row('Fees', c2.fees, '', 'var(--s4)', true),
+    row('Worker pay', c2.workerUsd, c2.workerPkr ? `${pkr(c2.workerPkr)} ÷ ${c2.fx}` : 'No worker', 'var(--s2)', true),
+    row('Profit', c2.profit, pkr(c2.profitPkr), null, false, true),
+    row(`Allah's share ${n(r2.charityPct)}%`, c2.charityUsd, pkr(c2.charityPkr), 'var(--s3)', true),
+    row('Net profit', c2.net, `${c2.gross>0?(c2.net/c2.gross*100).toFixed(1):'0.0'}% of revenue`, null, false, true)
+  ].join('');
+  F('pvNote').textContent = r2.currency === 'PKR_FX' ? `Priced in dollars, paid in rupees: the client pays ${pkr(c2.chargePkr)} at Rs ${c2.fx} per dollar. Update the rate on the day they pay.`
+    : r2.currency === 'PKR' ? `Paid in rupees. Dollar figures are the rupee amounts ÷ Rs ${c2.fx}.` : `All rupee figures use this entry's rate of Rs ${c2.fx} per dollar.`;
+}
+function validate(r){
+  const bad = []; if (!r.date) bad.push(['eDate','Pick a date.']); if (!r.project && !r.projectType) bad.push(['eProject','Add a project name or type.']);
+  if (r.pieces <= 0) bad.push(['ePieces','Pieces must be at least 1.']); if (r.price < 0) bad.push(['ePrice','Price can’t be negative.']);
+  if (r.fxRate <= 0) bad.push(['eFx','Enter the USD to PKR rate.']); if (r.charityPct < 0 || r.charityPct > 100) bad.push(['eCharity','Share must be 0–100%.']);
+  if (r.fees < 0) bad.push(['eFees','Fees can’t be negative.']);
+  $$('#entryForm input').forEach(i => i.classList.remove('bad'));
+  bad.forEach(([id]) => F(id).classList.add('bad'));
+  F('formErr').textContent = bad.length ? bad[0][1] : '';
+  return !bad.length;
+}
+async function submit(again){
+  const r = readForm();
+  if (!r.project) r.project = r.projectType;
+  if (!r.worker && !r.workerAmount && r.workerStatus !== 'N/A') r.workerStatus = 'N/A';
+  if (!validate(r)) return;
+  try { await putDoc('records', r); } catch { return; }
+  toast(editing ? `Entry #${r.sr} updated` : `Entry #${r.sr} saved · net ${usd(calc(r).net)}`);
+  if (again){ editing = null; openEntry({...r, id: undefined}, true); F('entryTitle').textContent = 'New entry'; F('eSr').value = Math.max(n(r.sr), records.reduce((m,x)=>Math.max(m,n(x.sr)),0))+1; F('eProject').select(); }
+  else closeSheet('entryScrim');
+}
+
+/* ---------- salary form ---------- */
+let sEditing = null;
+function openSalary(s, dup){
+  sEditing = s && !dup ? s.id : null;
+  const last = salaries.slice().sort((a,b)=>(b.month||'').localeCompare(a.month||''))[0];
+  const base = s || (last ? {...last, id: undefined} : null);
+  const d = base ? {...base} : { month: today().slice(0,7), date: today(), employer: '', via: 'Bank', currency: 'PKR', gross: '', taxPct: '', tax: '', deductions: '', fxRate: live(), status: 'Received', notes: '' };
+  if (!s || dup){ const m = dup ? addMonths((s.month||today().slice(0,7))+'-01',1).slice(0,7) : today().slice(0,7); d.month = m; d.date = dup ? addMonths(s.date||today(),1) : today(); d.status = 'Pending'; d.fxRate = live(); if (!s && !last) d.status = 'Received'; }
+  F('salTitle').textContent = sEditing ? `Edit ${prettyMonth(d.month)} salary` : 'Add salary';
+  F('slMonth').value = d.month||''; F('slDate').value = d.date||''; F('slEmployer').value = d.employer||''; F('slVia').value = d.via||'';
+  F('slCur').value = d.currency||'PKR'; F('slGross').value = d.gross ?? ''; F('slTaxPct').value = d.taxPct || ''; F('slTax').value = d.tax || ''; F('slDed').value = d.deductions || '';
+  F('slFx').value = d.fxRate || live(); F('slStatus').value = d.status||'Received'; F('slNotes').value = d.notes||'';
+  F('delSal').hidden = !sEditing; F('slErr').textContent = '';
+  openSheet('salScrim'); salPreview(); setTimeout(()=>F('slEmployer').focus(),30);
+}
+function readSal(){ return { id: sEditing || newId('s'), month: F('slMonth').value, date: F('slDate').value, employer: F('slEmployer').value.trim(), via: F('slVia').value.trim(), currency: F('slCur').value,
+  gross: n(F('slGross').value), taxPct: n(F('slTaxPct').value), tax: n(F('slTax').value), deductions: n(F('slDed').value), fxRate: n(F('slFx').value), status: F('slStatus').value, notes: F('slNotes').value.trim() }; }
+function salPreview(){
+  const s = readSal(); const c = salCalc(s); const sym = s.currency==='USD'?'$':'Rs';
+  F('slGrossLbl').textContent = `Gross salary (${sym})`; F('slTaxLbl').textContent = `Income tax amount (${sym})`; F('slDedLbl').textContent = `Other deductions (${sym})`;
+  const f = v => fmtIn(v, c.cur); const o = c.cur==='USD' ? v => pkr(v*c.fx) : v => usd(v/c.fx);
+  const row = (k,v,neg,tot) => `<div class="flow-row${tot?' total':''}"><span class="k">${k}</span><span class="v">${neg?'<span class="minus">−</span> ':''}${f(Math.abs(v))} <span style="color:var(--ink-3)">${o(Math.abs(v))}</span></span></div>`;
+  F('slPreview').innerHTML = [row('Gross', c.gross), row(`Income tax${c.gross?` (${(c.tax/c.gross*100).toFixed(1)}%)`:''}`, c.tax, true), row('Other deductions', c.ded, true), row('Net salary', c.net, false, true)].join('')
+    + `<div class="fx-note" style="font-size:12px;color:var(--ink-3);margin-top:8px">${s.status==='Received' && s.via ? `Adds ${f(c.net)} to ${esc(s.via)}${acctOf(s.via)?'':' (not one of your accounts yet — add it in Settings to see its balance)'}.` : s.status==='Received' ? 'Set “Received via” to add it to an account balance.' : 'Pending: not added to any balance yet.'}</div>`;
+}
+async function submitSal(){
+  const s = readSal(); const bad = [];
+  if (!s.month) bad.push(['slMonth','Pick the month.']); if (s.gross <= 0) bad.push(['slGross','Enter the gross salary.']); if (s.tax + s.deductions > s.gross) bad.push(['slTax','Tax and deductions are more than the gross.']);
+  if (s.fxRate <= 0) bad.push(['slFx','Enter the USD to PKR rate.']);
+  $$('#salForm input').forEach(i => i.classList.remove('bad')); bad.forEach(([id]) => F(id).classList.add('bad')); F('slErr').textContent = bad[0]?.[1] || '';
+  if (bad.length) return;
+  try { await putDoc('salaries', s); } catch { return; }
+  toast(`${prettyMonth(s.month)} salary saved · net ${fmtIn(salCalc(s).net, s.currency)}`); closeSheet('salScrim');
+}
+
+/* ---------- transaction form ---------- */
+let tEditing = null, recvTouched = false;
+function openTxn(t, dup){
+  tEditing = t && !dup ? t.id : null; recvTouched = !!(t && n(t.received));
+  const d = t ? {...t} : { type: 'transfer', date: today(), from: 'Payoneer', to: 'JazzCash', amount: '', fee: '', rate: live(), received: '', party: '', category: 'Withdrawal', ref: '', status: 'Completed', notes: '', estimated: false };
+  if (dup){ d.date = today(); d.ref = ''; d.received = ''; recvTouched = false; }
+  F('txnTitle').textContent = tEditing ? 'Edit transaction' : 'Add transaction';
+  renderLists();
+  F('tkType').value = d.type; F('tkDate').value = d.date||today(); F('tkFrom').value = d.from || (settings.accounts[0]?.name||''); F('tkTo').value = d.to || (settings.accounts[1]?.name||'');
+  F('tkParty').value = d.party||''; F('tkCat').value = d.category||''; F('tkAmt').value = d.amount ?? ''; F('tkFee').value = d.fee || ''; F('tkRate').value = d.rate || '';
+  F('tkRecv').value = n(d.received) ? d.received : ''; F('tkRef').value = d.ref||''; F('tkStatus').value = d.status||'Completed'; F('tkNotes').value = d.notes||''; F('tkEst').value = d.estimated ? '1' : '0';
+  F('delTxn').hidden = !tEditing; F('tkErr').textContent = '';
+  openSheet('txnScrim'); txnPreview(); setTimeout(()=>F('tkAmt').focus(),30);
+}
+function readTxn(){ const type = F('tkType').value; return { id: tEditing || newId('t'), type, date: F('tkDate').value, from: type==='in' ? '' : F('tkFrom').value, to: type==='out' ? '' : F('tkTo').value,
+  party: F('tkParty').value.trim(), category: F('tkCat').value.trim(), amount: n(F('tkAmt').value), fee: n(F('tkFee').value), rate: n(F('tkRate').value), received: recvTouched ? n(F('tkRecv').value) : 0,
+  ref: F('tkRef').value.trim(), status: F('tkStatus').value, notes: F('tkNotes').value.trim(), estimated: F('tkEst').value === '1',
+  seq: (txns.find(x=>x.id===tEditing)?.seq) ?? Date.now() }; }
+function txnPreview(){
+  const t = readTxn();
+  F('tkFromBox').hidden = t.type === 'in'; F('tkToBox').hidden = t.type === 'out';
+  F('tkPartyLbl').textContent = t.type === 'in' ? 'Received from' : t.type === 'out' ? 'Paid to' : 'Sent to (name on receipt)';
+  const fc = acctCur(t.from), tc = acctCur(t.to); const cross = t.type==='transfer' && fc !== tc;
+  const srcCur = t.type === 'in' ? tc : fc;
+  F('tkAmtLbl').textContent = `Total amount (${srcCur})`; F('tkFeeLbl').textContent = `Fee, part of the total (${srcCur})`;
+  F('tkAmtHelp').textContent = t.type === 'in' ? 'The full payment; the fee is taken out of it.' : 'Everything that left the account, fee included.';
+  F('tkFxRow').hidden = t.type !== 'transfer';
+  F('tkRecvLbl').textContent = `Amount received (${tc})`;
+  F('tkRate').closest('.field').hidden = !cross;
+  const auto = toCur(t.amount - t.fee, fc, tc, t.rate || n(settings.fxRate));
+  if (!recvTouched) F('tkRecv').placeholder = t.type==='transfer' ? (tc==='USD'?usd(auto):pkr(auto)) : '';
+  const recv = t.type === 'transfer' ? txnRecv(t) : 0;
+  const lines = [];
+  if (t.type === 'transfer'){ lines.push(['Leaves '+(t.from||'?'), `− ${fmtIn(t.amount, fc)}`]); if (t.fee) lines.push(['of which fee', fmtIn(t.fee, fc)]); lines.push(['Arrives in '+(t.to||'?'), `+ ${fmtIn(recv, tc)}`, true]);
+    if (cross && t.amount) lines.push(['Effective rate after fees', `Rs ${fRate.format(fc==='USD' ? recv/t.amount : t.amount/recv)} per $`]); }
+  else if (t.type === 'in'){ lines.push(['Payment', fmtIn(t.amount, tc)]); if (t.fee) lines.push(['Fee', `− ${fmtIn(t.fee, tc)}`]); lines.push(['Added to '+(t.to||'?'), `+ ${fmtIn(t.amount - t.fee, tc)}`, true]); }
+  else { lines.push(['Leaves '+(t.from||'?'), `− ${fmtIn(t.amount, fc)}`, true]); if (t.fee) lines.push(['of which fee', fmtIn(t.fee, fc)]); }
+  F('tkPreview').innerHTML = lines.map(([k,v,tot]) => `<div class="flow-row${tot?' total':''}"><span class="k">${esc(k)}</span><span class="v">${v}</span></div>`).join('');
+}
+async function submitTxn(){
+  const t = readTxn(); const bad = [];
+  if (!t.date) bad.push(['tkDate','Pick a date.']); if (t.amount <= 0) bad.push(['tkAmt','Enter the amount.']); if (t.fee > t.amount) bad.push(['tkFee','The fee is part of the total, so it can’t be bigger.']);
+  if (t.type==='transfer' && t.from === t.to) bad.push(['tkTo','Pick two different accounts.']);
+  $$('#txnForm input,#txnForm select').forEach(i => i.classList.remove('bad')); bad.forEach(([id]) => F(id).classList.add('bad')); F('tkErr').textContent = bad[0]?.[1] || '';
+  if (bad.length) return;
+  if (t.type !== 'transfer'){ t.rate = t.rate || 0; t.received = 0; }
+  try { await putDoc('txns', t); } catch { return; }
+  toast('Transaction saved'); closeSheet('txnScrim');
+}
+
+/* ---------- confirm ---------- */
+let cfAction = null;
+function confirmDel(text, fn){ F('cfText').textContent = text; cfAction = fn; F('confirmScrim').hidden = false; F('cfNo').focus(); }
+
+/* ---------- excel ---------- */
+const HEAD = ['Sr.','Date','Project','Client','Source','Pieces','Price / piece ($)','Adjustment ($)','Revenue ($)','Fees ($)','Worker','Pay type','Worker rate / amount (Rs)','Worker paid (Rs)','USD→PKR rate','Worker cost ($)','Profit ($)',"Allah's share %","Allah's share ($)","Allah's share (Rs)",'Net profit ($)','Net profit (Rs)','Client status','Worker status',"Allah's share status",'Notes','Project type','Paid in','Received via','Client paid (Rs)','Record ID','Revenue (Rs)','Fees (Rs)'];
+const USDF = '"$"#,##0.00;[Red]-"$"#,##0.00', PKRF = '"Rs "#,##0;[Red]-"Rs "#,##0', PKRF2 = '"Rs "#,##0.00;[Red]-"Rs "#,##0.00';
+function styleHeader(row, argb){ row.eachCell(c => { c.font = { bold: true, color: { argb: 'FFFFFFFF' }, name: 'Calibri' }; c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb: argb||'FF17684C' } }; c.alignment = { vertical:'middle', wrapText: true }; }); row.height = 30; }
+const xDate = s => { const [y,m,d] = (s||today()).split('-').map(Number); return new Date(Date.UTC(y,(m||1)-1,d||1)); };
+function buildRecordsSheet(wb, list){
+  const ws = wb.addWorksheet('Records', { views: [{ state: 'frozen', ySplit: 1, xSplit: 3 }] });
+  ws.addRow(HEAD); styleHeader(ws.getRow(1));
+  const widths = [6,12,30,18,12,8,12,12,12,10,16,11,14,14,10,13,12,9,13,14,13,14,11,11,12,24,16,13,13,14,14,14,12];
+  widths.forEach((w,i) => ws.getColumn(i+1).width = w);
+  list.forEach((r,idx) => { const i = idx+2; const c = calc(r);
+    ws.addRow([n(r.sr), xDate(r.date), projTitle(r), r.client, r.source, c.pieces, n(r.price)*c.k, n(r.adjustment)*c.k,
+      {formula:`ROUND(F${i}*G${i}+H${i},2)`, result:c.gross}, c.fees, r.worker, r.workerPayType==='fixed'?'Fixed':'Per piece', n(r.workerAmount),
+      {formula:`ROUND(IF(L${i}="Fixed",M${i},F${i}*M${i}),2)`, result:c.workerPkr}, c.fx, {formula:`IF(O${i}>0,ROUND(N${i}/O${i},2),0)`, result:c.workerUsd},
+      {formula:`ROUND(I${i}-J${i}-P${i},2)`, result:c.profit}, n(r.charityPct), {formula:`ROUND(MAX(0,Q${i})*R${i}/100,2)`, result:c.charityUsd},
+      {formula:`ROUND(MAX(0,AF${i}-AG${i}-N${i})*R${i}/100,2)`, result:c.charityPkr}, {formula:`ROUND(Q${i}-S${i},2)`, result:c.net}, {formula:`ROUND(AF${i}-AG${i}-N${i}-T${i},2)`, result:c.netPkr},
+      r.clientStatus, r.workerStatus, r.charityStatus, r.notes||'', r.projectType||'', c.cur, r.via||'', c.chargePkr ?? '', r.id, c.grossPkr, c.feesPkr]); });
+  const last = list.length + 1;
+  const tr = ws.addRow(['','TOTAL']); const sum = (col, res) => ({ formula: `SUM(${col}2:${col}${last})`, result: res });
+  const a = agg(list);
+  tr.getCell('F').value = sum('F', a.pieces); tr.getCell('I').value = sum('I', a.usd.gross); tr.getCell('J').value = sum('J', a.usd.fees);
+  tr.getCell('N').value = sum('N', a.pkr.worker); tr.getCell('P').value = sum('P', a.usd.worker); tr.getCell('Q').value = sum('Q', a.usd.profit);
+  tr.getCell('S').value = sum('S', a.usd.charity); tr.getCell('T').value = sum('T', a.pkr.charity); tr.getCell('U').value = sum('U', a.usd.net); tr.getCell('V').value = sum('V', a.pkr.net);
+  tr.eachCell(c => { c.font = { bold: true }; c.fill = { type:'pattern', pattern:'solid', fgColor:{argb:'FFE3EEE7'} }; });
+  ['G','H','I','J','P','Q','S','U'].forEach(L => ws.getColumn(L).numFmt = USDF);
+  ['M','N','T','V','AD','AF','AG'].forEach(L => ws.getColumn(L).numFmt = PKRF2);
+  ws.getColumn('O').numFmt = '0.00'; ws.getColumn('B').numFmt = 'dd-mmm-yyyy';
+  ws.getColumn('AE').hidden = true;
+  ws.autoFilter = { from: 'A1', to: `AD${Math.max(1,last)}` };
+  tr.getCell('AF').value = sum('AF', a.pkr.gross); tr.getCell('AG').value = sum('AG', a.pkr.fees);
+  for (let i = 2; i <= last; i++) ['W','X','Y'].forEach(L => { const c = ws.getCell(`${L}${i}`); if (c.value==='Paid') c.font = { color:{argb:'FF1D7A45'}, bold:true }; else if (c.value==='Pending') c.font = { color:{argb:'FFA45F00'}, bold:true }; });
+  return { ws, last };
+}
+function addTable(wb, name, head, rows, fmts, widths){
+  const ws = wb.addWorksheet(name, { views: [{ state: 'frozen', ySplit: 1 }] }); ws.addRow(head); styleHeader(ws.getRow(1), 'FF2B3A33');
+  rows.forEach(r => ws.addRow(r)); head.forEach((h,i) => { ws.getColumn(i+1).width = widths?.[i] || (i===0 ? 26 : 16); if (fmts[i]) ws.getColumn(i+1).numFmt = fmts[i]; });
+  return ws;
+}
+const curF = c => c === 'USD' ? USDF : PKRF;
+function addMoneySheets(wb){
+  const sl = salaries.slice().sort((a,b)=>(a.month||'').localeCompare(b.month||''));
+  const sws = addTable(wb, 'Salary', ['Month','Date received','Employer','Received via','Currency','Gross','Tax %','Income tax','Other deductions','Net','USD→PKR rate','Net (Rs)','Net ($)','Status','Notes'],
+    sl.map(s => { const c = salCalc(s); return [prettyMonth(s.month), s.date ? xDate(s.date) : '', s.employer, s.via, c.cur, c.gross, n(s.taxPct)||'', c.tax, c.ded, c.net, c.fx, toCur(c.net,c.cur,'PKR',c.fx), toCur(c.net,c.cur,'USD',c.fx), s.status, s.notes||'']; }),
+    [null,'dd-mmm-yyyy',null,null,null,'#,##0.00','0.00','#,##0.00','#,##0.00','#,##0.00','0.00',PKRF,USDF], [12,13,20,14,9,13,8,13,14,13,11,13,12,11,30]);
+  const tl = allLedger().sort((a,b) => (a.date||'').localeCompare(b.date||'') || (a.seq||0)-(b.seq||0));
+  addTable(wb, 'Transactions', ['Date','Type','From account','To account','Party','Category','Total amount','Currency','Fee','Rate','Received','Received currency','Status','Estimated','Reference','Notes'],
+    tl.map(t => { const fc = acctCur(t.from), tc = acctCur(t.to); return [xDate(t.date), t.type==='in'?'Money in':t.type==='out'?'Money out':t.type==='salary'?'Salary':'Transfer', t.from||'', t.to||'', t.party||'', t.category||'', n(t.amount), t.type==='in'||t.type==='salary'?tc:fc, n(t.fee), n(t.rate)||'',
+      t.type==='transfer' ? txnRecv(t) : (t.type==='in'||t.type==='salary' ? n(t.amount)-n(t.fee) : ''), t.type==='out' ? '' : tc, t.status, t.estimated?'Yes':'', t.ref||'', t.notes||'']; }),
+    ['dd-mmm-yyyy',null,null,null,null,null,'#,##0.00',null,'#,##0.00','0.00','#,##0.00'], [12,11,14,14,20,16,13,9,10,9,13,9,12,9,18,40]);
+  addTable(wb, 'Balances', ['Account','Currency','Opening','Money in','Money out','Balance','On the way','Transactions','Estimated','Last activity'],
+    balances().map(b => [b.name, b.currency, b.opening, b.inn, b.out, b.bal, b.transit, b.count, b.est, b.last ? xDate(b.last) : '']), [null,null,'#,##0.00','#,##0.00','#,##0.00','#,##0.00','#,##0.00','0','0','dd-mmm-yyyy']);
+  // account statements (Dr = money in, Cr = money out, in each account's own currency)
+  const stRows = [];
+  for (const b of balances()){ const st = acctStatement(b.name, ALLR); if (!st.rows.length && !st.opening) continue;
+    stRows.push([b.name, '', 'Opening balance', '', '', '', '', st.opening, b.currency, '']);
+    st.rows.forEach(L => stRows.push([b.name, xDate(L.date), L.part, L.sub, L.ref, L.d >= 0 ? L.d : '', L.d < 0 ? -L.d : '', L.transit ? '' : L.bal, b.currency, L.transit ? 'On the way, not in balance' : '']));
+    stRows.push([b.name, '', 'Closing balance', `${st.rows.filter(r=>!r.transit).length} entries`, '', st.dr, st.cr, st.closing, b.currency, '']); stRows.push([]); }
+  const sws2 = addTable(wb, 'Account statements', ['Account','Date','Particulars','Details','Reference','Money in (Dr)','Money out (Cr)','Balance','Currency','Note'], stRows, [null,'dd-mmm-yyyy',null,null,null,'#,##0.00','#,##0.00','#,##0.00'], [12,12,30,40,16,14,14,14,9,24]);
+  sws2.eachRow(r => { const v = r.getCell(3).value; if (v === 'Opening balance' || v === 'Closing balance') r.font = { bold: true }; });
+  const P = plData(ALLR); const F3 = currency === 'PKR' ? PKRF2 : USDF;
+  addTable(wb, `Earnings and expenses (${currency})`, ['Line','Earned (Cr)','Paid out / deducted (Dr)','Basis'],
+    [...P.credits.map(([k,v,b]) => [k, v, '', b]), ['Total earned', P.tc, '', ''], ...P.debits.map(([k,v,b]) => [k, '', v, b]), ['Total paid out and deducted', '', P.td, ''], ['What you kept', P.net, '', 'Total earned − total paid out']],
+    [null, F3, F3], [34,16,22,50]).eachRow(r => { if (/^(Total|What)/.test(String(r.getCell(1).value))) r.font = { bold: true }; });
+  const strip = h => String(h||'').replace(/<li>/g,'\n• ').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'");
+  addTable(wb, 'Reconciliation', ['Status','Check','Details','Amount'], reconChecks().map(c => [c.state==='ok'?'OK':c.state==='warn'?'Check':'Info', strip(c.title), strip(c.det), strip(c.amt)]), [], [8,50,90,16]).eachRow(r => { r.alignment = { wrapText: true, vertical: 'top' }; });
+  const F2 = currency === 'PKR' ? PKRF : USDF;
+  addTable(wb, `Monthly statement (${currency})`, ['Month','Projects','Revenue','Worker pay',"Allah's share",'Project net','Salary net','Tax','Money in','Money out','Transferred','Fees'],
+    statementRows().reverse().map(r => [prettyMonth(r.k), r.projects, r.rev, r.workers, r.share, r.net, r.salNet, r.tax, r.inn, r.out, r.moved, r.fees]), [null,'0',F2,F2,F2,F2,F2,F2,F2,F2,F2,F2], [12]);
+  addTable(wb, 'Audit log', ['When','Action','Module','Item','Summary','Changes','By'],
+    audit.slice().sort((a,b)=>(a.ts||'').localeCompare(b.ts||'')).map(e => [new Date(e.ts), e.action, e.module, e.label, e.summary||'', (e.changes||[]).map(c => `${FIELD_LBL[c.f]||c.f}: ${c.from} → ${c.to}`).join('\n'), e.by==='claude'?'Claude (setup)':e.by&&e.by===myId?'You':e.by?'Other':'']),
+    ['dd-mmm-yyyy hh:mm'], [18,10,11,36,50,60,14]);
+}
+async function buildWorkbook(list, title, rg){
+  if (typeof ExcelJS === 'undefined') { toast('The spreadsheet library could not load. Check your connection and reload.'); return null; }
+  const wb = new ExcelJS.Workbook(); wb.creator = 'Projects Record'; wb.created = new Date();
+  const sum = wb.addWorksheet('Summary');
+  const { last } = buildRecordsSheet(wb, list);
+  const a = agg(list);
+  sum.getColumn(1).width = 30; sum.getColumn(2).width = 18; sum.getColumn(3).width = 18;
+  sum.addRow(['Projects Record — ' + title]).font = { bold: true, size: 16 };
+  sum.addRow([rg ? `${pretty(rg[0])} to ${pretty(rg[1])}` : 'All records']).font = { color: { argb: 'FF6F7A72' } };
+  sum.addRow([`Generated ${pretty(today())} · today's rate Rs ${live().toFixed(2)} per $`]).font = { color: { argb: 'FF6F7A72' } };
+  sum.addRow([]);
+  const hr = sum.addRow(['Measure','USD','PKR']); styleHeader(hr);
+  const R = `Records!`; const L = Math.max(2,last);
+  const rowsDef = [
+    ['Projects', {formula:`COUNTA(${R}C2:C${L})`, result:a.count}, null, '0'],
+    ['Pieces', {formula:`SUM(${R}F2:F${L})`, result:a.pieces}, null, '0'],
+    ['Revenue', {formula:`SUM(${R}I2:I${L})`, result:a.usd.gross}, {formula:`SUM(${R}AF2:AF${L})`, result:a.pkr.gross}],
+    ['Fees and deductions', {formula:`SUM(${R}J2:J${L})`, result:a.usd.fees}, {formula:`SUM(${R}AG2:AG${L})`, result:a.pkr.fees}],
+    ['Worker pay', {formula:`SUM(${R}P2:P${L})`, result:a.usd.worker}, {formula:`SUM(${R}N2:N${L})`, result:a.pkr.worker}],
+    ['Profit before share', {formula:`SUM(${R}Q2:Q${L})`, result:a.usd.profit}, {formula:`C8-C9-C10`, result:a.pkr.profit}],
+    ["Allah's share", {formula:`SUM(${R}S2:S${L})`, result:a.usd.charity}, {formula:`SUM(${R}T2:T${L})`, result:a.pkr.charity}],
+    ['Net profit', {formula:`SUM(${R}U2:U${L})`, result:a.usd.net}, {formula:`SUM(${R}V2:V${L})`, result:a.pkr.net}],
+    ['Net margin', {formula:`IF(B8=0,0,B13/B8)`, result: a.usd.gross? a.usd.net/a.usd.gross : 0}, null, '0.0%'],
+  ];
+  rowsDef.forEach(([k,u,p,fmt]) => { const row = sum.addRow([k,u,p]); row.getCell(2).numFmt = fmt || USDF; row.getCell(3).numFmt = PKRF; if (k==='Net profit') row.font = { bold: true }; });
+  sum.addRow([]);
+  const pr = sum.addRow(['Still pending (in this file)','USD','PKR']); styleHeader(pr, 'FFA45F00');
+  const pend = (key, f) => sum2(list.filter(r => r[key]==='Pending').map(r => f(calc(r))));
+  [['Client payments due', {formula:`SUMIF(${R}W2:W${L},"Pending",${R}I2:I${L})`, result:pend('clientStatus',c=>c.gross)}, null],
+   ['Worker pay due', null, {formula:`SUMIF(${R}X2:X${L},"Pending",${R}N2:N${L})`, result:pend('workerStatus',c=>c.workerPkr)}],
+   ["Allah's share due", null, {formula:`SUMIF(${R}Y2:Y${L},"Pending",${R}T2:T${L})`, result:pend('charityStatus',c=>c.charityPkr)}]
+  ].forEach(([k,u,p]) => { const row = sum.addRow([k,u,p]); row.getCell(2).numFmt = USDF; row.getCell(3).numFmt = PKRF; });
+  sum.addRow([]);
+  const br = sum.addRow(['Account balances','Balance','Currency']); styleHeader(br, 'FF2B3A33');
+  balances().forEach(b => { const row = sum.addRow([b.name + (b.est ? ` (${b.est} estimated)` : ''), b.bal, b.currency]); row.getCell(2).numFmt = curF(b.currency); });
+
+  const grp = (key) => [...groupBy(list,key)].map(([k,v]) => [k, agg(v), v]).sort((x,y)=>y[1].usd.gross-x[1].usd.gross);
+  addTable(wb,'By Client',['Client','Projects','Revenue ($)','Worker pay (Rs)','Net profit ($)','Net profit (Rs)'], grp('client').map(([k,a])=>[k,a.count,a.usd.gross,a.pkr.worker,a.usd.net,a.pkr.net]), [null,'0',USDF,PKRF,USDF,PKRF]);
+  addTable(wb,'By Type',['Project type','Projects','Revenue ($)','Worker pay (Rs)','Net profit ($)','Net profit (Rs)'], grp('projectType').map(([k,a])=>[k,a.count,a.usd.gross,a.pkr.worker,a.usd.net,a.pkr.net]), [null,'0',USDF,PKRF,USDF,PKRF]);
+  addTable(wb,'By Worker',['Worker','Projects','Pieces','Paid (Rs)','Pending (Rs)'], grp('worker').filter(([k,a])=>a.pkr.worker>0).map(([k,a,v])=>[k,a.count,a.pieces,sum2(v.filter(r=>r.workerStatus!=='Pending').map(r=>calc(r).workerPkr)),sum2(v.filter(r=>r.workerStatus==='Pending').map(r=>calc(r).workerPkr))]), [null,'0','0',PKRF,PKRF]);
+  addTable(wb,'By Source',['Source','Projects','Revenue ($)','Fees ($)','Net profit ($)'], grp('source').map(([k,a])=>[k,a.count,a.usd.gross,a.usd.fees,a.usd.net]), [null,'0',USDF,USDF,USDF]);
+  const months = new Map(); for (const r of list){ const k=(r.date||'').slice(0,7); if(!months.has(k)) months.set(k,[]); months.get(k).push(r); }
+  addTable(wb,'By Month',['Month','Projects','Revenue ($)','Worker pay (Rs)',"Allah's share (Rs)",'Net profit ($)','Net profit (Rs)'], [...months].sort((x,y)=>x[0]<y[0]?-1:1).map(([k,v])=>{const a=agg(v); return [prettyMonth(k),a.count,a.usd.gross,a.pkr.worker,a.pkr.charity,a.usd.net,a.pkr.net];}), [null,'0',USDF,PKRF,PKRF,USDF,PKRF]);
+  addMoneySheets(wb);
+  const st = wb.addWorksheet('Settings'); st.addRow(['Setting','Value']); styleHeader(st.getRow(1),'FF2B3A33');
+  st.addRow(['Default USD→PKR rate', n(settings.fxRate)]); st.addRow(["Today's rate", live()]); st.addRow(["Today's rate date", settings.liveRate?.date||'']); st.addRow(["Allah's share %", n(settings.charityPct)]);
+  settings.sources.forEach(s => st.addRow([`Source fee: ${s.name} (%)`, n(s.fee)]));
+  (settings.accounts||[]).forEach(a => st.addRow([`Account: ${a.name} (${a.currency}) opening`, n(a.opening)]));
+  st.getColumn(1).width = 34; st.getColumn(2).width = 14;
+  return wb;
+}
+async function saveFile(name, wb){
+  const buf = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  if (dlCap){
+    try { await dlCap.save({ filename: name, data: blob }); toast('Workbook saved'); }
+    catch(e){ if (e && e.code === 'declined') return; toast(e && e.code === 'rate_limited' ? 'A save prompt is already open.' : 'This view can’t save files. Open the page on claude.ai to download.'); }
+    return;
+  }
+  { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast('Workbook downloaded'); return; }
+  toast('Downloads are still connecting. Try again in a few seconds.');
+}
+const byDate = (a,b)=>a.date<b.date?-1:a.date>b.date?1:n(a.sr)-n(b.sr);
+async function downloadAll(){ const wb = await buildWorkbook([...records].sort(byDate),'All records',null); if (wb) saveFile(`Projects_Record_${today()}.xlsx`, wb); }
+async function downloadSummary(){ const rg = range(period); const list = records.filter(r=>inRange(r,rg)).sort(byDate); const title = PERIODS.find(p=>p[0]===period)[1]; const wb = await buildWorkbook(list,title,rg); if (wb) saveFile(`Projects_Summary_${title.replace(/\s+/g,'-')}_${rg[0]}_to_${rg[1]}.xlsx`, wb); }
+async function importWorkbook(file){
+  if (typeof ExcelJS === 'undefined') return toast('The spreadsheet library could not load.');
+  try {
+    const wb = new ExcelJS.Workbook(); await wb.xlsx.load(await file.arrayBuffer());
+    const ws = wb.getWorksheet('Records'); if (!ws) return toast('No “Records” sheet found. Import a workbook downloaded from this app.');
+    const head = {}; ws.getRow(1).eachCell((c,i) => head[String(c.value).trim()] = i);
+    if (!head['Project'] || !head['Pieces']) return toast('The Records sheet is missing the Project or Pieces column.');
+    const val = (row, h) => { const i = head[h]; if (!i) return ''; let v = row.getCell(i).value; if (v && typeof v === 'object' && !(v instanceof Date)) v = 'result' in v ? v.result : v.text ?? v.richText?.map(t=>t.text).join('') ?? ''; return v ?? ''; };
+    const out = [];
+    ws.eachRow((row, i) => { if (i === 1) return; const project = String(val(row,'Project')).trim(); if (!project || project === 'TOTAL') return;
+      let d = val(row,'Date'); d = d instanceof Date ? iso(d) : typeof d === 'number' ? iso(new Date(Date.UTC(1899,11,30)+d*864e5)) : String(d).slice(0,10);
+      const id = String(val(row,'Record ID')||'').trim();
+      const st = v => ['Paid','Pending'].includes(String(v)) ? String(v) : 'N/A';
+      const cur = ['USD','PKR','PKR_FX'].includes(String(val(row,'Paid in'))) ? String(val(row,'Paid in')) : 'USD';
+      const fx = n(val(row,'USD→PKR rate')) || n(settings.fxRate); const k = cur === 'PKR' ? fx : 1;
+      out.push({ id: id || newId('r'), sr: n(val(row,'Sr.')), date: d, project, projectType: String(val(row,'Project type')||''), client: String(val(row,'Client')), source: String(val(row,'Source')),
+        currency: cur, via: String(val(row,'Received via')||''),
+        pieces: n(val(row,'Pieces')), price: n(val(row,'Price / piece ($)'))*k, adjustment: n(val(row,'Adjustment ($)'))*k, fees: n(val(row,'Fees ($)'))*k,
+        worker: String(val(row,'Worker')), workerPayType: String(val(row,'Pay type')).toLowerCase().startsWith('fix') ? 'fixed' : 'piece', workerAmount: n(val(row,'Worker rate / amount (Rs)')),
+        fxRate: fx, charityPct: n(val(row,"Allah's share %")),
+        clientStatus: st(val(row,'Client status')), workerStatus: st(val(row,'Worker status')), charityStatus: st(val(row,"Allah's share status")), notes: String(val(row,'Notes')) }); });
+    if (!out.length) return toast('No rows to import.');
+    toast(`Importing ${out.length} rows…`);
+    const ch = [];
+    for (const r of out){ const before = records.find(x => x.id === r.id); await putDoc('records', r, { noAudit: true });
+      const d = before ? diffOf(before, r) : null; if (!before) ch.push({ f: `#${r.sr} ${projTitle(r)}`, from: '—', to: 'added' }); else if (d.length) ch.push({ f: `#${r.sr} ${projTitle(r)}`, from: d.map(x=>`${FIELD_LBL[x.f]||x.f} ${x.from}`).join(', ').slice(0,140), to: d.map(x=>`${FIELD_LBL[x.f]||x.f} ${x.to}`).join(', ').slice(0,140) }); }
+    const e = { ts: new Date().toISOString(), module: 'records', action: 'import', docId: '', label: `${out.length} project records from ${file.name}`, summary: `${ch.filter(c=>c.to==='added').length} added, ${ch.filter(c=>c.to!=='added').length} changed, ${out.length - ch.length} unchanged.`, changes: ch.slice(0, 60), by: myId||'' };
+    const aid = newId('a'); try { await writeAudit(aid, e); } catch { const q = ls.get(AQ) || []; q.push({ id: aid, e }); ls.set(AQ, q); }
+    toast(`Imported ${out.length} rows`);
+  } catch(e){ toast('Could not read that file. Make sure it is an .xlsx downloaded from this app.'); }
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('button,[data-p]'); if (!t) return;
+  if (t.dataset.view) return showView(t.dataset.view);
+  if (t.dataset.close) return closeSheet(t.dataset.close);
+  if (t.dataset.cur){ currency = t.dataset.cur; ls.set('pr.currency', currency); $$('[data-cur]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cur===currency)); renderAll(); return; }
+  if (t.dataset.aud){ audView = t.dataset.aud; renderAudit(); return; }
+  if (t.dataset.today){ const el = F(t.dataset.today); el.value = live(); el.dispatchEvent(new Event('input', { bubbles: true })); return; }
+  if (t.dataset.p){ period = t.dataset.p; ls.set('pr.period', period); if (period==='custom' && !F('cFrom').value){ F('cTo').value = today(); F('cFrom').value = addDays(today(),-29); } renderDash(); return; }
+  if (t.dataset.sort && !['status','act','project'].includes(t.dataset.sort)){ const k = t.dataset.sort; sort = { key:k, dir: sort.key===k && sort.dir==='desc' ? 'asc' : 'desc' }; renderRecords(); return; }
+  if (t.dataset.acct != null){ selAcct = selAcct === t.dataset.acct ? '' : t.dataset.acct; showEstOnly = false; renderMoney(); return; }
+  if (t.id === 'showEst'){ showEstOnly = !showEstOnly; selAcct = ''; renderMoney(); return; }
+  const rec = id => records.find(r => r.id === id);
+  if (t.dataset.edit) return openEntry(rec(t.dataset.edit));
+  if (t.dataset.dup) return openEntry(rec(t.dataset.dup), true);
+  if (t.dataset.del){ const r = rec(t.dataset.del); return confirmDel(`#${r.sr} · ${projTitle(r)} (${r.client}) will be removed. The audit log keeps a note of it.`, () => delDoc('records', r.id).then(()=>{ toast(`Entry #${r.sr} deleted`); closeSheet('entryScrim'); })); }
+  const sal = id => salaries.find(s => s.id === id);
+  if (t.dataset.sedit) return openSalary(sal(t.dataset.sedit));
+  if (t.dataset.sdup) return openSalary(sal(t.dataset.sdup), true);
+  if (t.dataset.sdel){ const s = sal(t.dataset.sdel); return confirmDel(`${prettyMonth(s.month)} salary${s.employer?' from '+s.employer:''} will be removed.`, () => delDoc('salaries', s.id).then(()=>{ toast('Salary deleted'); closeSheet('salScrim'); })); }
+  const tx = id => txns.find(x => x.id === id);
+  if (t.dataset.tedit) return openTxn(tx(t.dataset.tedit));
+  if (t.dataset.tdup) return openTxn(tx(t.dataset.tdup), true);
+  if (t.dataset.tdel){ const x = tx(t.dataset.tdel); return confirmDel(`${txnTitle(x)} on ${pretty(x.date)} will be removed.`, () => delDoc('txns', x.id).then(()=>{ toast('Transaction deleted'); closeSheet('txnScrim'); })); }
+  if (t.dataset.toggle || t.dataset.mark){ const mod = t.dataset.mod || 'records'; const list = LISTS[mod](); const r = list.find(x => x.id === (t.dataset.toggle || t.dataset.mark)); if (!r) return; const k = t.dataset.key;
+    const nv = mod === 'salaries' ? (r[k]==='Received' ? 'Pending' : 'Received') : (r[k]==='Paid' ? 'Pending' : 'Paid');
+    putDoc(mod, {...r, [k]: nv}).then(()=> toast(mod==='salaries' ? `${prettyMonth(r.month)} salary marked ${nv.toLowerCase()}` : `#${r.sr} ${k==='clientStatus'?'client payment':k==='workerStatus'?'worker pay':"Allah's share"} marked ${nv.toLowerCase()}`)).catch(()=>{}); return; }
+  if (t.dataset.lgacct != null){ lgAcct = t.dataset.lgacct; renderLedger(); return; }
+  if (t.dataset.recAdd){ const ty = t.dataset.recAdd, amt = r2(t.dataset.amt);
+    if (ty === 'in') return openTxn({ type: 'in', date: today(), to: t.dataset.acc, from: '', amount: amt || '', fee: '', rate: 0, received: '', party: settings.defaultClient || '', category: 'Client payment', ref: '', status: 'Completed', notes: 'Added from Ledger reconciliation', estimated: false });
+    const from = (settings.accounts||[]).find(a => a.currency === 'PKR')?.name || '';
+    return openTxn({ type: 'out', date: today(), from, to: '', amount: amt || '', fee: '', rate: 0, received: '', party: '', category: t.dataset.cat, ref: '', status: 'Completed', notes: 'Added from Ledger reconciliation — set the real date, account and amount', estimated: false }); }
+  if (t.dataset.restore){ const en = audit.find(x => x.id === t.dataset.restore); if (en) restoreDeleted(en); return; }
+  if (t.dataset.srm != null){ settings.sources.splice(+t.dataset.srm,1); fillSettings(); return; }
+  if (t.dataset.arm != null){ settings.accounts.splice(+t.dataset.arm,1); fillSettings(); return; }
+});
+['newBtnTop','newBtnFab'].forEach(id => F(id).addEventListener('click', () => view==='salary' ? openSalary(null) : view==='money' ? openTxn(null) : openEntry(null)));
+F('newSalary').addEventListener('click', () => openSalary(null));
+F('newTxn').addEventListener('click', () => openTxn(null));
+['entryScrim','salScrim','txnScrim'].forEach(id => F(id).addEventListener('click', e => { if (e.target === F(id)) closeSheet(id); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape'){ if (!F('confirmScrim').hidden) F('confirmScrim').hidden = true; else ['entryScrim','salScrim','txnScrim'].forEach(id => { if (!F(id).hidden) closeSheet(id); }); } });
+F('entryForm').addEventListener('input', e => { if (e.target.id === 'eFees') feesTouched = true; if (e.target.id === 'eWorker'){ F('eWStatus').value = e.target.value.trim() ? (F('eWStatus').value==='N/A'?'Pending':F('eWStatus').value) : 'N/A'; } updatePreview(); });
+F('entryForm').addEventListener('change', e => { if (e.target.id === 'eCur' && e.target.value === 'PKR_FX' && !editing) F('eFx').value = live(); updatePreview(); });
+F('eSource').addEventListener('change', () => { feesTouched = false; updatePreview(); });
+F('feeSuggest').addEventListener('click', () => { F('eFees').value = n(F('feeSuggest').dataset.v).toFixed(2); feesTouched = true; updatePreview(); });
+F('entryForm').addEventListener('submit', e => { e.preventDefault(); submit(false); });
+F('saveAnother').addEventListener('click', () => submit(true));
+F('delEntry').addEventListener('click', () => { const r = records.find(x => x.id === editing); if (r) confirmDel(`#${r.sr} · ${projTitle(r)} will be removed. The audit log keeps a note of it.`, () => delDoc('records', r.id).then(()=>{ toast(`Entry #${r.sr} deleted`); closeSheet('entryScrim'); })); });
+F('salForm').addEventListener('input', e => { if (e.target.id === 'slTaxPct' || e.target.id === 'slGross'){ const p = n(F('slTaxPct').value); if (p) F('slTax').value = (n(F('slGross').value) * p / 100).toFixed(2); } if (e.target.id === 'slTax') F('slTaxPct').value = ''; salPreview(); });
+F('salForm').addEventListener('change', salPreview);
+F('salForm').addEventListener('submit', e => { e.preventDefault(); submitSal(); });
+F('delSal').addEventListener('click', () => { const s = salaries.find(x => x.id === sEditing); if (s) confirmDel(`${prettyMonth(s.month)} salary will be removed.`, () => delDoc('salaries', s.id).then(()=>{ toast('Salary deleted'); closeSheet('salScrim'); })); });
+F('txnForm').addEventListener('input', e => { if (e.target.id === 'tkRecv') recvTouched = !!e.target.value; txnPreview(); });
+F('txnForm').addEventListener('change', txnPreview);
+F('txnForm').addEventListener('submit', e => { e.preventDefault(); submitTxn(); });
+F('delTxn').addEventListener('click', () => { const x = txns.find(t => t.id === tEditing); if (x) confirmDel(`${txnTitle(x)} on ${pretty(x.date)} will be removed.`, () => delDoc('txns', x.id).then(()=>{ toast('Transaction deleted'); closeSheet('txnScrim'); })); });
+F('cfNo').addEventListener('click', () => F('confirmScrim').hidden = true);
+F('cfYes').addEventListener('click', async () => { F('confirmScrim').hidden = true; if (cfAction) { try { await cfAction(); } catch {} } });
+['q','fYear','fStatus','fType'].forEach(id => F(id).addEventListener('input', renderRecords));
+F('sYear').addEventListener('input', renderSalary);
+['tq','tYear','tType'].forEach(id => F(id).addEventListener('input', renderMoney));
+['aq','aMod','aAct','aFrom','aTo'].forEach(id => F(id).addEventListener('input', renderAudit));
+['cFrom','cTo'].forEach(id => F(id).addEventListener('change', renderDash));
+F('dlAll').addEventListener('click', downloadAll); F('dlAll2').addEventListener('click', downloadAll); F('dlSummary').addEventListener('click', downloadSummary);
+F('importFile').addEventListener('change', e => { const f = e.target.files[0]; if (f) importWorkbook(f); e.target.value = ''; });
+F('saveLive').addEventListener('click', () => { const r = n(F('sLive').value); if (r <= 0) return toast('Enter a rate above 0.');
+  settings.liveRate = { rate: r, date: F('sLiveDate').value || today(), note: F('sLiveNote').value.trim() }; putSettings(`Today's rate set to Rs ${r.toFixed(2)}`); });
+F('saveSettings').addEventListener('click', () => { const fx = n(F('sFx').value), ch = n(F('sCharity').value);
+  if (fx <= 0) return toast('Enter a USD to PKR rate above 0.'); if (ch < 0 || ch > 100) return toast("Allah's share must be between 0 and 100%.");
+  settings.fxRate = fx; settings.charityPct = ch; settings.defaultClient = F('sClient').value.trim(); settings.workerRate = n(F('sWorkerRate').value);
+  settings.defaultVia = F('sVia').value.trim(); settings.xferFeePct = n(F('sXferFee').value); putSettings(); });
+F('srcList').addEventListener('input', e => { const i = e.target.dataset.si; if (i==null) return; const s = settings.sources[+i]; if (e.target.dataset.sf==='fee') s.fee = n(e.target.value); else s.name = e.target.value; });
+F('addSrc').addEventListener('click', () => { settings.sources.push({name:'',fee:0}); fillSettings(); const ins = $$('#srcList input[data-sf="name"]'); ins[ins.length-1].focus(); });
+F('saveSrc').addEventListener('click', () => { settings.sources = settings.sources.filter(s => s.name.trim()).map(s => ({ name: s.name.trim(), fee: Math.min(100, Math.max(0, n(s.fee))) })); fillSettings(); putSettings(); });
+F('acctList').addEventListener('input', e => { const i = e.target.dataset.ai; if (i==null) return; const a = settings.accounts[+i]; const f = e.target.dataset.af; a[f] = f==='opening' ? n(e.target.value) : e.target.value; });
+F('addAcct').addEventListener('click', () => { settings.accounts.push({name:'',currency:'PKR',opening:0}); fillSettings(); const ins = $$('#acctList input[data-af="name"]'); ins[ins.length-1].focus(); });
+F('saveAcct').addEventListener('click', () => { settings.accounts = settings.accounts.filter(a => (a.name||'').trim()).map(a => ({ name: a.name.trim(), currency: a.currency==='USD'?'USD':'PKR', opening: n(a.opening) })); fillSettings(); putSettings('Accounts saved'); });
+F('saveTypes').addEventListener('click', () => { settings.projectTypes = [...new Set(F('sTypes').value.split('\n').map(s=>s.trim()).filter(Boolean))]; putSettings('Project types saved'); });
+const mq = matchMedia('(prefers-color-scheme: dark)'); mq.addEventListener?.('change', () => view==='dash' && renderDash());
+new MutationObserver(() => view==='dash' && renderDash()).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+/* ---------- start ---------- */
+$$('[data-cur]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cur===currency));
+const v0 = ls.get('pr.view'); setStorageTag(); showView(['dash','records','salary','money','ledger','audit','settings'].includes(v0) ? v0 : 'dash'); fillSettings(); boot();
+window.__pr = { calc, agg, salCalc, balances, statementRows, txnRecv, acctStatement, plData, reconChecks, rateOn, r2, sum2, ALLR, setCurrency(c){ currency = c; renderAll(); }, get records(){ return records; }, get txns(){ return txns; }, get salaries(){ return salaries; }, get audit(){ return audit; } };
+})();
+</script>
+</body>
+</html>

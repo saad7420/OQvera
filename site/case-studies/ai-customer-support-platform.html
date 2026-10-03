@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AI Customer Support Platform — case study — Saad Mehmood</title>
+<meta name="description" content="A FastAPI service that runs support conversations with memory, stores every session and message, rate-limits clients and ships with Docker and a 90% coverage test gate.">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://oqvera.netlify.app/case-studies/ai-customer-support-platform.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="AI Customer Support Platform — case study — Saad Mehmood">
+<meta property="og:description" content="A FastAPI service that runs support conversations with memory, stores every session and message, rate-limits clients and ships with Docker and a 90% coverage test gate.">
+<meta property="og:url" content="https://oqvera.netlify.app/case-studies/ai-customer-support-platform.html">
+<meta property="og:image" content="https://oqvera.netlify.app/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a><header class="site-head"><div class="wrap head-in">
+  <a class="logo" href="/" aria-label="Saad Mehmood, home"><span class="logo-mark" aria-hidden="true">SM</span><span>Saad Mehmood</span></a>
+  <nav class="nav" id="nav" aria-label="Main"><a href="/">Home</a><a href="/projects.html">Projects</a><a href="/case-studies.html" aria-current="page">Case studies</a><a href="/#about">About</a><a href="/#contact">Contact</a></nav>
+  <a class="btn btn-primary btn-sm head-cta" href="/#contact">Hire me</a>
+  <button class="menu-btn" type="button" aria-controls="nav" aria-expanded="false" aria-label="Menu"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+</div></header>
+<main id="main">
+<section class="page-hero"><div class="wrap">
+  <div class="crumbs"><a href="/case-studies.html">Case studies</a> / AI Customer Support Platform</div>
+  <div class="cs-hero">
+    <div>
+      <h1>AI Customer Support Platform</h1>
+      <p class="sub">Production-style support chatbot API with sessions and tests</p>
+      <p class="lede">A FastAPI service that runs support conversations with memory, stores every session and message, rate-limits clients and ships with Docker and a 90% coverage test gate.</p>
+      <div class="actions"><a class="btn btn-quiet " href="https://github.com/saad7420/AI-CUSTOMER-SUPPORT-CHATBOT" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg> Code</a></div>
+    </div>
+    <ol class="flow " aria-label="How it works, step by step"><li>Streamlit UI</li><li>FastAPI + rate limit</li><li>Save message</li><li>Replay history into chain</li><li>Groq Llama 3.1</li><li>Store reply, return</li></ol>
+  </div>
+  <div class="nums"><div><b>60/min</b><span>rate limit per client</span></div><div><b>90%</b><span>test coverage threshold</span></div><div><b>4</b><span>REST endpoints</span></div></div>
+</div></section>
+<div class="wrap cs-body">
+  <ul class="toc" aria-label="On this page"><li><a href="#problem">The problem</a></li><li><a href="#how">How it works</a></li><li><a href="#features">What it does</a></li><li><a href="#decisions">Engineering decisions</a></li><li><a href="#stack">Stack</a></li></ul>
+  <div>
+    <section class="cs-sec" id="problem"><h2>The problem</h2><p>Demo chatbots keep history in memory, so a restart wipes every conversation, nothing is auditable, and there is no contract for other apps to integrate with.</p></section>
+    <section class="cs-sec" id="how"><h2>How it works</h2><p>A REST API creates sessions, accepts messages and returns history. Each user message is saved first, then the full history is replayed into a LangChain conversation chain on Groq, and the reply is stored before it is returned — so the database is always the record of the conversation.</p><p>Middleware logs every request and enforces 60 requests a minute. Pydantic v2 schemas define the contract, a Streamlit UI consumes the same API, and Docker Compose starts both with one command. The test suite mocks the model and fails the build below 90% coverage.</p></section>
+    <section class="cs-sec" id="features"><h2>What it does</h2><ul class="ticks"><li>Session, message and history endpoints</li><li>Conversation memory rebuilt from the database</li><li>Request logging and rate limiting middleware</li><li>Swagger and ReDoc docs, Postman collection</li><li>Docker images for API and UI</li><li>Tests for sessions, messages, history, service and rate limits</li></ul></section>
+    <section class="cs-sec" id="decisions"><h2>Engineering decisions</h2><div class="decs"><div><b>Persist before you generate</b><p>Saving the user message before the model call means a failed generation never loses what the customer said.</p></div></div></section>
+    <section class="cs-sec" id="stack"><h2>Stack</h2><ul class="tags" aria-label="Technologies"><li>FastAPI</li><li>LangChain</li><li>Groq</li><li>Llama 3.1 8B</li><li>SQLAlchemy</li><li>SQLite</li><li>Pydantic v2</li><li>Streamlit</li><li>Docker Compose</li><li>pytest</li></ul></section>
+    
+  </div>
+</div>
+<nav class="wrap pager" aria-label="More case studies">
+  <a href="/case-studies/langgraph-tool-agent.html"><small>Previous</small>LangGraph Tool-Using Chatbot</a>
+  <a class="next" href="/case-studies/hybrid-research-engine.html"><small>Next</small>Enterprise Document Intelligence</a>
+</nav>
+<section class="sec" id="contact"><div class="wrap contact">
+  <div class="rv">
+    <h2>Get in touch</h2>
+    <p class="lede">Hiring for an AI role, or have a process you want an agent to handle? Tell me about it — every message comes straight to me.</p>
+    <ul class="cinfo">
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><div><b>Email</b><a href="mailto:mehmoodsaad042@gmail.com">mehmoodsaad042@gmail.com</a></div></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><b>Based in</b><span>Islamabad, Pakistan · working remotely worldwide</span></div></li>
+      <li><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Response time</b><span>Within one business day</span></div></li>
+    </ul>
+    <div class="socials"><a href="https://github.com/saad7420" target="_blank" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg></a><a href="https://www.linkedin.com/in/msaadmehmood/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg></a><a href="https://x.com/saadmehmood_" target="_blank" rel="noopener" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.24 2.25h3.31l-7.23 8.26 8.5 11.24h-6.66l-5.21-6.82-5.97 6.82H1.67l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23zm-1.16 17.52h1.83L7.08 4.13H5.12z"/></svg></a></div>
+  </div>
+  <form class="form rv" id="contactForm" novalidate data-endpoint="https://hook.eu1.make.com/1xbd6mt18cvllho7k1ergevtftc8wj97" data-email="mehmoodsaad042@gmail.com">
+    <h3>Send me a message</h3>
+    <p>Fill in the form and I'll get back to you within one business day.</p>
+    <div class="fgrid">
+      <div class="field"><label for="f-name">Full name</label><input id="f-name" name="name" autocomplete="name" required><span class="err">Enter your name.</span></div>
+      <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" autocomplete="email" required><span class="err">Enter a valid email address.</span></div>
+      <div class="field"><label for="f-company">Company <small>(optional)</small></label><input id="f-company" name="company" autocomplete="organization"></div>
+      <div class="field"><label for="f-phone">Phone or WhatsApp <small>(optional)</small></label><input id="f-phone" name="phone" type="tel" autocomplete="tel"></div>
+      <div class="field"><label for="f-service">What's it about?</label><select id="f-service" name="service" required>
+        <option value="">Choose one</option>
+        <option value="hire">Hiring for a full-time or contract role</option>
+        <option value="agents">AI agent or voice agent</option>
+        <option value="automation">Workflow automation</option>
+        <option value="rag">RAG or document AI</option>
+        <option value="vision">Computer vision or ML model</option>
+        <option value="web">Web or AR app</option>
+        <option value="demo">Project demo</option>
+        <option value="other">Something else</option>
+      </select><span class="err">Pick the closest option.</span></div>
+      <div class="field"><label for="f-timeline">Timeline <small>(optional)</small></label><select id="f-timeline" name="timeline"><option value="">Not sure yet</option><option>As soon as possible</option><option>Within a month</option><option>1–3 months</option><option>Just exploring</option></select></div>
+      <div class="field full"><label for="f-message">Message</label><textarea id="f-message" name="message" required placeholder="What are you building, or what should the system do?"></textarea><span class="err">Tell me a little more (at least 10 characters).</span></div>
+      <div class="hp" aria-hidden="true"><label for="f-website">Website</label><input id="f-website" name="website" tabindex="-1" autocomplete="off"></div>
+    </div>
+    <div class="form-foot"><button class="btn btn-primary" type="submit"><span>Send message</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button><small>Your details are only used to reply to you.</small></div>
+    <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+  </form>
+</div></section>
+</main><footer class="site-foot"><div class="wrap foot-in">
+  <span>© 2026 Saad Mehmood · AI/ML Engineer · Founder of OQVERA</span>
+  <div class="foot-links"><a href="/projects.html">Projects</a><a href="/case-studies.html">Case studies</a><a href="https://github.com/saad7420" target="_blank" rel="noopener">GitHub</a><a href="https://www.linkedin.com/in/msaadmehmood/" target="_blank" rel="noopener">LinkedIn</a><a href="https://x.com/saadmehmood_" target="_blank" rel="noopener">X</a><a href="mailto:mehmoodsaad042@gmail.com">Email</a></div>
+</div></footer>
+<button class="chat-fab" type="button" aria-controls="chat" aria-expanded="false"><span class="dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.8 7L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg></span><span>Ask my AI assistant</span></button>
+<section class="chat" id="chat" hidden aria-label="Chat with Saad's AI assistant">
+  <div class="chat-head"><img src="/assets/saad.webp" alt="" width="36" height="36"><div><b>Saad's assistant</b><span><i></i>Answers about my work, usually instantly</span></div><button class="chat-close" type="button" aria-label="Close chat"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
+  <div class="chat-log" role="log" aria-live="polite"></div>
+  <div class="chat-sugs"><button type="button">What has Saad built with LangGraph?</button><button type="button">Tell me about DeepTruth</button><button type="button">Is he available for freelance work?</button></div>
+  <form class="chat-form"><label class="hp" for="chatIn">Message</label><input id="chatIn" type="text" placeholder="Ask about projects, skills, hiring…" autocomplete="off" maxlength="1500"><button type="submit" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button></form>
+  <div class="chat-note">AI can make mistakes. For anything important, use the contact form.</div>
+</section>
+<script src="/assets/kb.js" defer></script>
+<script src="/assets/site.js" defer></script>
+</body>
+</html>
